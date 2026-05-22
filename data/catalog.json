@@ -132,7 +132,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "674111c02633a302bef536491eec0ff0880005706feb008126e0c0e1b39f84e5",
       "category": "deep-dive"
+    },
+    {
+      "slug": "claude-code-advanced-full-course-deep-dive",
+      "title": "Claude Code Advanced Full Course — Deep Dive",
+      "publishedAt": "2026-03-28T18:59:16.000Z",
+      "sourcePath": "/tmp/deep_dive_UPtmKh1vMN8.html",
+      "articlePath": "articles/claude-code-advanced-full-course-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/UPtmKh1vMN8/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "a5d5b86b4939d15b3674b9ed180241594de7c42a99035a69c41bc855fa8cbc2b",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-22T21:19:23.814Z"
+  "updatedAt": "2026-05-22T21:41:03.336Z"
 }

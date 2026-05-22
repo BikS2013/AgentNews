@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Advanced Full Course — Deep Dive</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--card:#181a20;--card-border:#23262f;--text:#e0e0e6;--text-muted:#8b8fa3;--accent:#a78bfa;--accent-dim:rgba(139,92,246,0.15);--accent-hover:rgba(139,92,246,0.3);--accent-bright:#c4b5fd;--green:#34d399;--blue:#60a5fa;--orange:#fbbf24;--red:#f87171;--pink:#f472b6;--cyan:#22d3ee}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif;line-height:1.7;min-height:100vh}
+a{color:var(--accent);text-decoration:none;transition:color 0.2s}
+a:hover{color:var(--accent-bright)}
+
+/* Container */
+.container{max-width:920px;margin:0 auto;padding:24px 20px 80px}
+
+/* Hero */
+.hero{text-align:center;padding:48px 0 40px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:20px}
+.hero-badge svg{width:14px;height:14px}
+.hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;line-height:1.2;margin-bottom:12px;background:linear-gradient(135deg,#fff 0%,var(--accent-bright) 50%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .subtitle{font-size:18px;color:var(--text-muted);margin-bottom:8px}
+.hero .meta{font-size:14px;color:var(--text-muted);display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:16px}
+.hero .meta span{display:inline-flex;align-items:center;gap:5px}
+.hero .meta svg{width:15px;height:15px;opacity:0.6}
+
+/* Video */
+.video-section{margin:0 0 40px;border-radius:16px;overflow:hidden;border:1px solid var(--card-border);background:#000}
+.video-responsive{position:relative;padding-bottom:56.25%;height:0}
+.video-responsive iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.video-fallback{display:none;padding:60px 20px;text-align:center;background:var(--card)}
+.video-fallback a{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:var(--accent-dim);color:var(--accent);font-weight:600;font-size:15px;transition:background 0.2s}
+.video-fallback a:hover{background:var(--accent-hover)}
+
+/* Timestamp pill */
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;text-decoration:none;transition:background 0.2s,color 0.2s;white-space:nowrap}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd}
+.timestamp svg{width:12px;height:12px;flex-shrink:0}
+
+/* TOC */
+.toc{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:28px 32px;margin-bottom:40px}
+.toc h2{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.toc h2 svg{width:20px;height:20px;color:var(--accent)}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.toc-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;transition:background 0.2s;cursor:pointer;text-decoration:none;color:var(--text)}
+.toc-item:hover{background:rgba(139,92,246,0.08);color:var(--accent-bright)}
+.toc-num{width:28px;height:28px;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toc-label{font-size:14px;line-height:1.3}
+
+/* Section card */
+.section{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:32px;margin-bottom:24px;transition:border-color 0.3s}
+.section:hover{border-color:rgba(139,92,246,0.3)}
+.section-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.section-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent-dim),rgba(139,92,246,0.25));color:var(--accent);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title-group{flex:1}
+.section-title{font-size:22px;font-weight:700;line-height:1.3;margin-bottom:4px}
+.section-ts{margin-top:6px}
+
+/* Content formatting */
+.section p{margin-bottom:14px;color:var(--text);font-size:15px}
+.section strong{color:#fff}
+.section ul,.section ol{margin:10px 0 16px 20px;font-size:15px}
+.section li{margin-bottom:6px;color:var(--text)}
+.section li strong{color:#fff}
+.section h3{font-size:17px;font-weight:700;color:var(--accent-bright);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+.section h4{font-size:15px;font-weight:600;color:var(--green);margin:18px 0 8px}
+
+/* Highlight boxes */
+.key-insight{background:rgba(139,92,246,0.08);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:14px}
+.key-insight strong{color:var(--accent-bright)}
+.warning-box{background:rgba(251,191,36,0.08);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:14px}
+.warning-box strong{color:var(--orange)}
+.tip-box{background:rgba(52,211,153,0.08);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:14px}
+.tip-box strong{color:var(--green)}
+
+/* Takeaways */
+.takeaways{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:32px;margin-bottom:24px}
+.takeaways h2{font-size:22px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.takeaway-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--card-border)}
+.takeaway-item:last-child{border-bottom:none}
+.takeaway-num{width:28px;height:28px;border-radius:50%;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.takeaway-text{font-size:14px;line-height:1.6}
+
+/* Timestamp index */
+.ts-index{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:32px;margin-bottom:24px}
+.ts-index h2{font-size:22px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:6px}
+.ts-entry{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;transition:background 0.2s}
+.ts-entry:hover{background:rgba(139,92,246,0.06)}
+.ts-entry .timestamp{flex-shrink:0;min-width:70px;justify-content:center}
+.ts-label{font-size:13px;color:var(--text-muted)}
+
+/* Footer */
+.footer{text-align:center;padding:40px 0 20px;color:var(--text-muted);font-size:13px}
+.footer a{color:var(--accent)}
+
+/* Responsive */
+@media(max-width:640px){
+  .container{padding:16px 14px 60px}
+  .section{padding:22px 18px}
+  .toc{padding:20px 18px}
+  .toc-grid{grid-template-columns:1fr}
+  .ts-grid{grid-template-columns:1fr}
+  .hero h1{font-size:26px}
+  .section-title{font-size:19px}
+}
+
+/* Detect file:// or drive */
+@media all{
+  .video-fallback-detect{display:none}
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var loc=window.location.href;
+  if(loc.startsWith('file://')||loc.includes('drive.google.com')){
+    var vr=document.querySelector('.video-responsive');
+    var vf=document.querySelector('.video-fallback');
+    if(vr)vr.style.display='none';
+    if(vf)vf.style.display='block';
+  }
+});
+function tsLink(s){return 'https://www.youtube.com/watch?v=UPtmKh1vMN8&t='+s+'s';}
+</script>
+</head>
+<body>
+<div class="container">
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Deep Dive — Advanced Course
+  </div>
+  <h1>Claude Code Advanced Full Course</h1>
+  <div class="subtitle">Mastering Agent Teams, Auto-Research, Browser Automation &amp; Beyond</div>
+  <div class="meta">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Nick Saraev</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~3:18:23</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> 12 Modules</span>
+  </div>
+</div>
+
+<!-- Video Embed -->
+<div class="video-section">
+  <div class="video-responsive">
+    <iframe src="https://www.youtube.com/embed/UPtmKh1vMN8?rel=0" title="Claude Code Advanced Full Course" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+  </div>
+  <div class="video-fallback">
+    <p style="color:var(--text-muted);margin-bottom:16px;">Video embed unavailable in this context.</p>
+    <a href="https://www.youtube.com/watch?v=UPtmKh1vMN8" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Watch on YouTube
+    </a>
+  </div>
+</div>
+
+<!-- Overview -->
+<div class="section" style="border-left:3px solid var(--accent)">
+  <h2 style="font-size:20px;font-weight:700;margin-bottom:14px;">📋 Course Overview</h2>
+  <p>Nick Saraev delivers a comprehensive <strong>3-hour advanced course</strong> on Claude Code, covering everything from <strong>CLAUDE.md optimization</strong> to <strong>agent teams, auto-research workflows, browser automation, security audits, workspace organization</strong>, and the future of AI-assisted development. This is aimed at <strong>intermediate-to-advanced users</strong> already familiar with Claude Code basics.</p>
+  <p>Nick runs a <strong>$4M/year business</strong> using Claude Code daily and teaches ~2,000 people how to use these tools. This course distills his production-grade workflows into actionable frameworks you can apply immediately.</p>
+  <div class="key-insight"><strong>🎯 Who this is for:</strong> Developers who've used Claude Code and want to go from "useful assistant" to "autonomous development partner." If you haven't used Claude Code at all, start with the basics first.</div>
+</div>
+
+<!-- Table of Contents -->
+<div class="toc">
+  <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg> Table of Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item"><span class="toc-num">1</span><span class="toc-label">CLAUDE.md &amp; System Prompts</span></a>
+    <a href="#s2" class="toc-item"><span class="toc-num">2</span><span class="toc-label">Agent Harnesses</span></a>
+    <a href="#s3" class="toc-item"><span class="toc-num">3</span><span class="toc-label">Parallelization</span></a>
+    <a href="#s4" class="toc-item"><span class="toc-num">4</span><span class="toc-label">Agent Teams</span></a>
+    <a href="#s5" class="toc-item"><span class="toc-num">5</span><span class="toc-label">Skills &amp; Sub-Agents</span></a>
+    <a href="#s6" class="toc-item"><span class="toc-num">6</span><span class="toc-label">Context Management</span></a>
+    <a href="#s7" class="toc-item"><span class="toc-num">7</span><span class="toc-label">Karpathy's Auto-Research</span></a>
+    <a href="#s8" class="toc-item"><span class="toc-num">8</span><span class="toc-label">Browser Automation</span></a>
+    <a href="#s9" class="toc-item"><span class="toc-num">9</span><span class="toc-label">Performance Fluctuations</span></a>
+    <a href="#s10" class="toc-item"><span class="toc-num">10</span><span class="toc-label">Workspace Organization</span></a>
+    <a href="#s11" class="toc-item"><span class="toc-num">11</span><span class="toc-label">Security</span></a>
+    <a href="#s12" class="toc-item"><span class="toc-num">12</span><span class="toc-label">Future of Claude Code &amp; AI</span></a>
+  </div>
+</div>
+
+<!-- ===== SECTION 1 ===== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title-group">
+      <div class="section-title">CLAUDE.md and System Prompts</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=162s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:42</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick opens the course with arguably the most important concept: understanding <strong>what CLAUDE.md actually IS</strong>. Most users treat it as a simple config file, but it serves three distinct and critical roles.</p>
+
+  <h3>🔹 The Three Roles of CLAUDE.md</h3>
+
+  <h4>1. A System Prompt Wrapper</h4>
+  <p>CLAUDE.md becomes the <strong>system prompt</strong> that controls Claude's behavior. Unlike raw system prompts you'd pass via API, CLAUDE.md is <strong>version-controlled, shareable, and persistent</strong>. It travels with your repository. When Claude Code starts, it reads CLAUDE.md and uses it as foundational instructions for everything that follows.</p>
+
+  <h4>2. A Project Map</h4>
+  <p>Contains <strong>project structure, conventions, tech stack info</strong>. It tells Claude what the codebase looks like and where things are. This is critical because it <strong>reduces exploratory searches that waste context</strong>. Without a good project map, Claude will spend tokens reading files just to figure out your project structure — tokens that could be spent on actual work.</p>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=243s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 4:03</a>
+
+  <h4>3. A Skill Router</h4>
+  <p>When CLAUDE.md references skills, it acts as a <strong>dispatch table</strong>. Claude reads the CLAUDE.md, sees available skills, and <strong>loads the appropriate one based on the task</strong>. This is the most advanced usage pattern and turns CLAUDE.md into a dynamic routing layer.</p>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=301s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 5:01</a>
+
+  <h3>🔹 Layered CLAUDE.md Hierarchy</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=519s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 8:39</a>
+  <p>CLAUDE.md files are <strong>hierarchical</strong> — Claude walks UP the directory tree, loading all CLAUDE.md files it finds:</p>
+  <ul>
+    <li><strong><code>~/.claude/CLAUDE.md</code></strong> — Global, applied everywhere across all projects</li>
+    <li><strong>Project root <code>CLAUDE.md</code></strong> — Project-specific conventions and rules</li>
+    <li><strong>Subdirectory <code>CLAUDE.md</code> files</strong> — Scoped to specific areas (e.g., <code>/frontend/CLAUDE.md</code>)</li>
+  </ul>
+  <p>All layers are merged together, giving you fine-grained control over Claude's behavior at different scopes.</p>
+
+  <h3>🔹 Key Advice for CLAUDE.md</h3>
+  <ul>
+    <li><strong>Keep it lean</strong> — <em>"Your CLAUDE.md is your global, highest-ROI bullet points"</em></li>
+    <li>Add only bullet points that apply to <strong>every future project</strong> at the global level</li>
+    <li>Don't make it a massive document — <em>"Claude MDs are highly volatile, they change frequently"</em></li>
+    <li>Use <strong>MCP servers</strong> (like DevTools) to dynamically inject context rather than stuffing everything into CLAUDE.md
+      <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=732s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 12:12</a>
+    </li>
+    <li>Use <strong>sub-agents</strong> to offload exploratory tasks rather than bloating the main context
+      <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=795s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 13:15</a>
+    </li>
+  </ul>
+
+  <h3>🔹 The Lab Notes Pattern</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1020s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 17:00</a>
+  <p>Include a <strong>"Lab Notes — What NOT to Do"</strong> section documenting failed approaches so Claude doesn't repeat mistakes. This is a high-ROI pattern: Claude reads the lab notes and avoids previously-attempted dead ends.</p>
+  <div class="tip-box"><strong>💡 Pro Tip:</strong> Lab notes are especially valuable in long-running projects where you've already tried and discarded certain approaches. Without them, Claude will waste time rediscovering the same dead ends.</div>
+
+  <h3>🔹 Profile Sections and User Context</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1353s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 22:33</a>
+  <p>Nick recommends including a brief profile section in your global CLAUDE.md — your role, expertise level, preferred communication style. This helps Claude calibrate its responses appropriately.</p>
+</div>
+
+<!-- ===== SECTION 2 ===== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title-group">
+      <div class="section-title">Agent Harnesses</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2078s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 34:38</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick defines what an <strong>"agent harness"</strong> actually means: Claude Code IS the harness around the model Claude that enables tool calling and actual work. The model alone is just a text predictor — the harness turns it into an agent.</p>
+
+  <h3>🔹 Components of the Harness</h3>
+  <p>The harness includes all the infrastructure that wraps around the base model:</p>
+  <ul>
+    <li><strong>The system prompt</strong> (CLAUDE.md) — behavioral instructions</li>
+    <li><strong>Tool definitions</strong> — file editing, terminal, search, etc.</li>
+    <li><strong>Memory systems</strong> — persistent context across sessions</li>
+    <li><strong>Skills</strong> — reusable workflow definitions</li>
+    <li><strong>MCP servers</strong> — external tool integrations</li>
+    <li><strong>Hooks</strong> — pre/post-execution actions</li>
+    <li><strong>Security configurations</strong> — permission boundaries</li>
+  </ul>
+
+  <div class="key-insight"><strong>💎 Key Insight:</strong> <em>"The harness matters as much as the model."</em> Two identical models with different harnesses will produce vastly different results. This is why Claude Code outperforms raw API Claude for development tasks — the harness provides the scaffolding for effective work.</div>
+
+  <h3>🔹 Building Harnesses: Code Walkthrough</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2262s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 37:42</a>
+  <p>Nick demonstrates building harnesses that combine all these components into a coherent system. The walkthrough covers how prompts, memory, skills, and tools are <strong>injected into the model's context</strong>, and how to think about the harness as an <strong>engineering system</strong>, not just a prompt.</p>
+
+  <p>The critical mental model shift: stop thinking "I'm writing a prompt" and start thinking <strong>"I'm building an agent system."</strong> The prompt is just one input among many. The tools, memory, and skills are equally important inputs that shape the agent's behavior.</p>
+
+  <div class="tip-box"><strong>💡 Takeaway:</strong> When debugging bad Claude Code output, don't just tweak the prompt. Examine the entire harness: are the right tools available? Is memory stale? Are skills loaded? The issue is often in the infrastructure, not the instructions.</div>
+</div>
+
+<!-- ===== SECTION 3 ===== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title-group">
+      <div class="section-title">Parallelization</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2559s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 42:39</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Long-running sequential tasks waste enormous time. Instead of one parent agent doing tasks 1→2→3→4 sequentially, you can <strong>stack tasks 2, 3, 4 in parallel</strong>, then add a synthesizer step to combine results.</p>
+
+  <h3>🔹 Why Parallelize?</h3>
+  <ul>
+    <li><strong>Speed</strong> — N tasks that take T seconds each complete in T seconds (not N×T)</li>
+    <li><strong>Quality</strong> — Multiple perspectives on the same problem yield better solutions</li>
+    <li><strong>Resilience</strong> — If one agent path fails, others may succeed</li>
+  </ul>
+
+  <h3>🔹 Agents Are Stochastic</h3>
+  <p>A fundamental truth: <strong>agents don't produce the same output every time</strong>. The same prompt with the same context can yield different approaches, different code, different solutions. Most people see this as a weakness. Nick reframes it as a <strong>feature</strong>.</p>
+
+  <h3>🔹 The Stochastic Consensus Pattern</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2709s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 45:09</a>
+  <p>This is the star pattern of the parallelization section:</p>
+  <ol>
+    <li><strong>Fan out:</strong> Run N agents on the same problem with different approaches</li>
+    <li><strong>Collect:</strong> Gather all N outputs</li>
+    <li><strong>Synthesize:</strong> Have a synthesizer agent combine the best elements from all N outputs
+      <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=3262s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 54:22</a>
+    </li>
+  </ol>
+
+  <div class="key-insight"><strong>💎 Key Insight:</strong> Stochastic consensus produces <strong>higher-quality results than any single run</strong>. It's like having three developers independently solve a problem, then having a tech lead pick the best parts from each solution.</div>
+
+  <h3>🔹 Sub-Agent Coordination</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=3659s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:00:59</a>
+  <p>Nick walks through how to coordinate sub-agents in practice — how the parent agent delegates, how sub-agents communicate results back, and how the synthesis step works mechanically within Claude Code.</p>
+
+  <h3>🔹 Stochastic Consensus Skill Demo</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=3798s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:03:18</a>
+  <p>A hands-on demo showing the stochastic consensus pattern running in real time. Multiple agents tackle the same task, their outputs are collected, and a final synthesis produces a result superior to any individual agent's work.</p>
+
+  <div class="warning-box"><strong>⚠️ Note:</strong> Parallelization increases API costs proportionally. Running 3 agents in parallel costs 3× as much as a single run. Balance quality gains against budget constraints.</div>
+</div>
+
+<!-- ===== SECTION 4 ===== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title-group">
+      <div class="section-title">Agent Teams</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4206s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:10:06</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Agent teams go <strong>beyond simple sub-agents</strong>. Instead of one agent orchestrating sequential sub-tasks, you define a <strong>TEAM of specialized agents that collaborate</strong> on a complex goal.</p>
+
+  <h3>🔹 Teams vs. Simple Sub-Agents</h3>
+  <p>Simple sub-agent delegation: Parent assigns task → sub-agent completes → returns result. This is one-directional and sequential.</p>
+  <p>Agent teams: Multiple specialized agents work <strong>simultaneously</strong> on different aspects of a task, with coordination and a consensus/synthesis step that combines their work.</p>
+
+  <div class="key-insight"><strong>💎 Key Insight:</strong> <em>"Agent teams are a lot better"</em> than simple sub-agent delegation for complex, multi-faceted tasks. The difference is analogous to assigning one person three tasks sequentially vs. having three specialists work on their domain simultaneously.</div>
+
+  <h3>🔹 Agent Teams + Skills Combination</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4269s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:11:09</a>
+  <p>Nick shows how to combine <strong>skills with agent teams</strong>: read a skill definition, then use the agent teams feature to spawn specialized workers based on the skill's requirements. This is where the power multiplies — skills provide the SOPs, teams provide the execution model.</p>
+
+  <h3>🔹 Spawning Specialized Sub-Agents</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4496s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:14:56</a>
+  <p>Each team member can be a <strong>specialist</strong> — one agent handles database work, another handles frontend, another handles testing. They run in parallel, each with their own context window and tool access, then a coordinator synthesizes their outputs into a coherent result.</p>
+
+  <div class="tip-box"><strong>💡 When to use teams:</strong> Complex tasks with clearly separable concerns. Don't over-engineer simple tasks with teams — the coordination overhead isn't worth it for straightforward work.</div>
+</div>
+
+<!-- ===== SECTION 5 ===== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title-group">
+      <div class="section-title">Skills and Sub-Agents</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4176s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:09:36</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Skills are <strong>markdown files with structured definitions</strong> that encode reusable workflows. They're one of the most powerful patterns in advanced Claude Code usage — essentially, you're teaching Claude repeatable procedures.</p>
+
+  <h3>🔹 Skill Anatomy</h3>
+  <p>A SKILL.md file contains:</p>
+  <ul>
+    <li><strong>Name</strong> — identifier for the skill</li>
+    <li><strong>Description</strong> — what the skill does and when to use it</li>
+    <li><strong>Allowed tools</strong> — which tools the skill can access (scoping permissions)</li>
+    <li><strong>SOPs (Standard Operating Procedures)</strong> — step-by-step instructions for execution</li>
+    <li><strong>MCP tool references</strong> — can invoke external tools</li>
+  </ul>
+
+  <h3>🔹 Skills in Practice</h3>
+  <p>Nick demonstrates two key skills:</p>
+  <ul>
+    <li><strong>Model-chat skill</strong> <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4015s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:06:55</a> — A skill for structured conversation with the model</li>
+    <li><strong>Stochastic consensus skill</strong> — Encodes the parallel consensus pattern as a reusable skill</li>
+  </ul>
+
+  <h3>🔹 Skill Organization</h3>
+  <ul>
+    <li><strong>Project-specific skills</strong> in <code>.claude/skills/</code> folder</li>
+    <li><strong>Client-specific skills</strong> separate from business skills</li>
+    <li><strong>Global skills</strong> shared across all workspaces</li>
+  </ul>
+
+  <h3>🔹 Sub-Agents Explained</h3>
+  <p>Sub-agents are just <strong>Claude Code instances spawned by a parent agent</strong> to do focused tasks. They run in their <strong>own context window</strong> and return summaries. This is important because it means they don't pollute the parent's context — they do their work, compress it into a summary, and hand it back.</p>
+
+  <div class="key-insight"><strong>💎 Key Pattern:</strong> Skills define WHAT to do (the procedure). Sub-agents define HOW to execute (in isolation). Agent teams define WHO works together (coordination). These three concepts compose together for powerful workflows.</div>
+</div>
+
+<!-- ===== SECTION 6 ===== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title-group">
+      <div class="section-title">Context Management</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4648s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:17:28</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Context management is about <strong>all the files, folders, and methods you put into a workspace</strong> to help Claude understand and navigate the project effectively.</p>
+
+  <h3>🔹 The Context Toolkit</h3>
+  <ul>
+    <li><strong>CLAUDE.md files</strong> (layered hierarchy) — static instructions</li>
+    <li><strong>SKILL.md files</strong> — reusable procedures</li>
+    <li><strong>MCP server connections</strong> — dynamic external context</li>
+    <li><strong>Memory files</strong> — persistent learned context across sessions</li>
+    <li><strong>Organizational hierarchy of agents</strong> — delegation structure
+      <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=5059s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:24:19</a>
+    </li>
+  </ul>
+
+  <div class="key-insight"><strong>💎 Key Insight:</strong> <em>"These are just different ways of organizing information."</em> Skills, memory, sub-agents, MCP servers — they're all context management tools. None are magic; they're just <strong>structured ways to feed information to the model</strong> at the right time in the right format.</div>
+
+  <h3>🔹 The Real Challenge</h3>
+  <p>Context management is ultimately about <strong>information retrieval at the right time</strong>. The model has a limited context window. You can't dump everything in. So the challenge is: what information does Claude need RIGHT NOW for THIS TASK, and how do you ensure it gets exactly that?</p>
+
+  <p>Solutions stack:</p>
+  <ol>
+    <li><strong>CLAUDE.md</strong> — always loaded, so keep it high-signal</li>
+    <li><strong>Skills</strong> — loaded on demand when a matching task appears</li>
+    <li><strong>MCP servers</strong> — queried dynamically as needed</li>
+    <li><strong>Sub-agents</strong> — explore and summarize, compressing information</li>
+    <li><strong>Memory</strong> — persists across sessions for continuity</li>
+  </ol>
+
+  <div class="tip-box"><strong>💡 Mental Model:</strong> Think of context management like a librarian system. CLAUDE.md is the reference desk (always accessible). Skills are the card catalog (find the right procedure). MCP is the interlibrary loan (get external information). Sub-agents are research assistants (go find specific things).</div>
+</div>
+
+<!-- ===== SECTION 7 ===== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title-group">
+      <div class="section-title">Karpathy's Auto-Research Approach</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=5413s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:30:13</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Inspired by <strong>Andrej Karpathy's approach</strong>: use agents to progressively improve things over time through <strong>automated research loops</strong>. This is one of the most powerful patterns in the entire course.</p>
+
+  <h3>🔹 The Auto-Research Loop</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=5584s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:33:04</a>
+  <ol>
+    <li><strong>Define a metric</strong> to improve (e.g., page load speed, CLS score, test coverage)</li>
+    <li><strong>Agent researches</strong> current state and proposes improvements</li>
+    <li><strong>Agent implements</strong> changes</li>
+    <li><strong>Agent measures</strong> results against the metric</li>
+    <li><strong>Loop:</strong> if improved, keep; if not, revert and try another approach</li>
+    <li><strong>Repeat</strong> until the metric reaches the target or diminishing returns</li>
+  </ol>
+
+  <div class="key-insight"><strong>💎 Key Insight:</strong> This is <strong>recursive self-improvement applied to practical tasks</strong>. The agent doesn't just try once — it iterates, measures, and adapts. Works best when the feedback loop is short (ideally ~30 seconds per iteration) and the metric is objectively measurable.</div>
+
+  <h3>🔹 Live Demo: Website Performance Optimization</h3>
+  <p>Nick applies auto-research to <strong>website performance optimization</strong> on his own site (leftclick.ai), demonstrating real-time improvement cycles. The agent:</p>
+  <ul>
+    <li>Measures current page load speed and CLS score</li>
+    <li>Researches optimization techniques</li>
+    <li>Implements changes (image optimization, code splitting, etc.)</li>
+    <li>Re-measures to verify improvement</li>
+    <li>Iterates on the next bottleneck</li>
+  </ul>
+
+  <h3>🔹 When Auto-Research Works Best</h3>
+  <ul>
+    <li><strong>Measurable metrics</strong> — speed, scores, pass/fail rates, code coverage</li>
+    <li><strong>Short feedback loops</strong> — ideally under 30 seconds per iteration</li>
+    <li><strong>Reversible changes</strong> — can revert if a change makes things worse</li>
+    <li><strong>Large improvement surface</strong> — many potential optimizations to try</li>
+  </ul>
+
+  <div class="warning-box"><strong>⚠️ When it doesn't work well:</strong> Subjective metrics (design quality), long feedback loops (deployment-dependent metrics), or irreversible changes. Always ensure you can roll back.</div>
+</div>
+
+<!-- ===== SECTION 8 ===== -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title-group">
+      <div class="section-title">Browser Automation</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=6247s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:44:07</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick compares <strong>three major approaches</strong> to browser automation, each with different strengths and ideal use cases.</p>
+
+  <h3>🔹 Approach 1: Computer Use (Anthropic)</h3>
+  <p><strong>Screenshot-based</strong> — takes screenshots of the screen and clicks at specific coordinates. Like a human looking at a monitor.</p>
+  <ul>
+    <li>✅ Works on <strong>anything</strong> — desktop apps, native UIs, any visual interface</li>
+    <li>✅ No DOM access needed</li>
+    <li>❌ Lower precision for web tasks</li>
+    <li>❌ Slower (screenshot → process → click cycle)</li>
+  </ul>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=7091s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 1:58:11</a>
+
+  <h3>🔹 Approach 2: Browser Use</h3>
+  <p><strong>DOM-based</strong> — interacts with actual HTML elements. Understands the page structure.</p>
+  <ul>
+    <li>✅ Higher precision for web tasks</li>
+    <li>✅ Can read and interact with specific elements</li>
+    <li>✅ Better for data extraction</li>
+    <li>❌ Only works in browsers (not desktop apps)</li>
+  </ul>
+
+  <h3>🔹 Approach 3: Playwright/Puppeteer via MCP</h3>
+  <p><strong>Programmatic browser control</strong> — write code that controls the browser.</p>
+  <ul>
+    <li>✅ Most reliable and reproducible</li>
+    <li>✅ Best for automated testing and scraping</li>
+    <li>✅ Can integrate into CI/CD pipelines</li>
+    <li>❌ Requires more setup</li>
+    <li>❌ Less flexible for ad-hoc tasks</li>
+  </ul>
+
+  <h3>🔹 Decision Guide</h3>
+  <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+    <tr style="border-bottom:1px solid var(--card-border);">
+      <td style="padding:8px;color:var(--accent);font-weight:600;">Use Case</td>
+      <td style="padding:8px;color:var(--accent);font-weight:600;">Best Approach</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--card-border);">
+      <td style="padding:8px;">Desktop apps, native UIs</td>
+      <td style="padding:8px;color:var(--orange);">Computer Use</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--card-border);">
+      <td style="padding:8px;">Web forms, data extraction</td>
+      <td style="padding:8px;color:var(--green);">Browser Use</td>
+    </tr>
+    <tr>
+      <td style="padding:8px;">Automated pipelines, CI/CD</td>
+      <td style="padding:8px;color:var(--blue);">Playwright/MCP</td>
+    </tr>
+  </table>
+
+  <p>Nick demonstrates <strong>booking a real appointment</strong> through browser automation to show practical capabilities — the agent navigates a booking interface, selects options, fills forms, and completes the process autonomously.</p>
+</div>
+
+<!-- ===== SECTION 9 ===== -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title-group">
+      <div class="section-title">Performance Fluctuations</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=7255s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:00:55</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick honestly acknowledges that <strong>Claude Code performance varies — sometimes dramatically</strong>. This isn't unique to Claude; it's inherent to LLM-based agents. The key is having strategies to handle it.</p>
+
+  <h3>🔹 Strategies for Dealing with Variance</h3>
+
+  <h4>Model Switching</h4>
+  <p>Different models excel at different tasks. Use the right model for the right job — some are better at reasoning, others at code generation, others at following complex instructions.</p>
+
+  <h4>Retry Patterns</h4>
+  <p>If a task fails, <strong>retry with different framing</strong>. Sometimes rephrasing the task or breaking it into smaller steps produces dramatically better results. Don't just retry the same prompt — vary your approach.</p>
+
+  <h4>Multi-Agent Orchestration</h4>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8285s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:18:05</a>
+  <p>Use <strong>multiple providers/models simultaneously</strong>. If Claude is having a bad day on a specific task, route to GPT-4 or Gemini. This requires more infrastructure but provides resilience.</p>
+
+  <h4>Stochastic Consensus (Again)</h4>
+  <p>Leverage variation as a <strong>feature, not a bug</strong>. Run multiple attempts, synthesize the best elements. Performance variance becomes quality improvement when you have a synthesis step.</p>
+
+  <h3>🔹 Alternatives to Claude Code</h3>
+  <p>Nick discusses alternatives honestly:</p>
+  <ul>
+    <li><strong>Codex</strong> (OpenAI) — different strengths, different model</li>
+    <li><strong>Pi</strong> — emerging alternative</li>
+    <li><strong>Amp</strong> — focused on specific workflows</li>
+    <li><strong>OpenCode</strong> — open-source alternative</li>
+  </ul>
+
+  <div class="key-insight"><strong>💎 Nick's View:</strong> Claude Code is the <strong>most capable</strong> but not always the <strong>most reliable</strong>. Capability ceiling is highest, but the floor can sometimes be lower than expected. Build your workflow to handle both peaks and valleys.</div>
+</div>
+
+<!-- ===== SECTION 10 ===== -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div class="section-title-group">
+      <div class="section-title">Workspace Organization</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8658s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:24:18</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick reveals his personal workspace structure — how he organizes projects, skills, and context for his $4M/year business running on Claude Code daily.</p>
+
+  <h3>🔹 Nick's Workspace Structure</h3>
+  <ul>
+    <li><strong>Root level:</strong> Business workspaces separated by concern</li>
+    <li><strong>Each workspace:</strong> <code>.claude/</code> folder with CLAUDE.md, skills, memory</li>
+    <li><strong>Client projects:</strong> Separate from business projects</li>
+    <li><strong>Global skills:</strong> Shared across all workspaces</li>
+    <li><strong>Client-specific skills:</strong> Scoped to individual clients</li>
+  </ul>
+
+  <h3>🔹 Information Hierarchy</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8714s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:25:14</a>
+  <ol>
+    <li><strong>Global CLAUDE.md</strong> (<code>~/.claude/CLAUDE.md</code>) — universal rules that apply everywhere</li>
+    <li><strong>Business CLAUDE.md</strong> — business-wide conventions and standards</li>
+    <li><strong>Project CLAUDE.md</strong> — project-specific context and requirements</li>
+    <li><strong>Skills</strong> — reusable workflows and procedures</li>
+    <li><strong>Memory</strong> — persistent learned context from past sessions</li>
+  </ol>
+
+  <h3>🔹 Client vs. Business Skills</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8807s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:26:47</a>
+  <p>For client work (selling AI development as a service): <strong>separate client workspaces</strong> with their own skills and context, while still being able to reference shared business skills. This prevents cross-contamination between clients while maintaining shared best practices.</p>
+
+  <div class="tip-box"><strong>💡 Key Principle:</strong> Keep the root clean. Don't pollute global context with project-specific details. Global = universal truths. Project = local conventions. Skills = reusable procedures. This layering prevents information overload.</div>
+
+  <h3>🔹 Auto-Research Integration</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9160s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:32:40</a>
+  <p>Nick shows how auto-research patterns integrate into workspace organization — having dedicated research outputs that feed back into project context, creating a continuous improvement loop for the workspace itself.</p>
+</div>
+
+<!-- ===== SECTION 11 ===== -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div class="section-title-group">
+      <div class="section-title">Security</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9554s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:39:14</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick addresses the security elephant in the room. Two camps exist: <strong>accelerationists</strong> (<em>"Claude Code for everything"</em>) vs. <strong>security-paranoid</strong> (<em>"AI will steal everything"</em>). Nick advocates for <strong>80/20 security</strong> — get the biggest wins with the least effort.</p>
+
+  <h3>🔹 The 80/20 Security Approach</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9652s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:40:52</a>
+
+  <h4>Low-Hanging Fruit</h4>
+  <ul>
+    <li><strong>Never store secrets in code</strong> — use <code>.env</code> files, always</li>
+    <li><strong>Enable Row Level Security (RLS)</strong> on databases, especially Supabase
+      <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9892s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:44:52</a>
+    </li>
+    <li><strong>Auto mode considerations</strong> — understand what you're approving when Claude asks for permissions</li>
+    <li><strong>OAuth implications</strong> — be careful with third-party integrations that Claude configures</li>
+  </ul>
+
+  <div class="warning-box"><strong>⚠️ Real Finding:</strong> Nick's security audit actually found that many production apps <strong>don't have RLS enabled</strong>. This means any authenticated user can potentially access any other user's data. This is a critical vulnerability that takes minutes to fix.</div>
+
+  <h3>🔹 Auto-Research for Security Audits</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10378s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:52:58</a>
+  <p>Apply the Karpathy auto-research pattern to security:</p>
+  <ol>
+    <li>Agent reads security blogs, best practices, OWASP guidelines</li>
+    <li>Agent audits your codebase against those standards</li>
+    <li>Produces an <strong>architecture summary</strong> and <strong>vulnerability report</strong></li>
+    <li>Prioritizes findings by severity and ease of fix</li>
+  </ol>
+
+  <h3>🔹 Full Security Audit Demo</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10568s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 2:56:08</a>
+  <p>Nick demonstrates running a <strong>full security audit on his auto-research repo</strong>, finding real issues. The agent examines authentication flows, database access patterns, API endpoints, and configuration files, producing an actionable report.</p>
+
+  <div class="tip-box"><strong>💡 Actionable:</strong> Run a security audit on your own projects using this pattern. You'll likely find at least one critical issue you didn't know about. The 30 minutes it takes could save you from a data breach.</div>
+</div>
+
+<!-- ===== SECTION 12 ===== -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div class="section-title-group">
+      <div class="section-title">The Future of Claude Code and AI Development</div>
+      <div class="section-ts">
+        <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10823s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 3:00:23</a>
+      </div>
+    </div>
+  </div>
+
+  <p>Nick closes the course with his predictions for where AI-assisted development is heading — and what it means for developers who learn these tools now.</p>
+
+  <h3>🔹 Short-Term Predictions (Months)</h3>
+  <ul>
+    <li><strong>Better model reliability</strong> — more consistent outputs, fewer dramatic performance swings</li>
+    <li><strong>Improved context handling</strong> — larger windows, better retrieval, smarter context management</li>
+    <li>More robust tool calling and error recovery</li>
+  </ul>
+
+  <h3>🔹 Medium-Term Predictions (1–2 Years)</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10891s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 3:01:31</a>
+  <ul>
+    <li><strong>Multi-modal agents</strong> — handle visual + code + data simultaneously</li>
+    <li><strong>Agent teams become standard workflow</strong> — not experimental, but the default way of working</li>
+    <li>Better inter-agent communication protocols</li>
+  </ul>
+
+  <h3>🔹 Long-Term Vision</h3>
+  <ul>
+    <li><strong>AI as genuine development partner</strong> — not just a tool, but a collaborator</li>
+    <li>The productivity divide will mirror the wealth divide — those who leverage AI effectively will have enormous advantages</li>
+  </ul>
+
+  <h3>🔹 Auto-Research as Future Template</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10999s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 3:03:20</a>
+  <p>Karpathy's auto-research pattern is a <strong>template for the future of all AI development</strong>: agents that progressively improve themselves and their outputs through automated feedback loops. This will extend beyond code to design, content, business strategy, and beyond.</p>
+
+  <h3>🔹 Agent Memory and Learning</h3>
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=11575s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 3:12:55</a>
+  <p>Agents will get better at <strong>remembering and learning</strong> across sessions — not just persisting notes, but genuinely accumulating expertise over time. Your Claude Code instance will eventually "know" your codebase as deeply as a senior team member.</p>
+
+  <div class="key-insight"><strong>💎 Closing Message:</strong> <em>"The future is already here, it's just not evenly distributed."</em> Even without money, you have access to incredible technology. The key is <strong>discipline in learning how to use it effectively</strong>. The people who understand how to build agent harnesses, run auto-research loops, and coordinate agent teams will have enormous leverage.</div>
+
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=11765s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 3:16:05</a> — <em>"The future is already here"</em>
+
+  <a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=11851s" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> 3:17:31</a> — Closing remarks on security, productivity divide, and the road ahead
+</div>
+
+<!-- ===== KEY TAKEAWAYS ===== -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <div class="takeaway-item">
+    <div class="takeaway-num">1</div>
+    <div class="takeaway-text"><strong>CLAUDE.md serves THREE roles:</strong> system prompt wrapper, project map, and skill router. Understanding all three unlocks its full potential.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">2</div>
+    <div class="takeaway-text"><strong>Keep CLAUDE.md lean</strong> — highest-ROI bullet points only. Add "lab notes" for failed approaches to prevent repeated mistakes.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">3</div>
+    <div class="takeaway-text"><strong>Agent harness = everything around the model</strong> — prompts, tools, memory, skills, MCP servers, hooks, and security configs. The harness matters as much as the model.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">4</div>
+    <div class="takeaway-text"><strong>Parallelization turns stochastic weakness into strength</strong> — run N agents, synthesize the best elements via consensus for higher-quality results than any single run.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">5</div>
+    <div class="takeaway-text"><strong>Agent teams > simple sub-agents</strong> for complex, multi-faceted tasks. Skills define WHAT, sub-agents define HOW, teams define WHO.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">6</div>
+    <div class="takeaway-text"><strong>Skills are structured markdown SOPs</strong> — organize by project vs. client vs. global scope for maximum reusability.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">7</div>
+    <div class="takeaway-text"><strong>Karpathy's auto-research:</strong> define a metric → research → implement → measure → loop. Best with short feedback loops and measurable outcomes.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">8</div>
+    <div class="takeaway-text"><strong>Browser automation trifecta:</strong> Computer Use for desktop, Browser Use for web DOM, Playwright/MCP for automated pipelines.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">9</div>
+    <div class="takeaway-text"><strong>Performance varies</strong> — use multi-model strategies, retry with different framing, and leverage stochastic consensus to handle variance.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">10</div>
+    <div class="takeaway-text"><strong>80/20 security:</strong> .env files for secrets, RLS on databases, auto-research security audits. Minutes of setup prevent hours of disaster.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">11</div>
+    <div class="takeaway-text"><strong>Workspace hierarchy:</strong> global → business → project → skills → memory. Keep each layer focused on its scope.</div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">12</div>
+    <div class="takeaway-text"><strong>The future is AI as development partner,</strong> not just tool. The productivity divide is real — those who master agent workflows will have enormous leverage.</div>
+  </div>
+</div>
+
+<!-- ===== TIMESTAMP INDEX ===== -->
+<div class="ts-index">
+  <h2>⏱️ Complete Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=0s" target="_blank" rel="noopener">0:00</a><span class="ts-label">Introduction and course overview</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=30s" target="_blank" rel="noopener">0:30</a><span class="ts-label">Course syllabus: 11 modules</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=99s" target="_blank" rel="noopener">1:39</a><span class="ts-label">Setup: Antigravity + Claude Code extension</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=162s" target="_blank" rel="noopener">2:42</a><span class="ts-label">Module 1: CLAUDE.md and system prompts</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=243s" target="_blank" rel="noopener">4:03</a><span class="ts-label">CLAUDE.md as project map</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=301s" target="_blank" rel="noopener">5:01</a><span class="ts-label">CLAUDE.md as skill router</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=519s" target="_blank" rel="noopener">8:39</a><span class="ts-label">Layered CLAUDE.md hierarchy</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=732s" target="_blank" rel="noopener">12:12</a><span class="ts-label">Using MCP servers for dynamic context</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=795s" target="_blank" rel="noopener">13:15</a><span class="ts-label">Sub-agents for exploration</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1020s" target="_blank" rel="noopener">17:00</a><span class="ts-label">Lab Notes pattern: what NOT to do</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1154s" target="_blank" rel="noopener">19:14</a><span class="ts-label">Workspace-level CLAUDE.md tips</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1353s" target="_blank" rel="noopener">22:33</a><span class="ts-label">Profile sections and user context</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1563s" target="_blank" rel="noopener">26:03</a><span class="ts-label">Lab notes and failure documentation</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=1700s" target="_blank" rel="noopener">28:20</a><span class="ts-label">User workspace organization</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2078s" target="_blank" rel="noopener">34:38</a><span class="ts-label">Module 2: Agent harnesses</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2262s" target="_blank" rel="noopener">37:42</a><span class="ts-label">Building harnesses: code walkthrough</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2559s" target="_blank" rel="noopener">42:39</a><span class="ts-label">Module 3: Parallelization</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=2709s" target="_blank" rel="noopener">45:09</a><span class="ts-label">Stochastic consensus pattern</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=3262s" target="_blank" rel="noopener">54:22</a><span class="ts-label">Synthesis step</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=3659s" target="_blank" rel="noopener">1:00:59</a><span class="ts-label">Sub-agent coordination</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=3798s" target="_blank" rel="noopener">1:03:18</a><span class="ts-label">Stochastic consensus skill demo</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4015s" target="_blank" rel="noopener">1:06:55</a><span class="ts-label">Model-chat skill</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4176s" target="_blank" rel="noopener">1:09:36</a><span class="ts-label">Module 4: Skills deep dive</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4206s" target="_blank" rel="noopener">1:10:06</a><span class="ts-label">Agent teams</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4269s" target="_blank" rel="noopener">1:11:09</a><span class="ts-label">Agent teams + skills combination</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4496s" target="_blank" rel="noopener">1:14:56</a><span class="ts-label">Spawning specialized sub-agents</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=4648s" target="_blank" rel="noopener">1:17:28</a><span class="ts-label">Module 5: Context management</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=5059s" target="_blank" rel="noopener">1:24:19</a><span class="ts-label">Organizational hierarchy of agents</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=5413s" target="_blank" rel="noopener">1:30:13</a><span class="ts-label">Module 6: Karpathy's auto-research</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=5584s" target="_blank" rel="noopener">1:33:04</a><span class="ts-label">Auto-research loop in practice</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=6247s" target="_blank" rel="noopener">1:44:07</a><span class="ts-label">Module 7: Browser automation</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=7091s" target="_blank" rel="noopener">1:58:11</a><span class="ts-label">Computer Use demo</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=7255s" target="_blank" rel="noopener">2:00:55</a><span class="ts-label">Module 8: Performance fluctuations</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8285s" target="_blank" rel="noopener">2:18:05</a><span class="ts-label">Multi-model strategies</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8658s" target="_blank" rel="noopener">2:24:18</a><span class="ts-label">Module 9: Workspace organization</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8714s" target="_blank" rel="noopener">2:25:14</a><span class="ts-label">Skills storage hierarchy</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=8807s" target="_blank" rel="noopener">2:26:47</a><span class="ts-label">Client vs business skills</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9160s" target="_blank" rel="noopener">2:32:40</a><span class="ts-label">Auto-research integration</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9554s" target="_blank" rel="noopener">2:39:14</a><span class="ts-label">Module 10: Security</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9652s" target="_blank" rel="noopener">2:40:52</a><span class="ts-label">80/20 security approach</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=9892s" target="_blank" rel="noopener">2:44:52</a><span class="ts-label">Row Level Security</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10378s" target="_blank" rel="noopener">2:52:58</a><span class="ts-label">Security audit via auto-research</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10568s" target="_blank" rel="noopener">2:56:08</a><span class="ts-label">Full security audit demo</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10823s" target="_blank" rel="noopener">3:00:23</a><span class="ts-label">Module 11: Future of Claude Code</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10891s" target="_blank" rel="noopener">3:01:31</a><span class="ts-label">Medium-term predictions</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=10999s" target="_blank" rel="noopener">3:03:20</a><span class="ts-label">Auto-research as future template</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=11575s" target="_blank" rel="noopener">3:12:55</a><span class="ts-label">Agent memory and learning</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=11765s" target="_blank" rel="noopener">3:16:05</a><span class="ts-label">"The future is already here"</span></div>
+    <div class="ts-entry"><a class="timestamp" href="https://www.youtube.com/watch?v=UPtmKh1vMN8&t=11851s" target="_blank" rel="noopener">3:17:31</a><span class="ts-label">Closing: security, productivity divide</span></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>Deep dive generated from <a href="https://www.youtube.com/watch?v=UPtmKh1vMN8" target="_blank" rel="noopener">Claude Code Advanced Full Course</a> by Nick Saraev</p>
+  <p style="margin-top:6px;font-size:12px;color:var(--text-muted);">For educational reference only</p>
+</div>
+
+</div>
+</body>
+</html>
