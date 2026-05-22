@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The One AI Writing Hack Nobody Talks About — Deep Dive</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--card:#181a20;--border:#23262f;--text:#e0e0e6;--muted:#8b8fa3;--accent:#a78bfa;--accent-dim:rgba(139,92,246,0.15);--accent-hover:rgba(139,92,246,0.3);--accent-bright:#c4b5fd;--green:#34d399;--red:#f87171;--yellow:#fbbf24}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px;max-width:860px;margin:0 auto}
+h1{font-size:1.75rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;color:#fff}
+h2{font-size:1.25rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:12px;color:#fff}
+h3{font-size:1rem;font-weight:600;color:var(--accent-bright);margin-bottom:8px}
+.meta{color:var(--muted);font-size:14px;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.meta a{color:var(--accent);text-decoration:none}
+.meta a:hover{text-decoration:underline}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.card-header{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-size:13px;font-weight:700;flex-shrink:0}
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd}
+.timestamp svg{width:12px;height:12px;fill:currentColor}
+p{margin-bottom:12px}
+p:last-child{margin-bottom:0}
+ul,ol{margin:0 0 12px 20px}
+li{margin-bottom:6px}
+.quote{border-left:3px solid var(--accent);padding:10px 16px;margin:12px 0;background:rgba(139,92,246,0.06);border-radius:0 8px 8px 0;font-style:italic;color:var(--muted)}
+.highlight{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:8px;padding:14px 18px;margin:12px 0}
+.highlight strong{color:var(--green)}
+.takeaways-grid{display:grid;gap:10px}
+.takeaway{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:rgba(139,92,246,0.04);border:1px solid var(--border);border-radius:8px}
+.takeaway-num{flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--accent-dim);color:var(--accent);font-size:12px;font-weight:700}
+.ts-index{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.ts-row{display:flex;align-items:center;gap:10px;padding:6px 0}
+.ts-row span{color:var(--muted);font-size:14px}
+.video-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;margin-bottom:24px;background:#000}
+.video-wrap iframe,.video-wrap .fallback{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.fallback{display:none;cursor:pointer;background-size:cover;background-position:center;background-image:url('https://img.youtube.com/vi/ltbzgzZZmgI/maxresdefault.jpg')}
+.fallback .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:48px;background:rgba(0,0,0,0.75);border-radius:14px;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
+.fallback:hover .play-btn{background:rgba(139,92,246,0.85)}
+.fallback .play-btn svg{width:24px;height:24px;fill:#fff}
+.divider{height:1px;background:var(--border);margin:8px 0 16px}
+@media(max-width:600px){body{padding:16px 10px}h1{font-size:1.35rem}.card{padding:16px}.ts-index{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Video Embed -->
+<div class="video-wrap" id="videoWrap">
+<iframe id="ytEmbed" src="https://www.youtube.com/embed/ltbzgzZZmgI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="fallback" id="fallback" onclick="window.open('https://www.youtube.com/watch?v=ltbzgzZZmgI','_blank')">
+<div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+</div>
+</div>
+<script>
+(function(){
+var h=location.href;
+if(h.startsWith('file://')||h.indexOf('drive.google.com')!==-1){
+document.getElementById('ytEmbed').style.display='none';
+document.getElementById('fallback').style.display='block';
+}
+})();
+</script>
+
+<h1>The One AI Writing Hack Nobody Talks About</h1>
+<h3 style="color:var(--muted);font-weight:400;margin-bottom:16px">Deep Dive</h3>
+<div class="meta">
+<span>📺 <a href="https://www.youtube.com/watch?v=ltbzgzZZmgI" target="_blank">Nate B Jones</a></span>
+<span>⏱ ~21:50</span>
+<span>🔗 <a href="https://www.youtube.com/watch?v=ltbzgzZZmgI" target="_blank">Watch on YouTube</a></span>
+</div>
+
+<!-- Overview -->
+<div class="card">
+<h2>Overview</h2>
+<p>Nate B Jones argues that the biggest source of AI hallucinations in 2026 isn't the model — it's the messy working environment around it. Using the Sullivan &amp; Cromwell legal scandal as a case study, he presents a <strong>'data room'</strong> workflow: prepare your sources before asking the agent to produce anything.</p>
+<p>With Opus 4.7 and GPT 5.5 now capable of long-running file manipulation, building a clean workspace first is the structural fix for hallucinations.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">1</span>
+<h2 style="margin:0">The Sullivan &amp; Cromwell Scandal</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=0s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>0:00</a>
+</div>
+<p>Sullivan &amp; Cromwell, one of the most prestigious law firms, had to write an apology to a federal bankruptcy judge. Their emergency motion contained <strong>dozens of fabricated or misquoted citations</strong> — AI hallucinations. The partner who signed the apology co-heads the firm's restructuring practice.</p>
+<p>This isn't a 2024-style hallucination from a solo practitioner using ChatGPT. This is an <strong>organizational failure</strong> at the top of an AI-assisted workflow. The motion looked legitimate — correct structure, professional formatting — but dozens of citations pointed at the wrong things. Nobody on the team caught it before filing.</p>
+<div class="quote">'The model is not the problem. The working environment around the model is the problem.'</div>
+</div>
+
+<!-- Section 2 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">2</span>
+<h2 style="margin:0">Why Better Prompts Don't Fix This</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=64s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>1:04</a>
+</div>
+<p>Addresses the Marc Andreessen screenshot circulating online (<em>"just tell the model not to hallucinate"</em>). Nate's response:</p>
+<div class="quote">'You cannot tell a language model not to hallucinate any more than you can tell autocomplete not to autocomplete.'</div>
+<p>There is no separate truth-check pass inside the model that an instruction can hook into. Sullivan &amp; Cromwell had access to the best AI tooling money can buy. The wrong detail still made it into court. The fix is not a sharper prompt.</p>
+</div>
+
+<!-- Section 3 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">3</span>
+<h2 style="margin:0">What's New with Opus 4.7 and GPT 5.5</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=119s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>1:59</a>
+</div>
+<p>These models do <strong>long-running agentic tasks on your file system</strong>. They walk folder trees, open files, compare dates across documents, inspect metadata. This capability has flipped the hallucination workflow, but most people haven't caught it yet.</p>
+<p>Nate's personal experience: with Codex, he drafted 8 documents simultaneously — only possible because he prepared the data room first.</p>
+<div class="quote">'It felt like the hair was blowing back on my face and I was living in the future.'</div>
+</div>
+
+<!-- Section 4 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">4</span>
+<h2 style="margin:0">Your First Prompt Is Never 'Do The Thing'</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=294s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>4:54</a>
+</div>
+<p>Because of ChatGPT (2022), most people think AI workflow starts with doing a job: write the memo, make the spreadsheet. But serious projects almost never have organized source material.</p>
+<p>The reality: strategy docs, meeting transcripts, spreadsheets, half-finished notes, follow-up emails, old decks, forgotten PDFs, Slack threads where actual decisions were made. Some current, some stale, some contradictory.</p>
+<p>When you ask AI to write from this mess, you're asking <strong>two jobs at once</strong>: (1) figure out what this is, and (2) produce a beautiful artifact. That's a recipe for mediocre results and hallucinations.</p>
+<div class="highlight">
+<strong>The correct first instruction:</strong><br>
+<em>'Find the relevant materials. Preserve the originals. Build me a data inventory. Tell me which files are authoritative, duplicates, old, or missing. Summarize every source before you synthesize anything. Do NOT write the deliverable yet.'</em>
+</div>
+</div>
+
+<!-- Section 5 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">5</span>
+<h2 style="margin:0">The Project Room / Data Room</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=442s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>7:22</a>
+</div>
+<p>A project room is a <strong>bounded workspace for one serious job</strong> — a project, a deliverable, a source set. Smaller than a second brain, more specific than a knowledge management system.</p>
+<p><strong>Key distinction:</strong> local files over cloud solutions. Nate finds local file systems more flexible than Claude Projects, ChatGPT Projects, etc. — no file type limitations, and LLMs are trained to work with computers at their most primitive level.</p>
+<h3>Examples</h3>
+<ul>
+<li><strong>Consulting:</strong> client decks, interview transcripts, data exports, prior proposals</li>
+<li><strong>House purchase:</strong> inspection reports, disclosures, contractor estimates, mortgage docs</li>
+<li><strong>Substack article:</strong> sources, transcripts, draft notes, screenshots, prior posts</li>
+<li><strong>Board doc:</strong> financial model, operating plan, old deck, KPI exports, meeting notes</li>
+</ul>
+</div>
+
+<!-- Section 6 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">6</span>
+<h2 style="margin:0">The Source Inventory — Most Important Artifact</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=630s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>10:30</a>
+</div>
+<p>The first thing to ask the agent to produce. A table recording for every file: <strong>path, type, date, apparent authority, whether current or superseded, what claims it supports, limitations, and how it should be used.</strong></p>
+<p>Why it matters: it tells you what the agent <em>thinks</em> the project consists of. You get a chance to correct the working set before the final draft inherits mistakes. It also makes verification by another LLM much easier.</p>
+</div>
+
+<!-- Section 7 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">7</span>
+<h2 style="margin:0">The Conflict Log</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=766s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>12:46</a>
+</div>
+<p>When the agent reads a serious source set, it finds disagreements: old PDF vs current plan, transcript using different names for stakeholders, spreadsheet numbers with no visible assumptions, documents that look adjacent but are months apart.</p>
+<p style="color:var(--red)"><strong>❌ Weak workflow:</strong> agent synthesizes and smooths conflicts over. Output reads confidently but you don't know what to trust.</p>
+<p style="color:var(--green)"><strong>✅ Strong workflow:</strong> agent surfaces disagreements in a conflict log with recommended responses. You review and decide before building the final document.</p>
+</div>
+
+<!-- Section 8 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">8</span>
+<h2 style="margin:0">The Missing Context List</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=830s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>13:50</a>
+</div>
+<p>One of the best signs an agent is helping properly: it tells you what it <strong>doesn't</strong> have. Missing decisions, numbers with no source, absent data files referenced in only one document.</p>
+<div class="quote">The missing material is often more important than what you have. Without this step, gaps become 'hallucination traps' — the model invents around them, the prose looks fine, and you ship something with a soft spot underneath.</div>
+</div>
+
+<!-- Section 9 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">9</span>
+<h2 style="margin:0">Duplicates — A Reasoning Problem</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=907s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>15:07</a>
+</div>
+<p>Duplicate detection isn't housekeeping — it's a <strong>reasoning problem</strong>. Three versions of a plan: agent might blend them. Same transcript exported twice: overweighted in synthesis. Old and new deck with similar titles: source for wrong claims.</p>
+<div class="highlight">
+<strong>Rule:</strong> Do NOT let the agent delete duplicates. Let it produce a duplicates report with confidence levels and version families. <em>'The agent finds, you decide.'</em>
+</div>
+</div>
+
+<!-- Section 10 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">10</span>
+<h2 style="margin:0">The Prompt Gets Short</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=1090s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>18:10</a>
+</div>
+<p>Once the room is prepared (inventory, conflict log, missing context list, duplicates report), the writing prompt becomes very short:</p>
+<div class="highlight">
+<em>'Use the reviewed source inventory. Treat the current operating plan as authoritative for numbers, the transcript as source material for decision context, the older deck as background only. Draft the memo, cite claims, flag anything not supported.'</em>
+</div>
+<p>This makes the AI's work <strong>inspectable</strong>. It's the difference between using AI as a colleague and using AI as a gopher.</p>
+</div>
+
+<!-- Section 11 -->
+<div class="card">
+<div class="card-header">
+<span class="section-num">11</span>
+<h2 style="margin:0">Calibration and Closing</h2>
+<a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=1188s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>19:48</a>
+</div>
+<p>This workflow is specifically for <strong>serious knowledge work</strong> — 30–50 hour Codex runs, heavy reports, complex projects. NOT for casual AI interactions (overkill). NOT for back-office agentic pipelines (different problem).</p>
+<p><strong>Mental model shift:</strong> The old AI question was <em>'can the model do the thing?'</em> The new question is <em>'can the agent help prepare the conditions under which good work happens?'</em></p>
+<div class="quote">'An agent can walk into a messy room, turn on the lights, label everything, and get the desk organized for serious work. That is an AI worth using.'</div>
+</div>
+
+<!-- Key Takeaways -->
+<div class="card">
+<h2>🔑 Key Takeaways</h2>
+<div class="takeaways-grid">
+<div class="takeaway"><span class="takeaway-num">1</span><span>2026 hallucinations are <strong>structural</strong>, not prompting failures — the working environment is the problem</span></div>
+<div class="takeaway"><span class="takeaway-num">2</span><span>You cannot prompt away hallucinations — "tell it not to hallucinate" doesn't work</span></div>
+<div class="takeaway"><span class="takeaway-num">3</span><span>Your first AI prompt should never be "do the thing" — it should be <strong>"build the room"</strong></span></div>
+<div class="takeaway"><span class="takeaway-num">4</span><span>The <strong>Project Room / Data Room</strong>: a bounded workspace for one serious job</span></div>
+<div class="takeaway"><span class="takeaway-num">5</span><span><strong>Source Inventory</strong> is the most important artifact — it makes the agent's judgment visible</span></div>
+<div class="takeaway"><span class="takeaway-num">6</span><span><strong>Conflict Log</strong> surfaces disagreements before they become hallucination traps</span></div>
+<div class="takeaway"><span class="takeaway-num">7</span><span><strong>Missing Context List</strong> reveals gaps the model would otherwise invent around</span></div>
+<div class="takeaway"><span class="takeaway-num">8</span><span>Duplicates are a <strong>reasoning problem</strong>, not housekeeping — "agent finds, you decide"</span></div>
+<div class="takeaway"><span class="takeaway-num">9</span><span>Once the room is prepared, the writing prompt gets very short and the output gets much better</span></div>
+<div class="takeaway"><span class="takeaway-num">10</span><span>Opus 4.7 and GPT 5.5 are specifically capable of the long-running file manipulation this requires</span></div>
+</div>
+</div>
+
+<!-- Timestamp Index -->
+<div class="card">
+<h2>⏱ Timestamp Index</h2>
+<div class="ts-index">
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=0s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>0:00</a><span>Sullivan & Cromwell scandal</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=64s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>1:04</a><span>Why better prompts don't fix hallucinations</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=119s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>1:59</a><span>What's new with Opus 4.7 & GPT 5.5</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=215s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>3:35</a><span>Three key takeaways overview</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=294s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>4:54</a><span>Your first prompt is never 'do the thing'</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=387s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>6:27</a><span>The correct first instruction</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=442s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>7:22</a><span>The Project Room / Data Room concept</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=508s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>8:28</a><span>Local files vs cloud solutions</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=552s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>9:12</a><span>Project room examples</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=630s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>10:30</a><span>The Source Inventory artifact</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=743s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>12:23</a><span>Why this matters now</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=766s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>12:46</a><span>The Conflict Log</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=830s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>13:50</a><span>The Missing Context List</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=907s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>15:07</a><span>Duplicates as a reasoning problem</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=974s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>16:14</a><span>Why this matters with current agents</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=1090s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>18:10</a><span>The prompt gets short after preparation</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=1188s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>19:48</a><span>Calibration: when to use this workflow</span></div>
+<div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=ltbzgzZZmgI&t=1243s" target="_blank"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>20:43</a><span>Mental model shift: old vs new question</span></div>
+</div>
+</div>
+
+<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px">
+Generated deep dive — <a href="https://www.youtube.com/watch?v=ltbzgzZZmgI" target="_blank" style="color:var(--accent);text-decoration:none">Watch the original video</a>
+</div>
+
+</body>
+</html>
