@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stop Using Tailscale. Use Open Source Instead — Deep Dive</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1117;color:#e4e4e7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 80px}
+.container{max-width:860px;margin:0 auto}
+h1{font-size:clamp(1.5rem,4vw,2rem);font-weight:700;color:#f4f4f5;margin-bottom:6px;letter-spacing:-0.02em}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-size:14px;color:#a1a1aa;margin-bottom:24px}
+.meta a{color:#a78bfa;text-decoration:none}.meta a:hover{text-decoration:underline}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa}
+
+/* Video embed */
+.video-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;margin-bottom:32px;background:#18181b}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.video-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;font-size:14px;color:#a1a1aa}
+.video-fallback a{color:#a78bfa;font-weight:600;text-decoration:none}
+
+/* Sections */
+.card{background:#16161a;border:1px solid #27272a;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.card h2{font-size:1.15rem;font-weight:700;color:#f4f4f5;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.card h3{font-size:0.95rem;font-weight:600;color:#d4d4d8;margin:14px 0 6px}
+.card p{color:#d4d4d8;margin-bottom:10px;font-size:15px}
+.card ul{padding-left:20px;margin-bottom:10px}
+.card li{margin-bottom:6px;font-size:15px;color:#d4d4d8}
+.card li strong{color:#e4e4e7}
+.card code{background:#27272a;padding:2px 7px;border-radius:5px;font-size:13px;color:#c4b5fd;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace}
+blockquote{border-left:3px solid #a78bfa;padding:6px 14px;margin:10px 0;background:rgba(139,92,246,0.06);border-radius:0 8px 8px 0;font-style:italic;color:#a1a1aa;font-size:14px}
+
+/* Timestamps */
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd}
+.timestamp::before{content:'▶';font-size:10px}
+
+/* Takeaways */
+.takeaways{counter-reset:tk}
+.takeaways li{counter-increment:tk;list-style:none;position:relative;padding-left:30px;margin-bottom:10px}
+.takeaways li::before{content:counter(tk);position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* Timestamp index grid */
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.ts-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;color:#d4d4d8}
+.ts-row .timestamp{flex-shrink:0}
+
+/* Overview highlight */
+.overview{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border-color:#323248}
+
+@media(max-width:600px){.card{padding:18px 16px}.ts-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Stop Using Tailscale. Use Open Source Instead — Deep Dive</h1>
+<div class="meta">
+  <span class="badge">Deep Dive</span>
+  <span>DevOps Toolbox</span>
+  <span>~10:45</span>
+  <a href="https://www.youtube.com/watch?v=7Jja20nWcqo" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+</div>
+
+<!-- Video Embed -->
+<div class="video-wrap">
+  <iframe src="https://www.youtube-nocookie.com/embed/7Jja20nWcqo" title="Stop Using Tailscale. Use Open Source Instead." allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+  <noscript><div class="video-fallback"><a href="https://www.youtube.com/watch?v=7Jja20nWcqo">Watch on YouTube</a></div></noscript>
+</div>
+
+<!-- Overview -->
+<div class="card overview">
+  <h2>Overview</h2>
+  <p>A hands-on walkthrough of replacing Tailscale's proprietary control server with <strong>Headscale</strong>, the open-source alternative. The video covers the motivation (control, latency, unlimited users/policies), WireGuard mesh networking fundamentals, full Headscale deployment on a K3S homelab cluster, Tailscale client integration, subnet routing for Kubernetes pod access, and DNS strategies for accessing internal services securely.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="card">
+  <h2>Why Replace Tailscale? <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=0s" target="_blank" rel="noopener">0:00</a></h2>
+  <p>Tailscale is amazing — fantastic service built on WireGuard, given away basically free. But its brain is still SaaS. The proprietary control server holds private keys and coordinates the network.</p>
+  <h3>Motivations for self-hosting</h3>
+  <ul>
+    <li><strong>Control</strong> — you control the gateway, not a closed-source server you blindly trust</li>
+    <li><strong>Unlimited resources</strong> — users, policies, and other resources are capped on Tailscale's free tier</li>
+    <li><strong>Latency</strong> — avoid routing through distant servers when accessing local machines</li>
+    <li><strong>Nerd factor</strong> — self-hosting for fun and learning</li>
+  </ul>
+  <blockquote>"I have nothing against Tailscale. For me, it's about latency and control."</blockquote>
+</div>
+
+<!-- Section 2 -->
+<div class="card">
+  <h2>VPN vs Mesh Network — Why WireGuard <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=86s" target="_blank" rel="noopener">1:26</a></h2>
+  <p><strong>Traditional VPN:</strong> clients use a gateway to access servers. Incredibly inefficient when you're physically near a machine but the VPN server is far away.</p>
+  <p><strong>Real-world example:</strong> companies running VPNs on AWS US East while having on-prem infrastructure across the country or globe. Same problem at home — why travel across continents to access security cameras?</p>
+  <h3>WireGuard mesh network</h3>
+  <p>Instead of a gateway, forms a mesh of nodes. Every machine that joins runs lightweight WireGuard tunnels between every available pair.</p>
+  <ul>
+    <li><strong>Faster</strong> — direct peer-to-peer connections</li>
+    <li><strong>Fault tolerant</strong> — no single gateway bottleneck</li>
+  </ul>
+  <p>Tailscale builds on this with a coordination server that helps nodes discover each other and stores keys. Headscale replaces <strong>only</strong> this server component.</p>
+</div>
+
+<!-- Section 3 -->
+<div class="card">
+  <h2>Headscale — The Open Source Control Server <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=65s" target="_blank" rel="noopener">1:05</a></h2>
+  <p>Headscale is one of the most popular projects on GitHub, directly aimed at replacing the Tailscale control center. You keep using Tailscale's open-source client — only the server changes.</p>
+  <p>Both are based on the same technology (WireGuard). WireGuard alone is hard to set up; Tailscale/Headscale make it easy.</p>
+  <p>Headscale implements almost all Tailscale features including <strong>Magic DNS</strong> (automatic internal DNS entries for machines).</p>
+</div>
+
+<!-- Section 4 -->
+<div class="card">
+  <h2>Deployment on K3S <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=155s" target="_blank" rel="noopener">2:35</a></h2>
+  <p>Full deployment walkthrough on a K3S homelab cluster (works on any setup).</p>
+  <h3>Configuration</h3>
+  <ul>
+    <li>Server URL — publicly available DNS (security handled separately)</li>
+    <li>Listen address for connections</li>
+    <li>Metrics address</li>
+  </ul>
+  <h3>Server setup</h3>
+  <ul>
+    <li>Official Docker Hub container image</li>
+    <li>Command: <code>headscale serve</code></li>
+    <li>Ports configured to match the config</li>
+  </ul>
+  <h3>Caddy reverse proxy</h3>
+  <p>Simple line routing traffic from public domain to local K3S Headscale service.</p>
+  <h3>Magic DNS caveat</h3>
+  <p>While cool for automatic internal DNS, it's problematic in practice. Not all devices trust non-public DNS entries. Browsers especially don't resolve "suspicious" entries. IPs work but are unusable for humans.</p>
+</div>
+
+<!-- Section 5 -->
+<div class="card">
+  <h2>Client Setup &amp; First Node <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=254s" target="_blank" rel="noopener">4:14</a></h2>
+  <p>Steps:</p>
+  <ul>
+    <li>Install the standard Tailscale client (open source)</li>
+    <li>Add a UI — Headscale doesn't ship one, but <strong>Headplane</strong> (most popular option on GitHub) works great</li>
+    <li>Create a user via Headscale CLI: <code>headscale users create &lt;name&gt;</code></li>
+    <li>Run the CLI inside the container using an alias trick for convenience</li>
+  </ul>
+  <h3>First node registration</h3>
+  <ul>
+    <li><code>tailscale up</code> with custom login server, accepting routes and DNS entries</li>
+    <li>Visit the generated URL to get a registration command with user and key</li>
+    <li>Register the node on the server</li>
+    <li>Node gets a special internal IP in the new mesh network</li>
+    <li><code>tailscale status</code> shows the machine as the only node in the mesh</li>
+  </ul>
+</div>
+
+<!-- Section 6 -->
+<div class="card">
+  <h2>Adding a Subnet Router (K3S Leg) <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=453s" target="_blank" rel="noopener">7:33</a></h2>
+  <p><strong>Goal:</strong> add a node inside the K3S cluster that acts as a subnet router, exposing Kubernetes internal pod networks to the mesh.</p>
+  <h3>Setup</h3>
+  <ul>
+    <li>Deploy a simple Tailscale container inside K3S called <code>subnet-router</code></li>
+    <li>Register it with the network using the same domain</li>
+    <li>Add subnets in Headplane to expose Kubernetes internal pod network</li>
+    <li>Approve the subnet routes in the UI</li>
+  </ul>
+  <h3>Proof it works</h3>
+  <p>Access <strong>Dozzle</strong> (open-source log viewer) via its cluster-internal IP from outside the cluster. Tailscale down → access fails. Tailscale up → access restored.</p>
+</div>
+
+<!-- Section 7 -->
+<div class="card">
+  <h2>DNS Strategies for Internal Services <a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=553s" target="_blank" rel="noopener">9:13</a></h2>
+  <h3>Option 1: AdGuard Home DNS rewrites</h3>
+  <p>Works but browsers don't trust non-standard entries. Fine for ad blocking, problematic for custom DNS. HTTPS adds another layer of annoyances.</p>
+  <h3>Option 2 (Recommended): Public DNS pointing to private IPs</h3>
+  <p>Add a public DNS record (e.g., <code>logs.yourdomain.com</code>) that resolves to a private/internal IP address. If you have Tailscale access, it works. If you don't, the IP leads nowhere. Elegant security: the DNS record is public, but the destination is private.</p>
+  <blockquote>"DNS is way more trickier than this" — more options for homelab setups will be explored in future videos.</blockquote>
+  <h3>Architecture note</h3>
+  <p>Exposing everything through a single subnet router is a "new VPN problem." Better architecture: deploy a small <strong>Tailscale sidecar</strong> next to each application you actually want exposed.</p>
+</div>
+
+<!-- Key Takeaways -->
+<div class="card">
+  <h2>Key Takeaways</h2>
+  <ul class="takeaways">
+    <li>Headscale replaces only Tailscale's proprietary control server — the client stays the same</li>
+    <li>Mesh networks (WireGuard) are fundamentally better than gateway VPNs for latency and fault tolerance</li>
+    <li>Self-hosting gives unlimited users, policies, and full key control</li>
+    <li>Headscale deploys as a simple container with minimal configuration</li>
+    <li>Headplane provides a clean web UI for managing the Headscale network</li>
+    <li>Magic DNS sounds cool but causes real-world browser trust issues</li>
+    <li>Public DNS records pointing to private IPs is an elegant access pattern</li>
+    <li>Subnet routing exposes K8s internal networks to the mesh — but scope it per-app, not cluster-wide</li>
+    <li>The Tailscale client is open source — you only replace the coordination server</li>
+    <li>Self-hosting your network control plane is the natural next step for homelab enthusiasts</li>
+  </ul>
+</div>
+
+<!-- Timestamp Index -->
+<div class="card">
+  <h2>Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=0s" target="_blank" rel="noopener">0:00</a> Motivation: why replace Tailscale</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=65s" target="_blank" rel="noopener">1:05</a> Headscale: the open-source alternative</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=86s" target="_blank" rel="noopener">1:26</a> VPN vs mesh network explained</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=129s" target="_blank" rel="noopener">2:09</a> WireGuard mesh architecture</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=155s" target="_blank" rel="noopener">2:35</a> Headscale deployment on K3S</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=186s" target="_blank" rel="noopener">3:06</a> Configuration walkthrough</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=198s" target="_blank" rel="noopener">3:18</a> Magic DNS: cool but problematic</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=242s" target="_blank" rel="noopener">4:02</a> Caddy reverse proxy setup</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=254s" target="_blank" rel="noopener">4:14</a> Tailscale client installation</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=269s" target="_blank" rel="noopener">4:29</a> Headplane UI setup</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=292s" target="_blank" rel="noopener">4:52</a> Creating users and CLI alias</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=397s" target="_blank" rel="noopener">6:37</a> Sponsor segment</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=410s" target="_blank" rel="noopener">6:50</a> First node registration</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=430s" target="_blank" rel="noopener">7:10</a> Node appears in Headplane</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=453s" target="_blank" rel="noopener">7:33</a> Adding subnet router in K3S</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=487s" target="_blank" rel="noopener">8:07</a> Registering the K3S node</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=501s" target="_blank" rel="noopener">8:21</a> Subnet approval in Headplane</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=515s" target="_blank" rel="noopener">8:35</a> Proof: accessing Dozzle via mesh</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=545s" target="_blank" rel="noopener">9:05</a> Kill test: Tailscale down = no access</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=553s" target="_blank" rel="noopener">9:13</a> DNS strategies for internal services</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=558s" target="_blank" rel="noopener">9:18</a> AdGuard Home DNS rewrites</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=588s" target="_blank" rel="noopener">9:48</a> Public DNS to private IP pattern</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=622s" target="_blank" rel="noopener">10:22</a> Architecture: per-app sidecars vs single router</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=7Jja20nWcqo&t=639s" target="_blank" rel="noopener">10:39</a> Closing</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
