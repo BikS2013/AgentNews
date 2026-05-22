@@ -110,7 +110,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "64d8c799f6f933fdf3043afce6a99bda42218f9249431eae43dcea2b0f14f110",
       "youtubePublishedAt": "2026-05-14T14:22:56.000Z"
+    },
+    {
+      "slug": "the-one-ai-writing-hack-nobody-talks-about-deep-dive",
+      "title": "The One AI Writing Hack Nobody Talks About — Deep Dive",
+      "publishedAt": "2026-05-22T14:00:54.000Z",
+      "sourcePath": "/tmp/deep_dive_ltbzgzZZmgI.html",
+      "articlePath": "articles/the-one-ai-writing-hack-nobody-talks-about-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/ltbzgzZZmgI/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "3eae70635543a2aba3343c5e3c0104c513ba41990cb5b118c198a90b3f47afb3",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-22T20:18:18.738Z"
+  "updatedAt": "2026-05-22T21:02:23.120Z"
 }
