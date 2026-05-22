@@ -70,27 +70,37 @@ describe('renderCatalogHtml — structural invariants', () => {
 // ---------------------------------------------------------------------------
 
 describe('renderCatalogHtml — empty entries', () => {
-  it('renders "No articles" message when entries array is empty', () => {
+  it('renders the empty-state copy when entries array is empty', () => {
     const html = renderCatalogHtml([]);
     assert.ok(
-      html.includes('No articles'),
-      'Expected "No articles" message when catalog is empty',
+      html.includes('No content yet'),
+      'Expected "No content yet" empty-state message when catalog is empty',
     );
   });
 
-  it('reports 0 articles published in the header', () => {
+  it('reports 0 items published in the empty-state eyebrow', () => {
     const html = renderCatalogHtml([]);
     assert.ok(
-      html.includes('0 articles published'),
-      'Expected "0 articles published" in header for empty catalog',
+      html.includes('0 items published'),
+      'Expected "0 items published" in empty-state eyebrow for empty catalog',
     );
   });
 
-  it('does not render any <article> cards when entries is empty', () => {
+  it('does not render any list-section <article> cards when both lists are empty', () => {
     const html = renderCatalogHtml([]);
+    // Three-list home page: when there are no entries and no links, none of
+    // the three sections (AI-News / Deep Dives / Articles) should appear.
     assert.ok(
-      !html.includes('<article'),
-      'Expected no <article> cards for empty catalog',
+      !html.includes('id="ai-news"'),
+      'AI-News section must not render for empty catalog',
+    );
+    assert.ok(
+      !html.includes('id="deep-dives"'),
+      'Deep Dives section must not render for empty catalog',
+    );
+    assert.ok(
+      !html.includes('id="articles"'),
+      'Articles section must not render for empty catalog',
     );
   });
 });
@@ -304,7 +314,7 @@ describe('renderCatalogHtml — article link structure', () => {
     assert.ok(html.includes('href="/a/article-three"'), 'Expected link for article-three');
   });
 
-  it('renders "1 article published" (singular) for a single entry', () => {
+  it('renders "1 video" (singular) for a single deep-dive entry', () => {
     const entry = makeEntry({
       slug: 'solo-article',
       title: 'Solo Article',
@@ -312,20 +322,24 @@ describe('renderCatalogHtml — article link structure', () => {
     });
     const html = renderCatalogHtml([entry]);
     assert.ok(
-      html.includes('1 article published'),
-      'Expected "1 article published" (not "1 articles published") for single entry',
+      html.includes('1 video'),
+      'Expected "1 video" count label in the Deep Dives section header',
+    );
+    assert.ok(
+      !html.includes('2 videos'),
+      'Plural count must not appear for a single entry',
     );
   });
 
-  it('renders "<n> articles published" (plural) for multiple entries', () => {
+  it('renders "<n> videos" (plural) for multiple deep-dive entries', () => {
     const entries = [
       makeEntry({ slug: 'art-a', title: 'Art A', publishedAt: '2025-06-01T00:00:00Z' }),
       makeEntry({ slug: 'art-b', title: 'Art B', publishedAt: '2025-05-01T00:00:00Z' }),
     ];
     const html = renderCatalogHtml(entries);
     assert.ok(
-      html.includes('2 articles published'),
-      'Expected "2 articles published" for two entries',
+      html.includes('2 videos'),
+      'Expected "2 videos" count label in the Deep Dives section header',
     );
   });
 });

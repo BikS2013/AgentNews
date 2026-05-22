@@ -26,7 +26,25 @@ export interface LinkEntry {
   sourceSite: string;
   /** ISO-8601 UTC timestamp of when the link was added to the catalog. */
   publishedAt: string;
+  /**
+   * Optional category placing the entry into one of the homepage lists.
+   * - `article` (default when absent) — curated technical/general AI articles
+   *                                     in the "Articles" list.
+   * - `ai-news`                       — non-technical AI news links that
+   *                                     belong in the mixed "AI-News" list
+   *                                     alongside AI-News videos.
+   */
+  category?: LinkCategory;
 }
+
+/** Discriminator for the homepage list a LinkEntry belongs to. */
+export type LinkCategory = 'article' | 'ai-news';
+
+/** Default category used when an entry omits the field on disk. */
+export const DEFAULT_LINK_CATEGORY: LinkCategory = 'article';
+
+/** Allowed `category` values for runtime validation + CLI parsing. */
+export const LINK_CATEGORIES: readonly LinkCategory[] = ['article', 'ai-news'];
 
 export interface LinksFile {
   schemaVersion: 1;
@@ -77,6 +95,12 @@ export function isLinkEntry(value: unknown): value is LinkEntry {
 
   const sum = value['summary'];
   if (sum !== undefined && (typeof sum !== 'string' || sum.length === 0)) return false;
+
+  // Optional field: category. If present, must be one of the allowed values.
+  const cat = value['category'];
+  if (cat !== undefined && !LINK_CATEGORIES.includes(cat as LinkCategory)) {
+    return false;
+  }
 
   return true;
 }

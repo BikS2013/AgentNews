@@ -29,7 +29,11 @@ import * as process from 'node:process';
 
 import { CatalogStore } from '../catalog/store.js';
 import { slugify } from '../catalog/slug.js';
-import type { CatalogEntry } from '../catalog/types.js';
+import {
+  CATALOG_CATEGORIES,
+  type CatalogCategory,
+  type CatalogEntry,
+} from '../catalog/types.js';
 import { loadConfig } from '../config.js';
 import { extractArticleMetadata } from '../extractor/extract.js';
 import { ArticleMetadataError } from '../extractor/errors.js';
@@ -48,6 +52,7 @@ interface ParsedArgs {
   thumbnailUrl: string | null;
   update: boolean;
   date: string | null;
+  category: CatalogCategory | null;
   help: boolean;
 }
 
@@ -62,8 +67,17 @@ Options:
   --update                  Replace an already-published article (preserves
                             slug and publishedAt; updates file + sha256 +
                             thumbnail + sourcePath).
-  --date <ISO-8601>         Publication timestamp (defaults to now, ignored on
-                            --update).
+  --date <ISO-8601>         Publication timestamp on Agent News (defaults to
+                            now, ignored on --update). MUST be the YouTube
+                            upload date (or the original source-page
+                            publication date) and ONLY fall back to "now"
+                            when no upstream date can be determined. See
+                            docs/PUBLISHING.md for the date-priority rule.
+  --category <name>         Homepage list to place the entry in:
+                              deep-dive (default) — technical AI videos.
+                              ai-news             — non-technical AI news
+                                                    videos shown in the
+                                                    mixed AI-News list.
   --help                    Show this help and exit 0.
 
 Exit codes:
@@ -76,6 +90,7 @@ function parseArgs(argv: readonly string[]): ParsedArgs {
     thumbnailUrl: null,
     update: false,
     date: null,
+    category: null,
     help: false,
   };
 
@@ -143,6 +158,21 @@ function parseArgs(argv: readonly string[]): ParsedArgs {
       continue;
     }
 
+    if (arg === '--category') {
+      const value = argv[i + 1];
+      if (value === undefined || value.startsWith('--')) {
+        throw new UsageError(`Flag --category requires a value`);
+      }
+      result.category = parseCategory(value);
+      i += 1;
+      continue;
+    }
+
+    if (arg.startsWith('--category=')) {
+      result.category = parseCategory(arg.slice('--category='.length));
+      continue;
+    }
+
     throw new UsageError(`Unknown flag: ${arg}`);
   }
 
@@ -154,6 +184,15 @@ class UsageError extends Error {
     super(message);
     this.name = 'UsageError';
   }
+}
+
+function parseCategory(raw: string): CatalogCategory {
+  if (!CATALOG_CATEGORIES.includes(raw as CatalogCategory)) {
+    throw new UsageError(
+      `Invalid --category: "${raw}". Allowed values: ${CATALOG_CATEGORIES.join(', ')}`,
+    );
+  }
+  return raw as CatalogCategory;
 }
 
 class IoError extends Error {
@@ -466,7 +505,16 @@ async function main(argv: readonly string[]): Promise<number> {
   }
 
   // 10. Build catalog entry.
+  // Category resolution:
+  //   - new publish: CLI value if given, otherwise omit (renderer defaults to 'deep-dive').
+  //   - --update:    CLI value if given (overrides existing), otherwise keep existing.
   const articlePath = `articles/${slug}.html`;
+  let categoryToPersist: CatalogCategory | undefined;
+  if (args.category !== null) {
+    categoryToPersist = args.category;
+  } else if (isUpdate && existingEntry !== null && existingEntry.category !== undefined) {
+    categoryToPersist = existingEntry.category;
+  }
   const entry: CatalogEntry = {
     slug,
     title,
@@ -477,6 +525,7 @@ async function main(argv: readonly string[]): Promise<number> {
     thumbnailSource,
     sha256,
     ...(youtubePublishedAt !== undefined ? { youtubePublishedAt } : {}),
+    ...(categoryToPersist !== undefined ? { category: categoryToPersist } : {}),
   };
 
   // 11. Persist via store.
@@ -490,6 +539,7 @@ async function main(argv: readonly string[]): Promise<number> {
         thumbnailSource: entry.thumbnailSource,
         sha256: entry.sha256,
         ...(youtubePublishedAt !== undefined ? { youtubePublishedAt } : {}),
+        ...(categoryToPersist !== undefined ? { category: categoryToPersist } : {}),
       });
     } else {
       await store.append(entry);

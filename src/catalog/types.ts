@@ -30,7 +30,28 @@ export interface CatalogEntry {
    * omitted otherwise (soft-skip — see `src/extractor/youtube.ts`).
    */
   youtubePublishedAt?: string;
+  /**
+   * Optional category placing the entry into one of the homepage lists.
+   * - `deep-dive` (default when absent) — technical AI video deep dives.
+   * - `ai-news`                         — accessible AI news videos that
+   *                                       belong in the mixed "AI-News"
+   *                                       homepage list alongside non-video
+   *                                       AI-News links.
+   */
+  category?: CatalogCategory;
 }
+
+/** Discriminator for the homepage list a CatalogEntry belongs to. */
+export type CatalogCategory = 'deep-dive' | 'ai-news';
+
+/** Default category used when an entry omits the field on disk. */
+export const DEFAULT_CATALOG_CATEGORY: CatalogCategory = 'deep-dive';
+
+/** Allowed `category` values for runtime validation + CLI parsing. */
+export const CATALOG_CATEGORIES: readonly CatalogCategory[] = [
+  'deep-dive',
+  'ai-news',
+];
 
 export interface CatalogFile {
   schemaVersion: 1;
@@ -79,6 +100,12 @@ export function isCatalogEntry(value: unknown): value is CatalogEntry {
   // timestamp. If absent (undefined or key missing), accept silently.
   const yt = value['youtubePublishedAt'];
   if (yt !== undefined && !isIsoTimestamp(yt)) return false;
+
+  // Optional field: category. If present, must be one of the allowed values.
+  const cat = value['category'];
+  if (cat !== undefined && !CATALOG_CATEGORIES.includes(cat as CatalogCategory)) {
+    return false;
+  }
 
   return true;
 }

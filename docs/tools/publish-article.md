@@ -6,7 +6,7 @@
         SHA-256 hash, and publication timestamp).
     </objective>
     <command>
-        npx tsx src/cli/publish-article.ts --source &lt;path&gt; [--thumbnail-url &lt;url&gt;] [--update] [--date &lt;ISO-8601&gt;]
+        npx tsx src/cli/publish-article.ts --source &lt;path&gt; [--thumbnail-url &lt;url&gt;] [--update] [--date &lt;ISO-8601&gt;] [--category &lt;deep-dive|ai-news&gt;]
 
         # Equivalent npm script alias:
         npm run publish-article -- --source &lt;path&gt; [options]
@@ -107,6 +107,21 @@
             Ignored when --update is present (publishedAt is preserved from the
             existing entry). Accepts space-separated or equals form.
 
+            DATE PRIORITY: callers MUST pass the underlying YouTube upload
+            date (or the original source-page publication date) when known.
+            Only fall back to omitting --date (which stamps "now") when no
+            upstream date can be determined. See docs/PUBLISHING.md §3.
+
+          --category &lt;name&gt;         (optional)
+            Homepage list placement. One of:
+              deep-dive  (default) — technical AI videos shown in the
+                                     "Deep Dives" list.
+              ai-news              — non-technical AI news videos shown in
+                                     the mixed "AI-News" list.
+            On --update, omitting the flag preserves the existing entry's
+            category; passing it overrides. Accepts space-separated or
+            equals form.
+
           --help / -h                (optional)
             Print usage text to stdout and exit 0.
 
@@ -117,7 +132,7 @@
           0   Success. One JSON line written to stdout with the CatalogEntry.
           1   User / argument error. Causes: unknown flag, missing --source,
               no thumbnail found and no --thumbnail-url provided, invalid --date
-              format, title could not be derived from HTML.
+              format, invalid --category value, title could not be derived from HTML.
           2   IO error. Causes: source file not found, source path is a directory,
               read failure, write failure, catalog load/save failure.
           3   Conflict. Causes: article already published (slug collision with
@@ -167,6 +182,13 @@
         PORT=3000 ARTICLES_DIR=./articles CATALOG_PATH=./data/catalog.json \
           npx tsx src/cli/publish-article.ts \
           --source "samples/my-article.html" \
+          --date "2026-01-15T09:00:00Z"
+
+        # Publish into the AI-News list (mixed videos+articles):
+        PORT=3000 ARTICLES_DIR=./articles CATALOG_PATH=./data/catalog.json \
+          npx tsx src/cli/publish-article.ts \
+          --source "samples/ai-news-roundup.html" \
+          --category ai-news \
           --date "2026-01-15T09:00:00Z"
 
         # Update an already-published article (re-publish changed source):

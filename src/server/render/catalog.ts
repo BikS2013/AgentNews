@@ -21,8 +21,14 @@
  * and are never altered by this site.
  */
 
-import type { CatalogEntry } from '../../catalog/types.js';
-import type { LinkEntry } from '../../links/types.js';
+import {
+  DEFAULT_CATALOG_CATEGORY,
+  type CatalogEntry,
+} from '../../catalog/types.js';
+import {
+  DEFAULT_LINK_CATEGORY,
+  type LinkEntry,
+} from '../../links/types.js';
 
 /**
  * Escape the five XML/HTML metacharacters so that arbitrary catalog
@@ -400,7 +406,9 @@ const EXTERNAL_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" fill="non
 
 function renderHeader(bp: string): string {
   const home = `${bp}/`;
-  const articlesAnchor = `${home}#from-around-the-web`;
+  const aiNewsAnchor = `${home}#ai-news`;
+  const deepDivesAnchor = `${home}#deep-dives`;
+  const articlesAnchor = `${home}#articles`;
   return `
 <header class="site-header">
   <div class="wrap site-header__inner">
@@ -409,9 +417,9 @@ function renderHeader(bp: string): string {
       <span class="brand__name">Agent News</span>
     </a>
     <nav class="nav" aria-label="Primary">
-      <a href="${home}" class="active">Latest</a>
+      <a href="${aiNewsAnchor}" class="active">AI-News</a>
+      <a href="${deepDivesAnchor}">Deep Dives</a>
       <a href="${articlesAnchor}">Articles</a>
-      <a href="${home}">Topics</a>
       <a href="${home}">About</a>
     </nav>
     <div class="header-actions">
@@ -442,9 +450,9 @@ function renderFooter(bp: string): string {
       <div>
         <h4>Read</h4>
         <ul>
-          <li><a href="${home}">Latest</a></li>
-          <li><a href="${home}#from-around-the-web">Articles</a></li>
-          <li><a href="${home}">Topics</a></li>
+          <li><a href="${home}#ai-news">AI-News</a></li>
+          <li><a href="${home}#deep-dives">Deep Dives</a></li>
+          <li><a href="${home}#articles">Articles</a></li>
         </ul>
       </div>
       <div>
@@ -497,10 +505,34 @@ export interface RenderCatalogOptions {
   basePath?: string;
 }
 
+/** Internal: category resolver. Absent values fall back to the schema default. */
+function videoCategory(entry: CatalogEntry): 'deep-dive' | 'ai-news' {
+  return entry.category ?? DEFAULT_CATALOG_CATEGORY;
+}
+
+function linkCategory(entry: LinkEntry): 'article' | 'ai-news' {
+  return entry.category ?? DEFAULT_LINK_CATEGORY;
+}
+
 /**
  * Render the full catalog HTML page.
  *
- * @param entries Self-hosted video deep-dive entries.
+ * The page is composed of three independent lists, in this order:
+ *
+ *   1. **AI-News**   — mixed feed: catalog video entries with
+ *                      `category === 'ai-news'` PLUS link entries with
+ *                      `category === 'ai-news'`. Sorted newest-first by
+ *                      best-available upstream date (video: YouTube upload
+ *                      date, fallback site publish date; link: publishedAt).
+ *   2. **Deep Dives**— catalog video entries with default category
+ *                      (`deep-dive`). Sorted as above.
+ *   3. **Articles**  — link entries with default category (`article`).
+ *                      Sorted newest-first by publishedAt.
+ *
+ * Empty sections are omitted. If all three are empty, an empty-state card
+ * is rendered.
+ *
+ * @param entries Self-hosted video catalog entries.
  * @param options Optional links (external articles) and basePath.
  */
 export function renderCatalogHtml(
@@ -511,37 +543,40 @@ export function renderCatalogHtml(
   const links = options.links ?? [];
 
   // --- Videos: sort newest-first by YouTube date, fallback to site date ---
-  const sortedVideos = entries.slice().sort((a, b) => {
-    const ka = sortKey(a);
-    const kb = sortKey(b);
-    if (ka < kb) return 1;
-    if (ka > kb) return -1;
-    if (a.publishedAt < b.publishedAt) return 1;
-    if (a.publishedAt > b.publishedAt) return -1;
-    return 0;
-  });
-
+  const sortedVideos = entries.slice().sort(compareVideos);
   // --- Links: sort newest-first by publishedAt ---
-  const sortedLinks = links.slice().sort((a, b) => {
-    if (a.publishedAt < b.publishedAt) return 1;
-    if (a.publishedAt > b.publishedAt) return -1;
-    return 0;
-  });
+  const sortedLinks = links.slice().sort(compareLinks);
 
-  const videoCount = sortedVideos.length;
-  const linkCount = sortedLinks.length;
-  const videoCountLabel = `${videoCount} article${videoCount === 1 ? '' : 's'} published`;
-  const linkCountLabel = `${linkCount} link${linkCount === 1 ? '' : 's'} curated`;
+  // --- Partition by category ---
+  const aiNewsVideos = sortedVideos.filter((e) => videoCategory(e) === 'ai-news');
+  const deepDiveVideos = sortedVideos.filter((e) => videoCategory(e) === 'deep-dive');
+  const aiNewsLinks = sortedLinks.filter((e) => linkCategory(e) === 'ai-news');
+  const articleLinks = sortedLinks.filter((e) => linkCategory(e) === 'article');
+
+  const aiNewsTotal = aiNewsVideos.length + aiNewsLinks.length;
+  const deepDiveTotal = deepDiveVideos.length;
+  const articleTotal = articleLinks.length;
+
+  const heroDate = pickHeroDate(sortedVideos, sortedLinks);
 
   // --- Body assembly ---
   let body: string;
-  if (videoCount === 0 && linkCount === 0) {
-    body = renderEmptyAll();
+  if (aiNewsTotal === 0 && deepDiveTotal === 0 && articleTotal === 0) {
+    body = renderHero(heroDate) + renderEmptyAll();
   } else {
-    const videoSection = videoCount === 0 ? '' : renderVideosSection(sortedVideos, videoCountLabel, bp);
-    const linksSection = linkCount === 0 ? '' : renderLinksSection(sortedLinks, linkCountLabel);
-    body = videoSection + linksSection;
+    body =
+      renderHero(heroDate) +
+      (aiNewsTotal === 0
+        ? ''
+        : renderAiNewsSection(aiNewsVideos, aiNewsLinks, bp)) +
+      (deepDiveTotal === 0 ? '' : renderDeepDivesSection(deepDiveVideos, bp)) +
+      (articleTotal === 0 ? '' : renderArticlesSection(articleLinks));
   }
+
+  const description =
+    `Agent News — three streams: AI-News, Deep Dives, and Articles. ` +
+    `${aiNewsTotal} AI-News, ${deepDiveTotal} Deep Dive${deepDiveTotal === 1 ? '' : 's'}, ` +
+    `${articleTotal} Article${articleTotal === 1 ? '' : 's'}.`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -549,7 +584,7 @@ export function renderCatalogHtml(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agent News</title>
-<meta name="description" content="Agent News — deep dives on the agent stack and curated articles from around the web. ${escapeHtml(videoCountLabel)}, ${escapeHtml(linkCountLabel)}.">
+<meta name="description" content="${escapeHtml(description)}">
 ${FONT_LINKS}
 <style>
 ${STYLES}
@@ -566,33 +601,149 @@ ${renderFooter(bp)}
 `;
 }
 
+function compareVideos(a: CatalogEntry, b: CatalogEntry): number {
+  const ka = sortKey(a);
+  const kb = sortKey(b);
+  if (ka < kb) return 1;
+  if (ka > kb) return -1;
+  if (a.publishedAt < b.publishedAt) return 1;
+  if (a.publishedAt > b.publishedAt) return -1;
+  return 0;
+}
+
+function compareLinks(a: LinkEntry, b: LinkEntry): number {
+  if (a.publishedAt < b.publishedAt) return 1;
+  if (a.publishedAt > b.publishedAt) return -1;
+  return 0;
+}
+
+/**
+ * Pick a single ISO date for the hero "Updated …" footnote: the most-recent
+ * publishedAt across all videos and links. Falls back to "now" if both lists
+ * are empty.
+ */
+function pickHeroDate(
+  videos: readonly CatalogEntry[],
+  links: readonly LinkEntry[],
+): string {
+  const candidates: string[] = [];
+  for (const v of videos) candidates.push(v.publishedAt);
+  for (const l of links) candidates.push(l.publishedAt);
+  if (candidates.length === 0) return new Date().toISOString();
+  return candidates.reduce((acc, x) => (x > acc ? x : acc), candidates[0] as string);
+}
+
 // ---------------------------------------------------------------------------
-// Videos
+// Hero (generic site intro, no longer tied to a specific lead story)
 // ---------------------------------------------------------------------------
 
-function renderVideosSection(
-  videos: readonly CatalogEntry[],
-  countLabel: string,
-  bp: string,
-): string {
-  const [lead, ...rest] = videos;
-  const featureSection = lead === undefined ? '' : renderFeature(lead, bp);
-  const restSection =
-    rest.length === 0
-      ? ''
-      : `
-<section class="section">
+function renderHero(latestIso: string): string {
+  const date = escapeHtml(formatPublishedAt(latestIso));
+  return `
+<section class="hero">
   <div class="wrap">
-    <div class="section__head">
-      <h2>More recent</h2>
-      <span class="count">${escapeHtml(countLabel)}</span>
-    </div>
-    <div class="grid-3">
-${rest.map((e) => renderCard(e, bp)).join('\n')}
+    <div class="hero__intro">
+      <h1 class="hero__title">News from the <em>agent stack.</em></h1>
+      <p class="hero__lede">
+        Three streams: <strong>AI-News</strong> for the broader picture, <strong>Deep Dives</strong> for technical video walkthroughs, and <strong>Articles</strong> curated from around the web.
+        <small>Updated ${date}</small>
+      </p>
     </div>
   </div>
-</section>`;
-  return featureSection + restSection;
+</section>`.trim();
+}
+
+// ---------------------------------------------------------------------------
+// Section: AI-News (mixed videos + links)
+// ---------------------------------------------------------------------------
+
+function renderAiNewsSection(
+  videos: readonly CatalogEntry[],
+  links: readonly LinkEntry[],
+  bp: string,
+): string {
+  // Merge into a single newest-first stream. Each item carries enough info
+  // to render either a video card or a link card.
+  type Item =
+    | { kind: 'video'; date: string; entry: CatalogEntry }
+    | { kind: 'link'; date: string; entry: LinkEntry };
+
+  const items: Item[] = [];
+  for (const v of videos) {
+    items.push({ kind: 'video', date: sortKey(v), entry: v });
+  }
+  for (const l of links) {
+    items.push({ kind: 'link', date: l.publishedAt, entry: l });
+  }
+  items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+
+  const cards = items
+    .map((it) =>
+      it.kind === 'video' ? renderCard(it.entry, bp) : renderLinkCard(it.entry),
+    )
+    .join('\n');
+  const count = items.length;
+  const label = `${count} item${count === 1 ? '' : 's'}`;
+
+  return `
+<section class="section" id="ai-news">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>AI-News</h2>
+      <span class="count">${escapeHtml(label)}</span>
+    </div>
+    <div class="grid-3">
+${cards}
+    </div>
+  </div>
+</section>`.trim();
+}
+
+// ---------------------------------------------------------------------------
+// Section: Deep Dives (technical video walkthroughs)
+// ---------------------------------------------------------------------------
+
+function renderDeepDivesSection(
+  videos: readonly CatalogEntry[],
+  bp: string,
+): string {
+  const count = videos.length;
+  const label = `${count} video${count === 1 ? '' : 's'}`;
+  const cards = videos.map((e) => renderCard(e, bp)).join('\n');
+  return `
+<section class="section" id="deep-dives">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>Deep Dives</h2>
+      <span class="count">${escapeHtml(label)}</span>
+    </div>
+    <div class="grid-3">
+${cards}
+    </div>
+  </div>
+</section>`.trim();
+}
+
+// ---------------------------------------------------------------------------
+// Section: Articles (curated external links)
+// ---------------------------------------------------------------------------
+
+function renderArticlesSection(links: readonly LinkEntry[]): string {
+  const count = links.length;
+  const label = `${count} article${count === 1 ? '' : 's'}`;
+  const cards = links.map(renderLinkCard).join('\n');
+  return `
+<section class="section" id="articles">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>Articles</h2>
+      <span class="count">${escapeHtml(label)}</span>
+    </div>
+    <div class="grid-3">
+${cards}
+    </div>
+  </div>
+</section>`.trim();
 }
 
 function renderDates(entry: CatalogEntry): string {
@@ -610,64 +761,19 @@ function renderDates(entry: CatalogEntry): string {
         </div>`;
 }
 
-function renderFeature(entry: CatalogEntry, bp: string): string {
-  const slug = escapeHtml(entry.slug);
-  const title = escapeHtml(entry.title);
-  const thumb = escapeHtml(entry.thumbnailUrl);
-  const siteDate = escapeHtml(formatPublishedAt(entry.publishedAt));
-  const ytDate =
-    entry.youtubePublishedAt === undefined
-      ? null
-      : escapeHtml(formatPublishedAt(entry.youtubePublishedAt));
-  const headDate = ytDate ?? siteDate;
-  const href = `${bp}/a/${slug}`;
-  return `
-<section class="hero">
-  <div class="wrap">
-    <div class="hero__intro">
-      <h1 class="hero__title">News from the <em>agent stack.</em></h1>
-      <p class="hero__lede">
-        Long-form deep dives on the tools, techniques, and frameworks shaping how engineers build with agents — and a curated stream of the best writing from around the web.
-        <small>Updated ${siteDate}</small>
-      </p>
-    </div>
-  </div>
-</section>
-<section class="section">
-  <div class="wrap">
-    <div class="section__head">
-      <h2>Lead story</h2>
-      <span class="count">${headDate}</span>
-    </div>
-    <article class="feature">
-      <a href="${href}" class="feature__art" aria-label="${title}">
-        <img src="${thumb}" alt="${title}" loading="lazy" decoding="async">
-      </a>
-      <div class="feature__body">
-        <div class="feature__meta">
-          <span class="eyebrow accent">Deep dive</span>
-        </div>
-${renderDates(entry)}
-        <h2 class="feature__title"><a href="${href}">${title}</a></h2>
-        <a href="${href}" class="feature__cta">Read article →</a>
-      </div>
-    </article>
-  </div>
-</section>`.trim();
-}
-
 function renderCard(entry: CatalogEntry, bp: string): string {
   const slug = escapeHtml(entry.slug);
   const title = escapeHtml(entry.title);
   const thumb = escapeHtml(entry.thumbnailUrl);
   const href = `${bp}/a/${slug}`;
+  const tagLabel = videoCategory(entry) === 'ai-news' ? 'AI-News · Video' : 'Deep dive';
   return `      <article class="card">
         <a href="${href}" class="card__art" aria-label="${title}">
           <img src="${thumb}" alt="${title}" loading="lazy" decoding="async">
         </a>
         <div class="card__body">
           <div class="card__meta">
-            <span class="tag">Deep dive</span>
+            <span class="tag">${escapeHtml(tagLabel)}</span>
           </div>
 ${renderDates(entry)}
           <h3 class="card__title"><a href="${href}">${title}</a></h3>
@@ -676,26 +782,8 @@ ${renderDates(entry)}
 }
 
 // ---------------------------------------------------------------------------
-// External links
+// External link card
 // ---------------------------------------------------------------------------
-
-function renderLinksSection(
-  links: readonly LinkEntry[],
-  countLabel: string,
-): string {
-  return `
-<section class="section" id="from-around-the-web">
-  <div class="wrap">
-    <div class="section__head">
-      <h2>From around the web</h2>
-      <span class="count">${escapeHtml(countLabel)}</span>
-    </div>
-    <div class="grid-3">
-${links.map(renderLinkCard).join('\n')}
-    </div>
-  </div>
-</section>`.trim();
-}
 
 function renderLinkCard(entry: LinkEntry): string {
   const title = escapeHtml(entry.title);
@@ -703,6 +791,7 @@ function renderLinkCard(entry: LinkEntry): string {
   const image = escapeHtml(entry.imageUrl);
   const host = escapeHtml(entry.sourceSite);
   const date = escapeHtml(formatPublishedAt(entry.publishedAt));
+  const tagLabel = linkCategory(entry) === 'ai-news' ? 'AI-News · Article' : 'Article';
   const summary =
     entry.summary !== undefined && entry.summary.length > 0
       ? `\n          <p class="card__summary">${escapeHtml(entry.summary)}</p>`
@@ -713,7 +802,7 @@ function renderLinkCard(entry: LinkEntry): string {
         </a>
         <div class="card__body">
           <div class="card__meta">
-            <span class="tag tag--link">Article</span>
+            <span class="tag tag--link">${escapeHtml(tagLabel)}</span>
             <span class="external-host">${EXTERNAL_ICON}${host}</span>
           </div>
           <div class="dates">
@@ -733,9 +822,9 @@ function renderEmptyAll(): string {
 <section class="section">
   <div class="wrap">
     <div class="empty">
-      <div class="empty__eyebrow">0 articles published</div>
-      <h2 class="empty__title">No articles yet.</h2>
-      <p class="empty__body">Publish a deep dive with <code>npm run publish-article -- --source &lt;path&gt;</code> or curate a third-party article with <code>npm run publish-link -- --url &lt;URL&gt;</code> and reload.</p>
+      <div class="empty__eyebrow">0 items published</div>
+      <h2 class="empty__title">No content yet.</h2>
+      <p class="empty__body">Add content to one of the three lists (AI-News, Deep Dives, Articles) with <code>npm run publish-article</code> or <code>npm run publish-link</code> — see <code>docs/PUBLISHING.md</code>.</p>
     </div>
   </div>
 </section>`.trim();

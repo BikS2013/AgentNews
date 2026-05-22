@@ -215,4 +215,15 @@
 
 ## Tools
 
-- **publish-article** — Publishes a self-contained HTML article from a source file to the site's `articles/` directory byte-identically, while appending or updating an entry in `data/catalog.json` with extracted metadata (title, thumbnail, SHA-256). See `docs/tools/publish-article.md`.
+- **publish-article** — Publishes a self-contained HTML article (a video deep-dive snapshot) from a source file to the site's `articles/` directory byte-identically, while appending or updating an entry in `data/catalog.json` with extracted metadata (title, thumbnail, SHA-256, optional `category` placing the entry in either the "Deep Dives" or the "AI-News" homepage list). See `docs/tools/publish-article.md`.
+- **publish-link** — Curates a third-party article URL into the site's `data/links.json`, extracting Open Graph / Twitter-card metadata (title, image, summary, source site) and writing a `LinkEntry` with an optional `category` that targets either the "Articles" or the "AI-News" homepage list. See `docs/tools/publish-link.md`.
+
+## Site lists
+
+The home page renders three independent lists, in this fixed order:
+
+1. **AI-News** — non-technical AI news. Mixed: catalog video entries with `category: "ai-news"` AND link entries with `category: "ai-news"`.
+2. **Deep Dives** — technical AI videos. Catalog entries with the default category (`deep-dive`).
+3. **Articles** — curated technical/general AI articles. Link entries with the default category (`article`).
+
+See `docs/PUBLISHING.md` for the agent-facing publishing contract (which CLI to use, the date-priority rule, title formatting, image referencing, and the `--category` flag).

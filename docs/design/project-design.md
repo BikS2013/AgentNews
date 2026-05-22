@@ -1,8 +1,24 @@
 # Project Design — HTML Article Publishing Site
 
-> **Status**: As-designed (Phase 5 / pre-implementation)
+> **Status**: As-designed (Phase 5 / pre-implementation) + extensions
 > **Last updated**: 2026-05-22
 > **Supersedes**: nothing (initial design)
+
+## Change log
+
+- **2026-05-22 — Three-list home page**: The homepage was reorganised from two
+  sections (videos + external links) into three independent lists, in this
+  order: **AI-News** (mixed videos + articles, non-technical), **Deep Dives**
+  (technical AI videos), **Articles** (curated external AI articles). The
+  `CatalogEntry` schema gained an optional `category: 'deep-dive' | 'ai-news'`
+  field (default `'deep-dive'` when absent). The `LinkEntry` schema gained an
+  optional `category: 'article' | 'ai-news'` field (default `'article'` when
+  absent). Both `publish-article` and `publish-link` CLIs accept a new
+  `--category` flag with validated values. The "lead story" feature card was
+  removed in favour of three uniform card grids; the hero block is now a
+  generic site intro. Agent-facing publishing contract is
+  `docs/PUBLISHING.md` (authoritative for autonomous publishing agents — date
+  priority, title format, image reference, list mapping).
 
 ## Provenance
 

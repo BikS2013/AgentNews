@@ -26,7 +26,11 @@ import {
   LinkMetadataError,
 } from '../extractor/link-metadata.js';
 import { LinksStore } from '../links/store.js';
-import type { LinkEntry } from '../links/types.js';
+import {
+  LINK_CATEGORIES,
+  type LinkCategory,
+  type LinkEntry,
+} from '../links/types.js';
 
 // ---------------------------------------------------------------------------
 // argv parsing
@@ -39,6 +43,7 @@ interface ParsedArgs {
   summary: string | null;
   sourceSite: string | null;
   date: string | null;
+  category: LinkCategory | null;
   update: boolean;
   help: boolean;
 }
@@ -53,7 +58,16 @@ Options (override the auto-extracted value from the source page's meta tags):
   --image-url <URL>         Absolute image URL.
   --summary <text>          Short summary / description.
   --source-site <host>      Override the displayed source site (default: URL host).
-  --date <ISO-8601>         Publication timestamp (defaults to now).
+  --date <ISO-8601>         Publication timestamp on Agent News (defaults to
+                            now). MUST be the original article's publication
+                            date on the source site; only fall back to "now"
+                            when no upstream date can be determined. See
+                            docs/PUBLISHING.md for the date-priority rule.
+  --category <name>         Homepage list to place the entry in:
+                              article (default) — curated AI articles in the
+                                                  "Articles" list.
+                              ai-news           — non-technical AI news links
+                                                  in the mixed AI-News list.
   --update                  Replace an existing entry whose URL matches.
   --help                    Show this help and exit 0.
 
@@ -76,6 +90,7 @@ function parseArgs(argv: readonly string[]): ParsedArgs {
     summary: null,
     sourceSite: null,
     date: null,
+    category: null,
     update: false,
     help: false,
   };
@@ -118,6 +133,20 @@ function parseArgs(argv: readonly string[]): ParsedArgs {
     if (arg === '--help' || arg === '-h') { result.help = true; continue; }
     if (arg === '--update') { result.update = true; continue; }
 
+    if (arg === '--category') {
+      const value = argv[i + 1];
+      if (value === undefined || value.startsWith('--')) {
+        throw new UsageError(`Flag --category requires a value`);
+      }
+      result.category = parseCategory(value);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--category=')) {
+      result.category = parseCategory(arg.slice('--category='.length));
+      continue;
+    }
+
     let matched = false;
     for (const h of handlers) {
       const next = h(i);
@@ -132,6 +161,15 @@ function parseArgs(argv: readonly string[]): ParsedArgs {
     }
   }
   return result;
+}
+
+function parseCategory(raw: string): LinkCategory {
+  if (!LINK_CATEGORIES.includes(raw as LinkCategory)) {
+    throw new UsageError(
+      `Invalid --category: "${raw}". Allowed values: ${LINK_CATEGORIES.join(', ')}`,
+    );
+  }
+  return raw as LinkCategory;
 }
 
 function validateIsoDate(raw: string): string {
@@ -277,6 +315,19 @@ async function main(argv: readonly string[]): Promise<number> {
     publishedAt = cliDate ?? new Date().toISOString();
   }
 
+  // Category resolution: CLI flag wins; otherwise preserve the existing
+  // value on --update; otherwise omit (renderer defaults to 'article').
+  let categoryToPersist: LinkCategory | undefined;
+  if (args.category !== null) {
+    categoryToPersist = args.category;
+  } else if (
+    existingByUrl !== undefined &&
+    args.update &&
+    existingByUrl.category !== undefined
+  ) {
+    categoryToPersist = existingByUrl.category;
+  }
+
   const entry: LinkEntry = {
     id,
     title,
@@ -285,6 +336,7 @@ async function main(argv: readonly string[]): Promise<number> {
     sourceSite,
     publishedAt,
     ...(summary !== null && summary.length > 0 ? { summary } : {}),
+    ...(categoryToPersist !== undefined ? { category: categoryToPersist } : {}),
   };
 
   try {
@@ -295,6 +347,7 @@ async function main(argv: readonly string[]): Promise<number> {
         imageUrl: entry.imageUrl,
         sourceSite: entry.sourceSite,
         ...(summary !== null && summary.length > 0 ? { summary } : {}),
+        ...(categoryToPersist !== undefined ? { category: categoryToPersist } : {}),
       });
     } else {
       await store.append(entry);
