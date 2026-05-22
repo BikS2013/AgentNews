@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive — How to Build Mobile Apps with Claude Code: Full Course (2026)</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:#0f1117;color:#e4e4e7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;font-size:16px}
+  ::selection{background:rgba(139,92,246,.35);color:#fff}
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-track{background:#0f1117}
+  ::-webkit-scrollbar-thumb{background:#27272a;border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:#3f3f46}
+
+  .container{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+
+  /* Hero */
+  .hero{text-align:center;padding:56px 0 40px;border-bottom:1px solid #1e1e24}
+  .hero-badge{display:inline-block;padding:5px 14px;border-radius:20px;background:rgba(139,92,246,.12);color:#a78bfa;font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;margin-bottom:18px}
+  .hero h1{font-size:clamp(1.7rem,4.5vw,2.5rem);font-weight:800;color:#f4f4f5;line-height:1.25;margin-bottom:12px;letter-spacing:-.02em}
+  .hero h1 .accent{background:linear-gradient(135deg,#a78bfa,#6d28d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin-top:18px;font-size:14px;color:#71717a}
+  .hero-meta span{display:inline-flex;align-items:center;gap:5px}
+  .hero-meta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+
+  /* Video Embed */
+  .video-wrapper{margin:36px 0;border-radius:14px;overflow:hidden;border:1px solid #27272a;background:#18181b;position:relative;padding-top:56.25%}
+  .video-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+  .video-fallback{text-align:center;padding:20px 0 4px;font-size:13px;color:#52525b}
+  .video-fallback a{color:#a78bfa;text-decoration:none}
+  .video-fallback a:hover{text-decoration:underline}
+
+  /* Overview Card */
+  .overview{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(59,130,246,.06));border:1px solid rgba(139,92,246,.18);border-radius:14px;padding:28px 30px;margin:36px 0}
+  .overview h2{font-size:18px;color:#c4b5fd;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .overview p{color:#a1a1aa;font-size:15px;line-height:1.75}
+  .overview .highlight{color:#e4e4e7;font-weight:600}
+
+  /* Stats Row */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:28px 0 40px}
+  .stat-card{background:#18181b;border:1px solid #27272a;border-radius:12px;padding:20px;text-align:center}
+  .stat-card .num{font-size:28px;font-weight:800;color:#a78bfa}
+  .stat-card .label{font-size:12px;color:#71717a;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+  /* Section Cards */
+  .section-card{background:#18181b;border:1px solid #27272a;border-radius:14px;padding:30px 32px;margin:24px 0;transition:border-color .25s}
+  .section-card:hover{border-color:#3f3f46}
+  .section-card h2{font-size:20px;font-weight:700;color:#f4f4f5;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .section-card h2 .sec-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:rgba(139,92,246,.15);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0}
+  .section-card h3{font-size:16px;font-weight:600;color:#d4d4d8;margin:20px 0 10px;padding-left:2px}
+  .section-card p{color:#a1a1aa;font-size:15px;margin:10px 0;line-height:1.75}
+  .section-card ul{margin:10px 0 10px 20px;color:#a1a1aa;font-size:15px}
+  .section-card ul li{margin:6px 0;line-height:1.65}
+  .section-card ul li strong{color:#d4d4d8}
+  .section-card ol{margin:10px 0 10px 20px;color:#a1a1aa;font-size:15px}
+  .section-card ol li{margin:6px 0;line-height:1.65}
+  .section-card ol li strong{color:#d4d4d8}
+  .section-card code{background:rgba(139,92,246,.1);color:#c4b5fd;padding:2px 7px;border-radius:5px;font-size:13px;font-family:'SF Mono',Consolas,'Liberation Mono',Menlo,monospace}
+  .section-card .callout{background:rgba(139,92,246,.06);border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:14px;color:#c4b5fd;line-height:1.7}
+  .section-card .callout em{color:#a78bfa;font-style:normal;font-weight:600}
+
+  /* Progression Ladder */
+  .ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0}
+  .ladder-step{background:#0f1117;border:1px solid #27272a;border-radius:10px;padding:18px;position:relative}
+  .ladder-step .step-num{position:absolute;top:12px;right:14px;font-size:32px;font-weight:800;color:rgba(139,92,246,.12)}
+  .ladder-step h4{font-size:15px;font-weight:700;color:#e4e4e7;margin-bottom:6px}
+  .ladder-step p{font-size:13px;color:#71717a;line-height:1.6}
+
+  /* Timestamp Pill */
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,.15);color:#a78bfa;font-size:13px;font-family:'SF Mono',Consolas,'Liberation Mono',Menlo,monospace;text-decoration:none;transition:background .2s,color .2s}
+  .timestamp:hover{background:rgba(139,92,246,.3);color:#c4b5fd}
+  .timestamp svg{width:12px;height:12px;fill:currentColor;flex-shrink:0}
+
+  /* Timestamp Index */
+  .ts-index{margin:44px 0}
+  .ts-index h2{font-size:20px;font-weight:700;color:#f4f4f5;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px}
+  .ts-row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;transition:background .15s}
+  .ts-row:hover{background:rgba(139,92,246,.06)}
+  .ts-row .ts-label{color:#a1a1aa;font-size:14px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* Key Takeaways */
+  .takeaways{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(139,92,246,.06));border:1px solid rgba(16,185,129,.15);border-radius:14px;padding:30px 32px;margin:36px 0}
+  .takeaways h2{font-size:20px;font-weight:700;color:#6ee7b7;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .takeaways ol{margin:0 0 0 20px;color:#a1a1aa;font-size:15px}
+  .takeaways ol li{margin:10px 0;line-height:1.7}
+  .takeaways ol li strong{color:#d4d4d8}
+
+  /* Footer */
+  .footer{text-align:center;padding:40px 0 0;border-top:1px solid #1e1e24;margin-top:50px;color:#3f3f46;font-size:12px}
+  .footer a{color:#52525b;text-decoration:none}
+  .footer a:hover{color:#71717a}
+
+  /* Feature Grid */
+  .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+  .feature-item{background:#0f1117;border:1px solid #27272a;border-radius:8px;padding:14px;font-size:14px;color:#a1a1aa}
+  .feature-item strong{color:#d4d4d8;display:block;margin-bottom:3px}
+
+  /* Workflow Steps */
+  .workflow{counter-reset:wf;margin:14px 0}
+  .wf-step{display:flex;gap:14px;margin:10px 0;align-items:flex-start}
+  .wf-step::before{counter-increment:wf;content:counter(wf);display:flex;align-items:center;justify-content:center;min-width:28px;height:28px;border-radius:50%;background:rgba(139,92,246,.15);color:#a78bfa;font-size:13px;font-weight:700;margin-top:2px}
+  .wf-step span{color:#a1a1aa;font-size:15px;line-height:1.6}
+
+  @media(max-width:640px){
+    .container{padding:16px 14px 60px}
+    .section-card{padding:22px 18px}
+    .overview{padding:22px 18px}
+    .takeaways{padding:22px 18px}
+    .ts-grid{grid-template-columns:1fr}
+    .hero h1{font-size:1.5rem}
+    .hero-meta{flex-direction:column;align-items:center;gap:8px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="hero-badge">📱 Full Course Deep Dive</div>
+  <h1>How to Build Mobile Apps with <span class="accent">Claude Code</span></h1>
+  <p style="color:#71717a;font-size:15px;margin-top:6px">Full Course (2026) — Zero to App Store in 4 Hours</p>
+  <div class="hero-meta">
+    <span><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Nick Saraev</span>
+    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~4:03:20</span>
+    <span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> 12 Sections</span>
+    <span><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> 3 Complete Apps</span>
+  </div>
+</header>
+
+<!-- ===== VIDEO ===== -->
+<div class="video-wrapper">
+  <iframe src="https://www.youtube.com/embed/BMMcmmnjrM8" title="How to Build Mobile Apps with Claude Code: Full Course (2026)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+</div>
+<p class="video-fallback">Can't see the video? <a href="https://www.youtube.com/watch?v=BMMcmmnjrM8" target="_blank" rel="noopener">Watch directly on YouTube ↗</a></p>
+
+<!-- ===== OVERVIEW ===== -->
+<div class="overview">
+  <h2>📋 Course Overview</h2>
+  <p>Nick Saraev delivers a <span class="highlight">4-hour comprehensive course</span> on building real, production-ready mobile apps using nothing but Claude Code and natural language prompts. The course takes you from absolute zero — no prior mobile development experience required — all the way to <span class="highlight">App Store and Play Store submission</span>.</p>
+  <p style="margin-top:12px">Three complete apps are built during the course, each progressively more complex: a <span class="highlight">habit tracker</span> (local storage only), an <span class="highlight">AI-powered tracker</span> (Supabase database + authentication + API integration), and a <span class="highlight">Pomodoro timer</span> (full production deployment with everything combined). The progression follows a deliberate learning ladder: local storage → database → auth → APIs → deployment.</p>
+  <p style="margin-top:12px">Nick runs a <span class="highlight">$300K/month business</span> built almost entirely on Claude Code, lending significant credibility to his approach. The core thesis: with the right tools and workflow, anyone can build and ship mobile apps that compete with — and often surpass — what professional developers produce.</p>
+</div>
+
+<!-- ===== STATS ===== -->
+<div class="stats">
+  <div class="stat-card"><div class="num">3</div><div class="label">Complete Apps Built</div></div>
+  <div class="stat-card"><div class="num">4h</div><div class="label">Course Duration</div></div>
+  <div class="stat-card"><div class="num">12</div><div class="label">Sections</div></div>
+  <div class="stat-card"><div class="num">$20</div><div class="label">Claude Sub / Month</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="label">App Stores Covered</div></div>
+  <div class="stat-card"><div class="num">0</div><div class="label">Prior Experience Needed</div></div>
+</div>
+
+<!-- ===== SECTION 1 ===== -->
+<div class="section-card" id="s1">
+  <h2><span class="sec-num">1</span> Quick Demo — 5-Minute App <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=80s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:20</a></h2>
+
+  <p>Nick opens the course not with theory but with a <strong>live demonstration</strong>. He pulls out his iPhone and shows a fully functional habit tracker app running natively. Then he flips to his development machine and shows the exact same app running locally through Expo Go — a perfect mirror of what's on the phone.</p>
+
+  <h3>What the Demo App Includes</h3>
+  <ul>
+    <li><strong>Onboarding flow</strong> — A polished welcome screen sequence that introduces the user to the app's purpose and guides them through initial setup</li>
+    <li><strong>Habit creation</strong> — Full form with name input, frequency selector (daily, weekly, custom), and a beautiful color picker for visual organization</li>
+    <li><strong>Tracking interface</strong> — A list view of all habits with tap-to-complete interactions, showing today's progress at a glance</li>
+    <li><strong>Progress visualization</strong> — Visual progress bars and completion indicators showing streaks and weekly/monthly stats</li>
+    <li><strong>Smooth animations</strong> — Native-feeling transitions and micro-interactions that make it feel like a professional, polished product</li>
+  </ul>
+
+  <div class="callout">
+    <em>Key point:</em> The entire demo app was built in less than 5 minutes using Claude Code with prompt templates. Nick emphasizes this upfront to set expectations — this isn't about spending weeks learning frameworks.
+  </div>
+
+  <p>The strategic purpose of this demo is powerful: by showing the finished product first, Nick establishes the quality bar and motivates learners. You see exactly what you'll build, and it looks genuinely impressive — not a toy "hello world" app but something that could credibly appear on the App Store.</p>
+</div>
+
+<!-- ===== SECTION 2 ===== -->
+<div class="section-card" id="s2">
+  <h2><span class="sec-num">2</span> Mobile App Architecture 101 <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=155s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:35</a></h2>
+
+  <p>Before writing a single line of code (or prompt), Nick lays out the fundamental architecture of any mobile application. This conceptual grounding is essential — even when Claude Code generates the code, understanding <em>what</em> you're building helps you direct Claude effectively.</p>
+
+  <h3>What Every Mobile App Needs</h3>
+  <ul>
+    <li><strong>A database</strong> — Somewhere to store user data, whether local (on-device) or remote (cloud server). Without persistence, your app forgets everything when closed.</li>
+    <li><strong>Read/write access</strong> — The ability for the app to retrieve stored data and save new data. This is the CRUD (Create, Read, Update, Delete) foundation.</li>
+    <li><strong>Modification capabilities</strong> — Users must be able to change their data: edit a habit name, update a timer setting, delete an entry.</li>
+    <li><strong>A meaningful UI</strong> — An interface that makes the database interactions intuitive, beautiful, and accessible. The UI is the user's window into the data layer.</li>
+    <li><strong>Optional: Authentication</strong> — User accounts, sign-up/login flows, session management. Needed when data is user-specific and cloud-stored.</li>
+    <li><strong>Optional: API integration</strong> — Connecting to third-party services (AI models, payment processors, analytics, push notifications).</li>
+    <li><strong>Optional: AI features</strong> — Using language models or other AI services to add intelligent capabilities to the app.</li>
+  </ul>
+
+  <h3>The Course Progression Ladder</h3>
+  <p>Nick introduces a deliberately structured learning path that adds complexity incrementally across three apps:</p>
+
+  <div class="ladder">
+    <div class="ladder-step">
+      <span class="step-num">1</span>
+      <h4>🟢 App 1: Habit Tracker</h4>
+      <p>Local only. No API, no database server, no authentication. Data stored on-device with AsyncStorage. Focus: UI, navigation, Claude Code workflow.</p>
+    </div>
+    <div class="ladder-step">
+      <span class="step-num">2</span>
+      <h4>🟡 App 2: AI Tracker</h4>
+      <p>Adds Supabase database, authentication (email/password + social), and API integration for AI features. Focus: cloud backend, auth flow, state management.</p>
+    </div>
+    <div class="ladder-step">
+      <span class="step-num">3</span>
+      <h4>🔴 App 3: Pomodoro Timer</h4>
+      <p>Combines everything. Full backend, auth, session history, statistics, and production deployment. Focus: speed, patterns, App Store submission.</p>
+    </div>
+  </div>
+
+  <h3>Framework Choice: React Native + Expo</h3>
+  <p>Nick explains why <strong>React Native with Expo</strong> is the optimal choice for AI-assisted mobile development in 2026:</p>
+  <ul>
+    <li><strong>Zero-config setup</strong> — No Xcode, no Android Studio, no complex build chains. Expo abstracts all of it away.</li>
+    <li><strong>Cross-platform</strong> — One codebase runs on both iOS and Android. Write once, deploy twice.</li>
+    <li><strong>Hot reload on real devices</strong> — Change code, see the result on your phone in seconds via Expo Go app.</li>
+    <li><strong>Simplified App Store submission</strong> — EAS (Expo Application Services) automates the build, signing, and submission process that used to take days of painful configuration.</li>
+    <li><strong>Claude Code compatibility</strong> — React Native + Expo has excellent representation in Claude's training data, meaning Claude generates high-quality, idiomatic code for this stack.</li>
+    <li><strong>JavaScript/TypeScript ecosystem</strong> — Massive package ecosystem, tons of community resources, and a language that Claude handles exceptionally well.</li>
+  </ul>
+
+  <div class="callout">
+    <em>Why not Flutter, SwiftUI, or Kotlin?</em> Nick addresses this directly: while those are excellent frameworks, Expo's zero-config approach and Claude's strong React Native knowledge make it the clear winner for AI-assisted development. The goal is shipping apps, not framework mastery.
+  </div>
+</div>
+
+<!-- ===== SECTION 3 ===== -->
+<div class="section-card" id="s3">
+  <h2><span class="sec-num">3</span> Development Environment Setup <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=266s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 4:26</a></h2>
+
+  <p>A thorough walkthrough of every tool you need installed and configured before building your first app. Nick keeps the tooling minimal — no bloated IDEs or complex configurations.</p>
+
+  <h3>Required Tools</h3>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <strong>Claude Code</strong>
+      VS Code extension or desktop app. This is your primary development tool — you'll write prompts, not code.
+    </div>
+    <div class="feature-item">
+      <strong>Node.js</strong>
+      JavaScript runtime required by React Native and Expo. Install the LTS version for stability.
+    </div>
+    <div class="feature-item">
+      <strong>Expo Go App</strong>
+      Install on your iOS or Android phone. This is how you preview your app live on a real device during development.
+    </div>
+    <div class="feature-item">
+      <strong>Git + GitHub</strong>
+      Version control for tracking changes and required for deployment pipelines (EAS Build).
+    </div>
+  </div>
+
+  <h3>Setup Walkthrough</h3>
+  <div class="workflow">
+    <div class="wf-step"><span>Install Node.js from the official website or via a package manager like <code>nvm</code> (Node Version Manager) for easy version switching</span></div>
+    <div class="wf-step"><span>Install Expo CLI globally: <code>npm install -g expo-cli</code> — this gives you the <code>expo</code> command in your terminal</span></div>
+    <div class="wf-step"><span>Create a new Expo project: <code>npx create-expo-app my-app</code> — scaffolds a complete React Native project with sensible defaults</span></div>
+    <div class="wf-step"><span>Start the development server: <code>npx expo start</code> — generates a QR code in your terminal</span></div>
+    <div class="wf-step"><span>Open Expo Go on your phone, scan the QR code, and watch your app appear live on your device</span></div>
+    <div class="wf-step"><span>Open the project in VS Code with Claude Code extension, and you're ready to build</span></div>
+  </div>
+
+  <div class="callout">
+    <em>Key insight:</em> You develop on your computer, but the app renders live on your phone via Expo Go. Every code change appears on your device within seconds. This tight feedback loop is crucial for rapid iteration with Claude Code — you can see immediately whether Claude's output looks right.
+  </div>
+
+  <p>Nick also covers the first code change — modifying the default "Hello World" text to "Hello Nick" <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=633s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 10:33</a> — to verify the development pipeline is working end-to-end. This simple change confirms: code editor → save → hot reload → phone displays update.</p>
+</div>
+
+<!-- ===== SECTION 4 ===== -->
+<div class="section-card" id="s4">
+  <h2><span class="sec-num">4</span> App 1 — Habit Tracker (Local Only) <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=655s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 10:55</a></h2>
+
+  <p>The first full build of the course. Nick constructs a complete, polished habit tracking app from scratch using only Claude Code prompts. No manual coding, no copy-pasting from StackOverflow — just natural language descriptions fed to Claude.</p>
+
+  <h3>Features Built</h3>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <strong>Onboarding Flow</strong>
+      Multi-screen welcome sequence introducing the app, explaining benefits, and getting the user started with their first habit.
+    </div>
+    <div class="feature-item">
+      <strong>Habit Creation</strong>
+      Full-featured form: name input, frequency selector (daily/weekly/custom schedule), color picker for visual categorization.
+    </div>
+    <div class="feature-item">
+      <strong>Habit List & Tracking</strong>
+      Main screen showing all habits with today's status. Tap to mark complete. Visual distinction between done/pending.
+    </div>
+    <div class="feature-item">
+      <strong>Progress Visualization</strong>
+      Progress bars, streak counters, and completion percentages giving users motivation and insight into their habits.
+    </div>
+    <div class="feature-item">
+      <strong>Local Data Persistence</strong>
+      AsyncStorage saves all habit data on-device. App remembers everything between sessions without any server.
+    </div>
+    <div class="feature-item">
+      <strong>Navigation System</strong>
+      React Navigation for multi-screen flow: onboarding → home → create habit → habit detail → settings.
+    </div>
+  </div>
+
+  <h3>The Claude Code Workflow</h3>
+  <p>This section reveals the core methodology that the entire course is built on:</p>
+
+  <div class="workflow">
+    <div class="wf-step"><span><strong>Scaffold with a prompt template</strong> — Start with a structured prompt that tells Claude what kind of app you're building, the tech stack, and high-level features. Nick uses pre-made templates that he's refined over hundreds of projects.</span></div>
+    <div class="wf-step"><span><strong>Describe the features</strong> — Write natural language descriptions of what you want each screen and interaction to do. Be specific about behavior but not about implementation details.</span></div>
+    <div class="wf-step"><span><strong>Claude generates components</strong> — Claude writes the React Native components, styles, navigation logic, and data management. Complete, runnable code from each prompt.</span></div>
+    <div class="wf-step"><span><strong>Test live on phone</strong> — Every change is immediately visible on your phone via Expo Go. Verify the output looks and works as expected.</span></div>
+    <div class="wf-step"><span><strong>Iterate and refine</strong> — Describe changes: "make the buttons bigger", "add a gradient background", "the animation should be smoother". Claude implements each refinement.</span></div>
+  </div>
+
+  <h3>Navigation Architecture</h3>
+  <p>Nick demonstrates how <strong>React Navigation</strong> handles multi-screen apps. Claude generates all routing and screen setup, including:</p>
+  <ul>
+    <li>Stack navigator for linear flows (onboarding sequence)</li>
+    <li>Tab navigator for main app sections</li>
+    <li>Modal presentations for create/edit screens</li>
+    <li>Deep linking support for notifications</li>
+    <li>Proper back button behavior on both iOS and Android</li>
+  </ul>
+
+  <h3>Styling & Design Quality</h3>
+  <p>One of the most impressive aspects is getting <strong>production-quality UI</strong> through natural language. Nick shows iterative refinement:</p>
+  <ul>
+    <li>"Make the header larger with a gradient from purple to blue"</li>
+    <li>"Add subtle shadows to the habit cards"</li>
+    <li>"The completion animation should have a satisfying bounce effect"</li>
+    <li>"Use a modern, clean design language similar to Apple Health"</li>
+  </ul>
+
+  <h3>Data Persistence with AsyncStorage</h3>
+  <p>For App 1, all data lives locally on the device using React Native's <code>AsyncStorage</code> <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=1169s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 19:29</a>. This is a key-value storage system similar to localStorage in web browsers. Claude handles the save/load logic, error handling, and data serialization automatically.</p>
+
+  <h3>Lab Notes and Failure Documentation</h3>
+  <p>At <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=1563s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 26:03</a>, Nick introduces an important practice: documenting what goes wrong. Not everything Claude generates is perfect on the first try. He keeps "lab notes" of:</p>
+  <ul>
+    <li>Prompts that didn't produce the desired result</li>
+    <li>Common failure modes and how to work around them</li>
+    <li>Patterns that consistently produce better output</li>
+    <li>Edge cases that Claude misses and need manual attention</li>
+  </ul>
+
+  <h3>Advanced Prompt Techniques for UI</h3>
+  <p>At <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=2078s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 34:38</a>, Nick dives deeper into prompting strategies specifically for UI generation. Techniques include referencing well-known apps ("make it look like the Todoist create screen"), describing animations precisely, and using design vocabulary (padding, margin, border-radius) when needed for pixel-perfect results.</p>
+
+  <div class="callout">
+    <em>Key stat:</em> "I was able to build a better app than 90% of what's currently available on the App Store in about an hour using a $20/month subscription." — This is the central value proposition of the entire course.
+  </div>
+
+  <p>The complete habit tracker app is built in roughly 1 hour of the course. Nick plays with the finished product at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3605s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:00:05</a>, demonstrating every feature working smoothly on his phone.</p>
+</div>
+
+<!-- ===== SECTION 5 ===== -->
+<div class="section-card" id="s5">
+  <h2><span class="sec-num">5</span> Git &amp; GitHub for Mobile Apps <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3638s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:00:38</a></h2>
+
+  <p>With App 1 complete, Nick pauses to establish proper version control. This isn't just good practice — it's a <strong>requirement</strong> for the deployment pipeline that comes later.</p>
+
+  <h3>Why Version Control Matters for Mobile Apps</h3>
+  <ul>
+    <li><strong>Track changes over time</strong> — See exactly what Claude changed in each iteration. Essential for understanding your codebase.</li>
+    <li><strong>Revert if something breaks</strong> — Claude sometimes introduces regressions when fixing one thing. Git lets you roll back instantly.</li>
+    <li><strong>Share with team members</strong> — If you're working with others (or hiring a developer to help), Git is the standard collaboration tool.</li>
+    <li><strong>Required for EAS deployment</strong> — Expo Application Services pulls from your Git repository to build your app. No Git = no automated deployment.</li>
+    <li><strong>Branching for experiments</strong> — Try risky changes on a branch. If they work, merge. If not, delete the branch. Zero risk.</li>
+  </ul>
+
+  <h3>Git Walkthrough</h3>
+  <p>Nick walks through the complete Git workflow at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3669s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:01:09</a>:</p>
+  <div class="workflow">
+    <div class="wf-step"><span><code>git init</code> — Initialize a Git repository in your project folder</span></div>
+    <div class="wf-step"><span><code>git add .</code> — Stage all files for commit</span></div>
+    <div class="wf-step"><span><code>git commit -m "Initial commit: habit tracker app"</code> — Save the snapshot with a descriptive message</span></div>
+    <div class="wf-step"><span>Create a new repository on GitHub.com</span></div>
+    <div class="wf-step"><span><code>git remote add origin &lt;url&gt;</code> — Connect local repo to GitHub</span></div>
+    <div class="wf-step"><span><code>git push -u origin main</code> — Push your code to GitHub</span></div>
+  </div>
+
+  <p>Nick also shows how <strong>Claude Code can handle Git operations for you</strong> — you can say "commit these changes with a descriptive message" or "push to GitHub" and Claude will generate and execute the commands.</p>
+
+  <p>App 1 summary and wrap-up at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3845s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:04:05</a>.</p>
+</div>
+
+<!-- ===== SECTION 6 ===== -->
+<div class="section-card" id="s6">
+  <h2><span class="sec-num">6</span> Adding a Database with Supabase <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3881s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:04:41</a></h2>
+
+  <p>The transition from local-only to cloud-backed is the biggest architectural leap in the course. Nick explains <em>why</em> you need a real database and then introduces <strong>Supabase</strong> as the ideal solution.</p>
+
+  <h3>Why Local Storage Isn't Enough</h3>
+  <ul>
+    <li><strong>Data lives only on one device</strong> — Switch phones and everything is gone. No backup, no sync.</li>
+    <li><strong>No multi-user support</strong> — Can't have different users with different data on the same app.</li>
+    <li><strong>No server-side logic</strong> — Can't send notifications, process data in the background, or enforce business rules.</li>
+    <li><strong>No analytics</strong> — Can't understand how users actually use your app without server-side data collection.</li>
+    <li><strong>Limited scalability</strong> — Local storage has size limits and no indexing for complex queries.</li>
+  </ul>
+
+  <h3>Why Supabase</h3>
+  <p>Nick makes a strong case at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3920s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:05:20</a> for Supabase as the backend of choice:</p>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <strong>Generous Free Tier</strong>
+      500MB database, 1GB file storage, 50,000 monthly active users. Enough for most indie apps.
+    </div>
+    <div class="feature-item">
+      <strong>PostgreSQL Core</strong>
+      Real relational database under the hood. Not a toy — it's the same technology powering Instagram, Spotify, and Netflix.
+    </div>
+    <div class="feature-item">
+      <strong>Built-in Authentication</strong>
+      Email/password, social logins (Google, Apple, GitHub), magic links, phone auth — all pre-built and configurable.
+    </div>
+    <div class="feature-item">
+      <strong>Real-time Subscriptions</strong>
+      Data changes push to connected clients automatically. Perfect for collaborative or live-updating features.
+    </div>
+    <div class="feature-item">
+      <strong>Row Level Security (RLS)</strong>
+      Database-level security policies ensuring users can only access their own data. Critical for multi-user apps.
+    </div>
+    <div class="feature-item">
+      <strong>Claude Knows It Well</strong>
+      Supabase has excellent representation in Claude's training data. Claude generates idiomatic Supabase queries, schemas, and auth flows with high accuracy.
+    </div>
+  </div>
+
+  <h3>Supabase Setup</h3>
+  <p>Full setup walkthrough starting at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3943s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:05:43</a>:</p>
+  <div class="workflow">
+    <div class="wf-step"><span>Create a free Supabase account at supabase.com</span></div>
+    <div class="wf-step"><span>Create a new project — choose a name, set database password, select region</span></div>
+    <div class="wf-step"><span>Grab the API URL and <code>anon</code> key from project settings</span></div>
+    <div class="wf-step"><span>Install the Supabase JS client: <code>npm install @supabase/supabase-js</code></span></div>
+    <div class="wf-step"><span>Configure the client in your app with the URL and key</span></div>
+    <div class="wf-step"><span>Tell Claude to design the database schema and write the migration SQL</span></div>
+    <div class="wf-step"><span>Run the migration in Supabase's SQL editor</span></div>
+  </div>
+
+  <h3>Migration Pattern: Local → Cloud</h3>
+  <p>One of the most practical demonstrations: Claude rewrites the data layer from AsyncStorage to Supabase <strong>while keeping the UI completely intact</strong>. The user experience doesn't change — but the backend is now cloud-powered. This pattern of "swap the backend, keep the frontend" is a powerful architectural principle.</p>
+</div>
+
+<!-- ===== SECTION 7 ===== -->
+<div class="section-card" id="s7">
+  <h2><span class="sec-num">7</span> App 2 — AI-Powered Tracker <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=5577s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:32:57</a></h2>
+
+  <p>The second app represents a major step up in complexity. It's not just a UI with local storage anymore — it's a <strong>full-stack application</strong> with a cloud database, user authentication, and AI-powered features.</p>
+
+  <h3>Architecture Layers</h3>
+  <ul>
+    <li><strong>Supabase database</strong> — Persistent cloud storage with relational data model</li>
+    <li><strong>Authentication</strong> — Sign up, log in, user sessions, protected routes</li>
+    <li><strong>API integration</strong> — Connecting to AI services for intelligent features</li>
+    <li><strong>Complex state management</strong> — Managing authenticated user state, loading states, error states, optimistic updates</li>
+  </ul>
+
+  <h3>Planning Before Building</h3>
+  <p>Nick introduces a critical new step at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=5615s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:33:35</a>: <strong>architectural planning with flow diagrams</strong>. Before writing any prompts, he works with Claude to create:</p>
+  <ul>
+    <li>User flow diagrams (what screens exist, how users navigate between them)</li>
+    <li>Data model diagrams (what tables exist, relationships between them)</li>
+    <li>Authentication flow (sign up → verify → log in → session → protected routes)</li>
+    <li>API integration plan (what endpoints to call, when, what data to send/receive)</li>
+  </ul>
+
+  <div class="callout">
+    <em>Insight:</em> For simple apps (like App 1), you can jump straight into building. For complex apps with multiple systems (database + auth + APIs), spending 15-30 minutes planning with Claude saves hours of rework later.
+  </div>
+
+  <h3>MVP Ideation Pattern</h3>
+  <p>At <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=8019s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:13:39</a>, Nick demonstrates the MVP ideation process:</p>
+  <div class="workflow">
+    <div class="wf-step"><span><strong>Brainstorm with Claude</strong> — Describe your app idea in broad terms. Claude helps refine it, suggests features, identifies potential challenges.</span></div>
+    <div class="wf-step"><span><strong>Define the feature set</strong> — List everything the app could do. Be ambitious.</span></div>
+    <div class="wf-step"><span><strong>Prioritize ruthlessly</strong> — What's the minimum viable product? What 3-5 features make the app useful?</span></div>
+    <div class="wf-step"><span><strong>Build incrementally</strong> — Start with the highest-priority features. Add more in subsequent versions.</span></div>
+  </div>
+
+  <h3>Authentication Flow</h3>
+  <p>Supabase Auth handles the heavy lifting. Claude generates the complete authentication system including:</p>
+  <ul>
+    <li><strong>Sign-up screen</strong> with email/password and input validation</li>
+    <li><strong>Login screen</strong> with error handling and "forgot password" flow</li>
+    <li><strong>Social logins</strong> — Google, Apple ID integration via Supabase</li>
+    <li><strong>Session management</strong> — Persisting login state, auto-refresh tokens</li>
+    <li><strong>Protected routes</strong> — Redirecting unauthenticated users to login</li>
+    <li><strong>User profiles</strong> — Storing and displaying user-specific data</li>
+    <li><strong>Logout</strong> — Clean session teardown</li>
+  </ul>
+
+  <h3>AI Feature Integration</h3>
+  <p>The "AI-powered" aspect of App 2 involves calling an AI API to provide intelligent features. The specifics depend on the app concept brainstormed during the MVP ideation, but the pattern is consistent:</p>
+  <ul>
+    <li>User inputs data → app sends to AI API → receives intelligent response → displays to user</li>
+    <li>Claude generates the API call code, error handling, loading states, and response parsing</li>
+    <li>Key consideration: API key management (never hardcode in the app, use environment variables or server-side proxy)</li>
+  </ul>
+
+  <h3>Testing on Real Devices</h3>
+  <p>Nick heavily emphasizes testing on actual phones throughout development — not just browser simulators or emulators. The reasoning:</p>
+  <ul>
+    <li>Touch interactions feel different than mouse clicks</li>
+    <li>Network conditions on mobile are less reliable</li>
+    <li>Screen sizes and safe areas vary by device</li>
+    <li>Performance characteristics differ from desktop browsers</li>
+    <li>Authentication flows (especially social login) behave differently on real devices</li>
+  </ul>
+
+  <p>App 2 is completed around <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=7639s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:07:19</a>.</p>
+</div>
+
+<!-- ===== SECTION 8 ===== -->
+<div class="section-card" id="s8">
+  <h2><span class="sec-num">8</span> App 3 — Pomodoro Timer <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=11129s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:05:29</a></h2>
+
+  <p>The capstone app combines every technique from the course into a single, production-ready application. The Pomodoro timer isn't just a timer — it's a full productivity app with backend, auth, history, and statistics.</p>
+
+  <h3>Features & Design</h3>
+  <p>Starting at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=11376s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:09:36</a>:</p>
+  <ul>
+    <li><strong>Timer functionality</strong> — Classic Pomodoro technique: 25-minute work sessions, 5-minute breaks, configurable durations</li>
+    <li><strong>Visual countdown</strong> — Beautiful animated circular timer with progress indication</li>
+    <li><strong>Full Supabase backend</strong> — Session data stored in the cloud, accessible from any device</li>
+    <li><strong>Authentication</strong> — User accounts with personalized timer history and settings</li>
+    <li><strong>Session history</strong> — Complete log of all Pomodoro sessions with dates, durations, and completion status</li>
+    <li><strong>Statistics dashboard</strong> — Daily/weekly/monthly focus time, streak tracking, productivity trends</li>
+    <li><strong>Notifications</strong> — Alert when timer completes (requires device notification permissions)</li>
+    <li><strong>Production-ready design</strong> — Polished, App-Store-worthy visual design</li>
+  </ul>
+
+  <h3>Speed Improvement</h3>
+  <p>A key observation: App 3 is built <strong>significantly faster</strong> than App 1 or App 2, despite being more complex. The reasons:</p>
+  <ul>
+    <li><strong>Pattern recognition</strong> — You've seen the Supabase setup, auth flow, and navigation patterns twice already</li>
+    <li><strong>Refined prompts</strong> — Your prompt templates are now battle-tested and produce better results</li>
+    <li><strong>Muscle memory</strong> — The Claude Code workflow (prompt → test → iterate) becomes second nature</li>
+    <li><strong>Reusable components</strong> — Auth screens, database configuration, and navigation setup can be copied/adapted from previous apps</li>
+  </ul>
+
+  <div class="callout">
+    <em>Key point:</em> The learning curve compounds — the investment in understanding patterns during Apps 1 and 2 pays massive dividends in App 3. This is the core argument for the progressive complexity approach.
+  </div>
+</div>
+
+<!-- ===== SECTION 9 ===== -->
+<div class="section-card" id="s9">
+  <h2><span class="sec-num">9</span> Testing &amp; Quality Assurance <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=10573s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:56:13</a></h2>
+
+  <p>Before any app goes to the App Store, it needs thorough testing. Nick's approach is practical, not academic — he focuses on the tests that actually catch real bugs in AI-generated mobile apps.</p>
+
+  <h3>Testing Checklist</h3>
+  <ul>
+    <li><strong>Real device testing</strong> — Every feature must work on a physical phone, not just an emulator. Touch targets, scroll behavior, and performance can all differ.</li>
+    <li><strong>Database operations end-to-end</strong> — Create, read, update, delete. Verify data appears in Supabase dashboard after creating in the app.</li>
+    <li><strong>Authentication flows</strong> — Sign up with a new email. Log out. Log back in. Close the app and reopen — session should persist. Test "forgot password" flow.</li>
+    <li><strong>Edge cases</strong>:
+      <ul>
+        <li>What happens with no internet connection?</li>
+        <li>What do empty states look like (no habits, no sessions)?</li>
+        <li>What happens if the user enters very long text?</li>
+        <li>What if the user rapidly taps a button multiple times?</li>
+        <li>What happens when the app is backgrounded and resumed?</li>
+      </ul>
+    </li>
+    <li><strong>Performance</strong> — App should feel smooth. No jank, no lag, no white screens between navigation transitions.</li>
+    <li><strong>Both platforms</strong> — If targeting both iOS and Android, test on both. Supabase social login behavior can differ.</li>
+  </ul>
+
+  <h3>Pre-Submission Checklist</h3>
+  <p>At <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=10808s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:00:08</a>, Nick covers what to verify before hitting "Submit":</p>
+  <ul>
+    <li>App icon and splash screen are set and look professional</li>
+    <li>App name, description, and keywords are finalized</li>
+    <li>Screenshots are captured for all required device sizes</li>
+    <li>Privacy policy URL is live (required by both stores)</li>
+    <li>All test data is cleared — no debug screens or placeholder content</li>
+    <li>Version number and build number are set correctly</li>
+    <li>Performance is acceptable on older devices (not just your latest phone)</li>
+  </ul>
+
+  <div class="callout">
+    <em>Nick emphasizes:</em> "Test before deploying — every feature should work on a real phone before you consider submission." Apple's review team will find issues you missed, and rejections cost time.
+  </div>
+</div>
+
+<!-- ===== SECTION 10 ===== -->
+<div class="section-card" id="s10">
+  <h2><span class="sec-num">10</span> App Store Submission (iOS) <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13473s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:44:33</a></h2>
+
+  <p>The moment everything has been building toward: getting your app on the Apple App Store. Nick walks through the <strong>entire process</strong> from build to submission, demystifying what used to be one of the most painful parts of iOS development.</p>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li><strong>Apple Developer Account</strong> — $99/year. Required to submit to the App Store. No way around this.</li>
+    <li><strong>App Store Connect</strong> — Apple's portal at appstoreconnect.apple.com for managing your apps, viewing analytics, and responding to reviews.</li>
+    <li><strong>EAS CLI installed</strong> — <code>npm install -g eas-cli</code> — Expo's command-line tool for building and submitting.</li>
+  </ul>
+
+  <h3>The EAS Build + Submit Pipeline</h3>
+  <p>Starting at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13674s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:47:54</a>:</p>
+
+  <div class="workflow">
+    <div class="wf-step"><span><strong>Configure <code>eas.json</code></strong> — Define build profiles (development, preview, production) with appropriate settings for each stage.</span></div>
+    <div class="wf-step"><span><strong>Run <code>eas build --platform ios</code></strong> — EAS builds your iOS binary in the cloud. No Mac required! The build runs on Expo's servers and produces a signed IPA file.</span></div>
+    <div class="wf-step"><span><strong>Wait for build completion</strong> — Usually 10-30 minutes. You get a URL to track progress.</span></div>
+    <div class="wf-step"><span><strong>Set up App Store Connect</strong> <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13927s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:52:07</a> — Create your app listing with name, subtitle, description, keywords, screenshots, app icon, privacy policy, and content rating.</span></div>
+    <div class="wf-step"><span><strong>Configure API key</strong> <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14149s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:55:49</a> — Create an App Store Connect API key and configure it in EAS for automated submission.</span></div>
+    <div class="wf-step"><span><strong>Run <code>eas submit --platform ios</code></strong> — Automatically uploads the build to App Store Connect. No manual uploading through Xcode or Transporter.</span></div>
+    <div class="wf-step"><span><strong>Submit for review</strong> — In App Store Connect, click "Submit for Review". Apple reviews typically take 24-48 hours.</span></div>
+  </div>
+
+  <p>Submission is confirmed at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14172s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:56:12</a> — Nick shows the "Waiting for Review" status in App Store Connect.</p>
+
+  <div class="callout">
+    <em>Key revelation:</em> "Submitting to the App Store used to be incredibly painful. With EAS, it's mostly automated." — The combination of Expo + EAS has reduced what used to be a multi-day, error-prone process to a few terminal commands.
+  </div>
+
+  <h3>Common Rejection Reasons to Avoid</h3>
+  <ul>
+    <li>Missing privacy policy</li>
+    <li>Broken links or placeholder content</li>
+    <li>App crashes on launch (test on real devices!)</li>
+    <li>Login required but no demo account provided for reviewers</li>
+    <li>Incomplete metadata or misleading screenshots</li>
+    <li>Using private APIs (unlikely with Expo, but worth checking)</li>
+  </ul>
+</div>
+
+<!-- ===== SECTION 11 ===== -->
+<div class="section-card" id="s11">
+  <h2><span class="sec-num">11</span> Google Play Store Submission <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13807s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:50:07</a></h2>
+
+  <p>The Android path is covered as an alternative (or complement) to iOS. The process is simpler in some ways, more complex in others.</p>
+
+  <h3>Key Differences from iOS</h3>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <strong>Cost</strong>
+      $25 one-time fee (vs. Apple's $99/year). Much more accessible for indie developers.
+    </div>
+    <div class="feature-item">
+      <strong>Review Process</strong>
+      Typically faster than Apple. Less strict guidelines, but still has quality requirements.
+    </div>
+    <div class="feature-item">
+      <strong>Build Output</strong>
+      EAS generates an AAB (Android App Bundle) instead of IPA. Same command, different platform flag.
+    </div>
+    <div class="feature-item">
+      <strong>Distribution</strong>
+      Can also distribute APKs directly (sideloading), giving more flexibility for testing and beta distribution.
+    </div>
+  </div>
+
+  <h3>Android Submission Process</h3>
+  <div class="workflow">
+    <div class="wf-step"><span>Create a Google Play Console account ($25 one-time registration)</span></div>
+    <div class="wf-step"><span>Run <code>eas build --platform android</code> to generate the AAB file</span></div>
+    <div class="wf-step"><span>Create your app listing in Play Console: title, description, screenshots, content rating, privacy policy</span></div>
+    <div class="wf-step"><span>Upload the AAB via <code>eas submit --platform android</code> or manually through Play Console</span></div>
+    <div class="wf-step"><span>Complete the content rating questionnaire and data safety section</span></div>
+    <div class="wf-step"><span>Submit for review and wait for approval</span></div>
+  </div>
+
+  <p>Nick notes that targeting both platforms simultaneously is the power of React Native + Expo: <strong>one codebase, two stores</strong>.</p>
+</div>
+
+<!-- ===== SECTION 12 ===== -->
+<div class="section-card" id="s12">
+  <h2><span class="sec-num">12</span> Post-Launch — App Store Optimization <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14410s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 4:00:10</a></h2>
+
+  <p>Getting the app on the store is only the beginning. Nick closes the course with strategies for growing your app post-launch.</p>
+
+  <h3>Promo Codes</h3>
+  <ul>
+    <li>Apple gives you promo codes for each app version — use them for early testing, reviews, and influencer outreach</li>
+    <li>Great for getting initial reviews on the store (reviews heavily influence download rates)</li>
+    <li>Can be shared with beta testers as a "thank you" before public launch</li>
+  </ul>
+
+  <h3>App Store Optimization (ASO)</h3>
+  <ul>
+    <li><strong>Keywords</strong> — Research what terms people search for. Include them in your app title, subtitle, and keyword field.</li>
+    <li><strong>Screenshots</strong> — Your #1 conversion factor. Show the app's best features with clear, compelling visuals. Use text overlays to explain benefits.</li>
+    <li><strong>Descriptions</strong> — Front-load the first 1-3 sentences (that's all most people read). Focus on benefits, not features.</li>
+    <li><strong>App icon</strong> — Simple, distinctive, recognizable at small sizes. Avoid text in the icon.</li>
+    <li><strong>Ratings & reviews</strong> — Prompt happy users to rate (timing matters — ask after a positive interaction, not on first launch).</li>
+    <li><strong>Localization</strong> — Even just translating metadata (title, description, keywords) to other languages can dramatically increase downloads.</li>
+  </ul>
+
+  <h3>User Feedback & Iteration</h3>
+  <ul>
+    <li>Read every review and respond thoughtfully</li>
+    <li>Track which features users request most frequently</li>
+    <li>Use analytics (built into both App Store Connect and Play Console) to understand usage patterns</li>
+    <li>Iterate with Claude Code — describe the change, test, deploy. The update cycle can be as fast as a few hours.</li>
+  </ul>
+
+  <p>Course closing at <a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14520s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 4:02:00</a>.</p>
+</div>
+
+<!-- ===== KEY TAKEAWAYS ===== -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Claude Code can build production-quality mobile apps</strong> from English descriptions alone — no manual coding required for most features.</li>
+    <li><strong>React Native + Expo is the optimal framework</strong> — one codebase, both platforms, live testing on device, simplified deployment.</li>
+    <li><strong>Start local, then add complexity incrementally</strong> — local storage → database → auth → APIs. Don't try to build everything at once.</li>
+    <li><strong>Supabase is the ideal backend</strong> — free tier, PostgreSQL, built-in auth, real-time, and Claude knows it exceptionally well.</li>
+    <li><strong>Three apps, progressive complexity</strong> — Habit tracker (local) → AI tracker (cloud) → Pomodoro (production). Each builds on the previous.</li>
+    <li><strong>MVP ideation: brainstorm with Claude before building</strong> — Define features, prioritize ruthlessly, build incrementally.</li>
+    <li><strong>Always test on real devices</strong> — Emulators and browsers miss touch, performance, and network issues that matter on phones.</li>
+    <li><strong>EAS automates the painful App Store submission</strong> — Build in the cloud, submit via CLI. What took days now takes minutes.</li>
+    <li><strong>Version control with Git is essential</strong> — Not just good practice; required for the EAS deployment pipeline.</li>
+    <li><strong>The learning curve compounds</strong> — Third app built significantly faster than the first. Investment in patterns pays off exponentially.</li>
+    <li><strong>A $20/month Claude subscription can produce apps better than 90% of the App Store</strong> — The barrier to entry has never been lower.</li>
+    <li><strong>Post-launch matters: ASO, promo codes, user feedback loops</strong> for iterative improvement. Shipping is the beginning, not the end.</li>
+  </ol>
+</div>
+
+<!-- ===== TIMESTAMP INDEX ===== -->
+<div class="ts-index" id="timestamps">
+  <h2>🕐 Full Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=0s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 0:00</a><span class="ts-label">Course introduction and overview</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=80s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:20</a><span class="ts-label">Quick demo: habit tracker on iOS</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=155s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:35</a><span class="ts-label">Mobile app architecture 101</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=211s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:31</a><span class="ts-label">Course progression ladder: 3 apps</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=266s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 4:26</a><span class="ts-label">Development environment setup</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=633s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 10:33</a><span class="ts-label">First code change: Hello World → Hello Nick</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=655s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 10:55</a><span class="ts-label">Building the habit tracker from scratch</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=1169s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 19:29</a><span class="ts-label">Local data persistence (AsyncStorage)</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=1182s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 19:42</a><span class="ts-label">Testing on phone via Expo Go</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=1563s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 26:03</a><span class="ts-label">Lab notes and failure documentation</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=2078s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 34:38</a><span class="ts-label">Advanced prompt techniques for UI</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=2559s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 42:39</a><span class="ts-label">Navigation and multi-screen setup</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=2709s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 45:09</a><span class="ts-label">Iterative design refinement</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3605s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:00:05</a><span class="ts-label">Playing with the finished habit tracker</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3638s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:00:38</a><span class="ts-label">Git and GitHub setup</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3669s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:01:09</a><span class="ts-label">Pushing to GitHub walkthrough</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3845s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:04:05</a><span class="ts-label">App 1 complete summary</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3881s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:04:41</a><span class="ts-label">Why you need a database</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3920s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:05:20</a><span class="ts-label">Supabase introduction</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=3943s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:05:43</a><span class="ts-label">Setting up Supabase</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=5577s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:32:57</a><span class="ts-label">App 2: AI-powered tracker begins</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=5615s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 1:33:35</a><span class="ts-label">Planning with flow diagrams</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=7639s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:07:19</a><span class="ts-label">App 2 complete, moving to next</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=8019s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:13:39</a><span class="ts-label">MVP ideation pattern</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=8037s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:13:57</a><span class="ts-label">Brainstorming the next app concept</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=10573s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 2:56:13</a><span class="ts-label">Testing and QA before deployment</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=10808s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:00:08</a><span class="ts-label">Pre-submission checklist</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=11129s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:05:29</a><span class="ts-label">App 3: Pomodoro timer begins</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=11376s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:09:36</a><span class="ts-label">Pomodoro features and design</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13255s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:40:55</a><span class="ts-label">Final deployment planning</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13473s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:44:33</a><span class="ts-label">App Store submission walkthrough</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13674s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:47:54</a><span class="ts-label">EAS Build and Submit</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13807s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:50:07</a><span class="ts-label">Google Play Store process</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=13927s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:52:07</a><span class="ts-label">App Store Connect setup</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14149s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:55:49</a><span class="ts-label">API key and submission automation</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14172s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 3:56:12</a><span class="ts-label">Submission confirmed</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14410s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 4:00:10</a><span class="ts-label">Post-launch: ASO and optimization</span></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=BMMcmmnjrM8&t=14520s" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M6 3.2L12.8 8 6 12.8z"/></svg> 4:02:00</a><span class="ts-label">Course closing</span></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <p>Deep Dive generated from <a href="https://www.youtube.com/watch?v=BMMcmmnjrM8" target="_blank" rel="noopener">youtube.com/watch?v=BMMcmmnjrM8</a></p>
+  <p style="margin-top:6px">Nick Saraev · 2026 · Not affiliated with or endorsed by the creator</p>
+</footer>
+
+</div>
+</body>
+</html>
