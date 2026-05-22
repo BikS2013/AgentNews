@@ -56,6 +56,7 @@ function formatPublishedAt(iso: string): string {
 
 const STYLES = `
   :root {
+    /* Light theme (default) */
     --bg:          #f4f6f9;
     --bg-2:        #eef2f7;
     --surface:     #ffffff;
@@ -69,10 +70,54 @@ const STYLES = `
     --accent:      #007a8a;
     --accent-ink:  #00525c;
     --accent-soft: #e0f2f4;
+    --header-bg:   rgba(244,246,249,.82);
     --radius-sm: 6px;
     --radius:    10px;
     --radius-lg: 16px;
     --shadow-md: 0 4px 18px -8px rgba(11,30,46,.18), 0 0 0 1px rgba(11,30,46,.05);
+  }
+
+  /* Dark theme — applied when the user explicitly toggles, OR
+     (the user has no explicit choice AND the OS prefers dark).
+     The :root[data-theme="dark"] selector wins over the media query so
+     a manual toggle always overrides the OS preference. */
+  :root[data-theme="dark"] {
+    --bg:          #0b1419;
+    --bg-2:        #0f1c24;
+    --surface:     #14232c;
+    --surface-2:   #1a2d38;
+    --ink:         #e6edf3;
+    --ink-2:       #c5d1dc;
+    --muted:       #8b9aab;
+    --muted-2:     #6b7a8c;
+    --border:      #243441;
+    --hairline:    #1c2b36;
+    --accent:      #2dd4bf;
+    --accent-ink:  #67e8f9;
+    --accent-soft: #0a3a42;
+    --header-bg:   rgba(11,20,25,.85);
+    --shadow-md:   0 4px 18px -8px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+    color-scheme:  dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #0b1419;
+      --bg-2:        #0f1c24;
+      --surface:     #14232c;
+      --surface-2:   #1a2d38;
+      --ink:         #e6edf3;
+      --ink-2:       #c5d1dc;
+      --muted:       #8b9aab;
+      --muted-2:     #6b7a8c;
+      --border:      #243441;
+      --hairline:    #1c2b36;
+      --accent:      #2dd4bf;
+      --accent-ink:  #67e8f9;
+      --accent-soft: #0a3a42;
+      --header-bg:   rgba(11,20,25,.85);
+      --shadow-md:   0 4px 18px -8px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+      color-scheme:  dark;
+    }
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -95,7 +140,7 @@ const STYLES = `
   /* ---------- HEADER ---------- */
   .site-header {
     position: sticky; top: 0; z-index: 50;
-    background: rgba(244,246,249,.82);
+    background: var(--header-bg);
     backdrop-filter: saturate(180%) blur(14px);
     -webkit-backdrop-filter: saturate(180%) blur(14px);
     border-bottom: 1px solid var(--hairline);
@@ -392,6 +437,34 @@ const STYLES = `
   @media (max-width: 880px) {
     .footer-grid { grid-template-columns: 1fr 1fr; }
   }
+
+  /* ---------- THEME TOGGLE ---------- */
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    padding: 0;
+    border-radius: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent-soft); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  /* Show the "switch to dark" (moon) icon by default; hide the "switch to
+     light" (sun) icon. Flip in dark mode — either when the user has
+     toggled it explicitly, or when the OS prefers dark and the user has
+     not explicitly chosen light. */
+  .theme-toggle .icon-sun  { display: none; }
+  .theme-toggle .icon-moon { display: block; }
+  :root[data-theme="dark"] .theme-toggle .icon-sun  { display: block; }
+  :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun  { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+  }
 `.trim();
 
 const FONT_LINKS = `
@@ -400,9 +473,58 @@ const FONT_LINKS = `
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
 `.trim();
 
+/**
+ * Pre-paint theme bootstrap script. MUST be emitted synchronously inside
+ * <head> before any styles or content render, otherwise the visitor will
+ * briefly see the light theme before the saved/dark choice kicks in
+ * (FOUC). Reads localStorage; if no explicit choice, leaves data-theme
+ * unset so the @media (prefers-color-scheme: dark) rule still decides.
+ */
+const THEME_BOOTSTRAP_SCRIPT = `
+<script>
+(function(){try{var s=localStorage.getItem('agent-news-theme');if(s==='light'||s==='dark'){document.documentElement.setAttribute('data-theme',s);}}catch(e){}})();
+</script>
+`.trim();
+
+/**
+ * End-of-body script that wires the header toggle button. Click cycles the
+ * theme between light and dark and persists the choice in localStorage so
+ * subsequent visits load directly into the chosen theme via the bootstrap
+ * script above. Updates the button's aria-pressed + title so the visible
+ * sun/moon icon matches the current state.
+ */
+const THEME_TOGGLE_SCRIPT = `
+<script>
+(function(){
+  var btn=document.getElementById('theme-toggle');
+  if(!btn)return;
+  function current(){
+    var explicit=document.documentElement.getAttribute('data-theme');
+    if(explicit==='light'||explicit==='dark')return explicit;
+    return (window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+  }
+  function syncLabel(t){
+    btn.setAttribute('aria-pressed',t==='dark'?'true':'false');
+    btn.setAttribute('title',t==='dark'?'Switch to light theme':'Switch to dark theme');
+  }
+  syncLabel(current());
+  btn.addEventListener('click',function(){
+    var next=current()==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('agent-news-theme',next);}catch(e){}
+    syncLabel(next);
+  });
+})();
+</script>
+`.trim();
+
 const SEARCH_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>';
 
 const EXTERNAL_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg>';
+
+const SUN_ICON = '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>';
+
+const MOON_ICON = '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
 
 function renderHeader(bp: string): string {
   const home = `${bp}/`;
@@ -428,6 +550,10 @@ function renderHeader(bp: string): string {
         <span>Search articles</span>
         <span class="kbd">⌘K</span>
       </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" title="Switch to dark theme" aria-label="Toggle dark theme">
+        ${SUN_ICON}
+        ${MOON_ICON}
+      </button>
     </div>
   </div>
 </header>
@@ -585,6 +711,7 @@ export function renderCatalogHtml(
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agent News</title>
 <meta name="description" content="${escapeHtml(description)}">
+${THEME_BOOTSTRAP_SCRIPT}
 ${FONT_LINKS}
 <style>
 ${STYLES}
@@ -596,6 +723,7 @@ ${renderHeader(bp)}
 ${body}
 </main>
 ${renderFooter(bp)}
+${THEME_TOGGLE_SCRIPT}
 </body>
 </html>
 `;
