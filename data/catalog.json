@@ -165,7 +165,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "787a01f6749c0d15b25eeb711d78ef79c06e5b6aaed0bac2fd6f08b01b9d6120",
       "category": "deep-dive"
+    },
+    {
+      "slug": "this-karpathy-file-will-10x-your-claude-output-deep-dive",
+      "title": "This 'Karpathy File' Will 10x Your Claude Output — Deep Dive",
+      "publishedAt": "2026-05-18T19:00:22.000Z",
+      "sourcePath": "/tmp/deep_dive_hzQie4EucY0.html",
+      "articlePath": "articles/this-karpathy-file-will-10x-your-claude-output-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/hzQie4EucY0/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "9bbcaf0c4eb70c1c423173b9e83c292ca859f8f7cc7555d03a7182552682e7a8",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-22T22:31:02.978Z"
+  "updatedAt": "2026-05-22T22:38:47.644Z"
 }
