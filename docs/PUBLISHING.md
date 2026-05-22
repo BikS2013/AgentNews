@@ -241,7 +241,119 @@ load.
 
 ---
 
-## 8. Rebuild the static site
+## 8. Unpublishing — remove an item from any of the three lists
+
+There is currently **no `unpublish-*` CLI**. Unpublishing is a manual
+operation against the same catalog/links files the publish CLIs write to.
+Follow this procedure literally — partial removals (catalog entry deleted
+but article file orphaned, or vice versa) will break the byte-identity
+verification in `scripts/build-static.ts` and the CI deploy will fail.
+
+The procedure differs by *what kind of item* you are removing, not by
+which list it currently appears in. The `category` field only decides
+which list renders the item; the storage file is decided by item kind.
+
+| Item kind                            | Storage file        | Identifier key | Article file to delete                |
+|--------------------------------------|---------------------|----------------|---------------------------------------|
+| Video (deep dive OR AI-News video)   | `data/catalog.json` | `slug`         | `articles/<slug>.html` (MUST delete)  |
+| Link (article OR AI-News link)       | `data/links.json`   | `id` (or `url`)| none                                  |
+
+### 8a. Identify the item
+
+```bash
+# Videos (in catalog.json). Inspect by slug or by title substring:
+jq '.entries[] | select(.slug == "deep-dive-handoff-is-my-new-favourite-skill-matt-pocock")' data/catalog.json
+jq '.entries[] | select(.title | test("Hermes"; "i"))' data/catalog.json
+
+# Links (in links.json). Inspect by id or by url:
+jq '.entries[] | select(.id == "the-unreasonable-effectiveness-of-html")' data/links.json
+jq '.entries[] | select(.url == "https://claude.com/blog/...")' data/links.json
+```
+
+Confirm the entry's `category` so you know which list it currently
+appears in — but it does NOT change where you delete from.
+
+### 8b. Unpublish a video (deep dive or AI-News video)
+
+Remove the entry from `data/catalog.json` **and** delete the corresponding
+HTML file. Both steps are required. Use `jq` to keep the JSON well-formed
+and to refresh `updatedAt`:
+
+```bash
+SLUG="deep-dive-slug-to-remove"
+
+# 1. Remove the catalog entry + bump updatedAt atomically via a tmp file.
+jq --arg slug "$SLUG" --arg now "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" '
+  .entries |= map(select(.slug != $slug))
+  | .updatedAt = $now
+' data/catalog.json > data/catalog.json.tmp \
+  && mv data/catalog.json.tmp data/catalog.json
+
+# 2. Delete the published article file.
+rm "articles/${SLUG}.html"
+
+# 3. Verify byte-identity still holds for everything that remains.
+npm run typecheck
+npm test
+```
+
+> If you skip step 2, the next `build:static` will throw
+> `Article file missing on disk for catalog entry "<slug>"`. If you skip
+> step 1, the next build will throw an SHA-256 mismatch the moment the
+> article is regenerated, OR the orphan file will silently ship without a
+> card. Always do BOTH.
+
+### 8c. Unpublish a link (article or AI-News link)
+
+```bash
+ID="link-id-to-remove"
+# Or, if you have the URL but not the id:
+# URL="https://publisher.com/some-article"
+
+jq --arg id "$ID" --arg now "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" '
+  .entries |= map(select(.id != $id))
+  | .updatedAt = $now
+' data/links.json > data/links.json.tmp \
+  && mv data/links.json.tmp data/links.json
+
+npm run typecheck
+npm test
+```
+
+No file on disk to delete — links never copy the article body.
+
+### 8d. Re-categorise vs. unpublish
+
+Moving an item between AI-News and Deep Dives (or AI-News and Articles)
+is **not** an unpublish. Use the publish CLI's `--update` path instead so
+the entry's identity (`slug` / `id` / `publishedAt`) is preserved:
+
+```bash
+# Move a video from AI-News into Deep Dives:
+npm run publish-article -- --source "<original source path>" --update --category deep-dive
+
+# Move a link from Articles into AI-News:
+npm run publish-link -- --url "<original URL>" --update --category ai-news
+```
+
+### 8e. After any unpublish — commit + push
+
+The unpublish is only "live" after the static-deploy workflow runs:
+
+```bash
+git add data/catalog.json data/links.json articles/    # `articles/` for the deletion
+git status                                             # confirm scope
+git commit -m "Unpublish: <human description of the item>"
+git push origin main
+```
+
+CI rebuilds `dist/` from the post-removal state, the deploy job promotes
+the new artifact, and the site reflects the removal within a minute or
+two of the push completing.
+
+---
+
+## 9. Rebuild the static site
 
 After publishing, regenerate the static export consumed by GitHub Pages:
 
@@ -261,9 +373,9 @@ The output is written to `dist/`:
 
 ---
 
-## 9. Checklist for agents
+## 10. Checklist for agents
 
-Before invoking the CLI, confirm:
+Before invoking the publish CLI, confirm:
 
 - [ ] Decided which of the three lists this item belongs to (AI-News / Deep Dives / Articles).
 - [ ] Picked the correct CLI (`publish-article` for videos, `publish-link` for articles).
@@ -273,9 +385,16 @@ Before invoking the CLI, confirm:
 - [ ] `--category` is set when targeting AI-News (the default for the other two lists is correct).
 - [ ] `npm run typecheck` and `npm test` are green before pushing.
 
+Before unpublishing (§8), confirm:
+
+- [ ] Identified the right kind of item — video → `data/catalog.json` (delete `articles/<slug>.html` too), link → `data/links.json` (no file delete).
+- [ ] The intent is removal — not re-categorisation; if just moving lists, use `--update --category` instead (§8d).
+- [ ] Captured the entry's `slug`/`id` for the commit message and for any rollback that might be needed.
+- [ ] Confirmed `npm run typecheck` and `npm test` still pass after the deletion, BEFORE pushing.
+
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
@@ -285,3 +404,6 @@ Before invoking the CLI, confirm:
 | `Invalid --date` (exit 1) | Date is not full ISO-8601 with timezone. | Use `2025-11-12T09:00:00Z` or `…+02:00`. |
 | `Invalid --category` (exit 1) | Value is not `deep-dive`/`ai-news` (article CLI) or `article`/`ai-news` (link CLI). | Use one of the documented values. |
 | Card appears in the wrong list | `--category` was wrong / missing on `--update`. | Re-run with `--update --category <correct>` to fix in place. |
+| `Article file missing on disk for catalog entry "<slug>"` during `build:static` | Catalog entry kept but `articles/<slug>.html` was deleted (incomplete unpublish). | Either restore the file from git (`git checkout HEAD -- articles/<slug>.html`) OR finish the unpublish by removing the catalog entry too (§8b). |
+| SHA-256 mismatch during `build:static` | The article file changed on disk but the catalog `sha256` was not updated. | Re-publish with `--update`, OR if removing, finish the unpublish (§8b). |
+| Item removed from `data/*.json` but still appears on the live site | CI hasn't redeployed yet; or the commit only edited JSON and forgot to delete the article file. | Wait for the `Deploy to GitHub Pages` workflow to finish on `main`; then confirm `articles/<slug>.html` is also gone for video unpublishes. |
