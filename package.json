@@ -15,7 +15,8 @@
     "verify": "tsx test_scripts/verify-byte-identity.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test_scripts/*.test.ts",
-    "build:static": "tsx scripts/build-static.ts"
+    "build:static": "tsx scripts/build-static.ts",
+    "refresh-youtube-dates": "tsx scripts/refresh-youtube-dates.ts"
   },
   "dependencies": {
     "@fastify/static": "^9.1.3",

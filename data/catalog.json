@@ -108,8 +108,9 @@
       "articlePath": "articles/i-stopped-using-grill-me-for-coding-deep-dive.html",
       "thumbnailUrl": "https://img.youtube.com/vi/6BB6exR8Zd8/maxresdefault.jpg",
       "thumbnailSource": "cli-override",
-      "sha256": "64d8c799f6f933fdf3043afce6a99bda42218f9249431eae43dcea2b0f14f110"
+      "sha256": "64d8c799f6f933fdf3043afce6a99bda42218f9249431eae43dcea2b0f14f110",
+      "youtubePublishedAt": "2026-05-14T14:22:56.000Z"
     }
   ],
-  "updatedAt": "2026-05-22T20:08:04.603Z"
+  "updatedAt": "2026-05-22T20:18:18.738Z"
 }
