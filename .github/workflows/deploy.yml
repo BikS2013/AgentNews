@@ -20,6 +20,16 @@ permissions:
   pages: write
   id-token: write
 
+# Run all JavaScript-based actions (actions/checkout, actions/setup-node,
+# actions/configure-pages, actions/upload-pages-artifact, actions/deploy-pages,
+# etc.) on Node.js 24 instead of the deprecated Node.js 20 runtime. GitHub is
+# flipping Node 24 to default on 2026-06-02; setting this now silences the
+# deprecation warnings and gets us onto the new runtime early. Once Node 24
+# becomes the default, this env var becomes a no-op and can be removed.
+# See: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
