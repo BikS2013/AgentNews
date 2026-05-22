@@ -121,7 +121,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "3eae70635543a2aba3343c5e3c0104c513ba41990cb5b118c198a90b3f47afb3",
       "category": "ai-news"
+    },
+    {
+      "slug": "building-pi-in-a-world-of-slop-deep-dive",
+      "title": "Building Pi in a World of Slop — Deep Dive",
+      "publishedAt": "2026-04-16T22:58:06.000Z",
+      "sourcePath": "/tmp/deep_dive_RjfbvDXpFls.html",
+      "articlePath": "articles/building-pi-in-a-world-of-slop-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/RjfbvDXpFls/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "674111c02633a302bef536491eec0ff0880005706feb008126e0c0e1b39f84e5",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-22T21:02:23.120Z"
+  "updatedAt": "2026-05-22T21:19:23.814Z"
 }

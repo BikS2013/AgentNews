@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Pi in a World of Slop — Deep Dive</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--card:#181a24;--card-border:#23263a;--text:#e4e4e7;--text-muted:#a1a1aa;--accent:#a78bfa;--accent-bg:rgba(139,92,246,0.15);--accent-hover:rgba(139,92,246,0.3);--accent-light:#c4b5fd;--red:#f87171;--green:#4ade80;--yellow:#facc15;--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;--font-mono:'SF Mono','Fira Code','Fira Mono','Roboto Mono',monospace}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.7;padding:0;min-height:100vh}
+a{color:var(--accent);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-light)}
+.container{max-width:860px;margin:0 auto;padding:24px 20px 60px}
+/* Header */
+.header{text-align:center;margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid var(--card-border)}
+.header h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:700;letter-spacing:-0.5px;margin-bottom:8px;background:linear-gradient(135deg,#e4e4e7,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header .meta{font-size:14px;color:var(--text-muted);display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-top:6px}
+.header .meta span{display:inline-flex;align-items:center;gap:4px}
+/* Video */
+.video-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;margin-bottom:32px;background:#000}
+.video-wrap iframe,.video-wrap .fallback{position:absolute;inset:0;width:100%;height:100%;border:0}
+.fallback{display:none;cursor:pointer;background-size:cover;background-position:center;background-image:url('https://img.youtube.com/vi/RjfbvDXpFls/maxresdefault.jpg')}
+.fallback .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:68px;background:rgba(139,92,246,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s}
+.fallback:hover .play-btn{transform:translate(-50%,-50%) scale(1.1);background:rgba(139,92,246,1)}
+.fallback .play-btn svg{width:28px;height:28px;fill:#fff;margin-left:3px}
+/* Timestamps */
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd}
+/* Section cards */
+.section{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.section h2{font-size:1.2rem;font-weight:700;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.section h3{font-size:1rem;font-weight:600;margin:16px 0 8px;color:var(--accent-light)}
+.section ul{padding-left:20px;margin:8px 0}
+.section ul li{margin-bottom:6px;color:var(--text-muted)}
+.section ul li strong{color:var(--text)}
+.section p{color:var(--text-muted);margin-bottom:10px}
+.section blockquote{border-left:3px solid var(--accent);padding:6px 14px;margin:12px 0;color:var(--text-muted);font-style:italic;background:rgba(139,92,246,0.05);border-radius:0 8px 8px 0}
+/* Takeaways */
+.takeaways ol{padding-left:22px;counter-reset:tk}
+.takeaways ol li{margin-bottom:8px;color:var(--text-muted)}
+.takeaways ol li strong{color:var(--text)}
+/* Timestamp index grid */
+.ts-index{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px 16px}
+.ts-index a{display:flex;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--text-muted);transition:color .2s}
+.ts-index a:hover{color:var(--text)}
+.ts-index a .timestamp{flex-shrink:0}
+/* Responsive */
+@media(max-width:600px){.container{padding:16px 12px 40px}.section{padding:18px 16px}.ts-index{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+<h1>Building Pi in a World of Slop — Deep Dive</h1>
+<div class="meta">
+<span>🎤 AI Engineer (talk by Mario Zechner)</span>
+<span>⏱ ~18:25</span>
+<span><a href="https://www.youtube.com/watch?v=RjfbvDXpFls" target="_blank" rel="noopener">Watch on YouTube ↗</a></span>
+</div>
+</div>
+
+<!-- Video Embed -->
+<div class="video-wrap" id="videoWrap">
+<iframe id="ytEmbed" src="https://www.youtube.com/embed/RjfbvDXpFls" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="fallback" id="fallback" onclick="window.open('https://www.youtube.com/watch?v=RjfbvDXpFls','_blank')">
+<div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg></div>
+</div>
+</div>
+
+<!-- Overview -->
+<div class="section">
+<h2>📋 Overview</h2>
+<p>Mario Zechner, creator of the <strong>Pi coding agent</strong>, delivers a conference talk in three acts: <strong>(1)</strong> why he stopped using Claude Code and built Pi, <strong>(2)</strong> how AI-generated spam ("clankers") is destroying open source, and <strong>(3)</strong> a passionate argument for slowing down and writing critical code by hand. A raw, opinionated, and deeply technical talk about agent harness design, context control, and the compounding error problem of agent-generated code.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section">
+<h2>Act One — Why He Built Pi <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=29s" target="_blank" rel="noopener">▶ 0:29</a></h2>
+<p>Started using Claude Code in April 2025. Initially simple, predictable, fit his workflow. But problems emerged:</p>
+<ul>
+<li><strong>Token madness</strong> — team grew, shipped many features he didn't need. With velocity came bugs. <em>"If my hammer breaks every day, I'm getting really mad."</em></li>
+<li><strong>Context wasn't his context</strong> — Claude Code controls context behind your back: system prompt changes on every release, tools removed/modified without notice, system reminders injected at inopportune places (<em>"may or may not be relevant"</em>), confusing the model and breaking workflows.</li>
+<li><strong>Zero observability</strong> — can't see what agents are doing.</li>
+<li><strong>Zero model choice</strong> — locked to Anthropic models.</li>
+<li><strong>Zero extensibility</strong> — hooks are shallow, each spawns a new process.</li>
+</ul>
+<p>Looked at alternatives: <strong>Amp</strong> and <strong>FactoryDroid</strong> (<em>"the Porsche and Lamborghini"</em>), <strong>OpenCode</strong> (brilliant team, but found issues: tool output pruning that <em>"lobotomizes the model"</em>, LSP integration checking errors after every edit confusing the model, individual messages stored as separate JSON files, CORS security issue).</p>
+</div>
+
+<!-- Section 2 -->
+<div class="section">
+<h2>The Terminal Bench Revelation <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=286s" target="_blank" rel="noopener">▶ 4:46</a></h2>
+<p>Discovered <strong>Terminal Bench</strong> — a benchmark giving the model only keystroke-sending to a tmux session. No file tools, no sub-agents. Yet it scored among the highest, often beating native harnesses.</p>
+<h3>Two theses:</h3>
+<ul>
+<li><strong>We're in the "fuck around and find out" phase</strong> — current agent form is NOT the final form</li>
+<li><strong>We need better ways to experiment</strong> — self-modifying, malleable agents</li>
+</ul>
+</div>
+
+<!-- Section 3 -->
+<div class="section">
+<h2>Pi's Architecture <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=346s" target="_blank" rel="noopener">▶ 5:46</a></h2>
+<p>Stripped everything down, built minimal but extensible core. Agent can modify itself.</p>
+<p><strong>Four packages:</strong> AI (provider abstraction), Agent Core (while loop + tool calling), TUI (bespoke framework from game dev background — doesn't flicker), Coding Agent.</p>
+<blockquote>Pi's system prompt: [shows nearly empty prompt]. "That's it." Models are reinforcement-trained on coding agents — they don't need 10,000 tokens telling them they're a coding agent. They know.</blockquote>
+<p><strong>Four tools only:</strong> <code>read</code>, <code>write</code>, <code>edit</code>, <code>bash</code>. <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=421s" target="_blank" rel="noopener">▶ 7:01</a></p>
+<p><strong>YOLO by default</strong> — no approval dialogs. <em>"My security needs are different than yours."</em> Instead gives you rope to build your own security. <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=447s" target="_blank" rel="noopener">▶ 7:27</a></p>
+<p>Sub-agents, plan mode, MCP — NOT built in. You ask Pi to build them as extensions based on your needs.</p>
+</div>
+
+<!-- Section 4 -->
+<div class="section">
+<h2>Extensions — Pi's Superpower <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=482s" target="_blank" rel="noopener">▶ 8:02</a></h2>
+<p>Extensions are <strong>TypeScript modules</strong>. Extension API hooks into everything: tools, slash commands, events, session state, custom compaction, custom providers, full tool control.</p>
+<p>Packaged via NPM or GitHub — <em>"we don't need another silo called a marketplace. We already have package managers."</em></p>
+<p>Everything <strong>hot-reloads</strong> during sessions (game dev philosophy: low iteration time).</p>
+<h3>Examples <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=562s" target="_blank" rel="noopener">▶ 9:22</a></h3>
+<ul>
+<li>Anthropic's <code>/byTheWay</code> feature — someone rebuilt it in 5 minutes as a Pi extension with <strong>more</strong> features</li>
+<li>Nico's chat room for Pi agents talking to each other (custom UI)</li>
+<li>NES games and Doom running inside Pi</li>
+</ul>
+<blockquote>"How do you build a Pi extension? You don't. You tell Pi to build it for you." <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=601s" target="_blank" rel="noopener">▶ 10:01</a></blockquote>
+<p><strong>Terminal Bench:</strong> Pi scored <strong>6th place</strong> — before even having compaction.</p>
+</div>
+
+<!-- Section 5 -->
+<div class="section">
+<h2>Act Two — OSS in the Age of Clankers <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=657s" target="_blank" rel="noopener">▶ 10:57</a></h2>
+<p>"Clankers" (AI-generated spam) are destroying open source. TilDraw closed their issue tracker. OpenCode flooded. Pi's tracker filled with garbage from OpenCode instances using Pi as agent core without users knowing.</p>
+<h3>Mario's anti-clanker system <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=674s" target="_blank" rel="noopener">▶ 11:14</a></h3>
+<ul>
+<li><strong>Auto-close all PRs</strong> with a comment asking for a human-written issue (max one screen of text)</li>
+<li>If human responds → gets <strong>"vouched"</strong>, future PRs allowed through</li>
+<li>Clankers never read the comment, never come back — <strong>perfect filter</strong></li>
+<li>Labels deprioritizing issues from OpenCode interactions</li>
+<li>3D embedding visualization of issues to see clusters</li>
+<li><strong>"OS certification"</strong> — just closes the tracker whenever he wants his life back</li>
+</ul>
+</div>
+
+<!-- Section 6 -->
+<div class="section">
+<h2>Act Three — Slow The F*** Down <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=724s" target="_blank" rel="noopener">▶ 12:04</a></h2>
+<p>The core argument: <strong>"Everything's broken."</strong></p>
+<blockquote>"Our product's been 100% built by agents." — "Yes, we know it sucks now. Congratulations."</blockquote>
+<p>Agents compound errors ("booboos") with zero learning, no bottlenecks, and delayed pain (for you). <strong>Visualization:</strong> 1 human → manageable errors. 1 agent → more errors. 10 agents → exponential errors. <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=780s" target="_blank" rel="noopener">▶ 13:00</a></p>
+<blockquote>"But I have a review agent!" — "Let me introduce you to the wonderful world of the ouroboros." Doesn't work.</blockquote>
+<h3>Why agents produce complexity <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=840s" target="_blank" rel="noopener">▶ 14:00</a></h3>
+<p>They learned from the internet (90% garbage code). Every decision is local. They add abstractions, duplication, backwards compatibility everywhere. <em>"Enterprise-grade complexity within 2 weeks with just two humans and 10 agents."</em></p>
+<blockquote>"But my detailed spec." — "A sufficiently detailed spec is a program." Blanks in specs get filled with internet garbage.</blockquote>
+<p><strong>Humans vs agents:</strong> humans are fallible BUT they learn, they're bottlenecks (limited booboos per day), and they feel pain. Pain triggers action (quit, blame someone, or refactor). <em>"Agents will happily keep shitting into your code base."</em></p>
+</div>
+
+<!-- Section 7 -->
+<div class="section">
+<h2>How We Should Work <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=972s" target="_blank" rel="noopener">▶ 16:12</a></h2>
+<p><strong>Good agent tasks:</strong></p>
+<ul>
+<li><strong>Scopeable</strong> — agent guaranteed to find everything needed</li>
+<li><strong>Evaluable</strong> — function to measure quality</li>
+<li><strong>Non-mission-critical</strong></li>
+<li>Boring stuff, reproduction cases for user issues, rubber ducking</li>
+</ul>
+<p><strong>Pattern:</strong> agent works → you evaluate → take what's reasonable (most isn't) → finalize.</p>
+<h3>Final advice <a class="timestamp" href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=1016s" target="_blank" rel="noopener">▶ 16:56</a></h3>
+<ul>
+<li>Think about what you're building and <strong>WHY</strong></li>
+<li>Learn to say no — <em>"your most valuable capability right now"</em></li>
+<li>Fewer features, but polish them</li>
+<li>Cap the amount of generated code you review</li>
+<li>Non-critical code: <em>"five slop ahead."</em> Critical code: <em>"read every line."</em></li>
+<li><strong>If you do anything important, write it by hand</strong></li>
+<li><em>"That friction builds the understanding of the system in your head"</em></li>
+<li><strong>"All of this still requires humans."</strong></li>
+</ul>
+</div>
+
+<!-- Key Takeaways -->
+<div class="section takeaways">
+<h2>🔑 Key Takeaways</h2>
+<ol>
+<li><strong>Claude Code's biggest problem:</strong> you don't control your own context</li>
+<li><strong>Terminal Bench proves</strong> minimal harnesses can outperform feature-rich ones</li>
+<li><strong>Pi's philosophy:</strong> 4 tools, ~empty system prompt, self-modifying via extensions</li>
+<li>Models are already <strong>reinforcement-trained as coding agents</strong> — they don't need verbose instructions</li>
+<li><strong>Extensions &gt; built-in features:</strong> let Pi build what YOU need</li>
+<li>AI-generated PRs ("clankers") are destroying open source — <strong>require human vouching</strong></li>
+<li>Agents <strong>compound errors</strong> with zero learning and no pain mechanism</li>
+<li><em>"A sufficiently detailed spec is a program"</em> — blanks get filled with internet garbage</li>
+<li>Humans are bottlenecks and that's a <strong>FEATURE</strong>, not a bug</li>
+<li><strong>Critical code: write by hand.</strong> The friction IS the learning.</li>
+</ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="section">
+<h2>🕐 Timestamp Index</h2>
+<div class="ts-index">
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=29s" target="_blank" rel="noopener"><span class="timestamp">0:29</span> Act One: why he stopped using Claude Code</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=61s" target="_blank" rel="noopener"><span class="timestamp">1:01</span> Claude Code's context control problems</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=155s" target="_blank" rel="noopener"><span class="timestamp">2:35</span> Zero observability, model choice, extensibility</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=189s" target="_blank" rel="noopener"><span class="timestamp">3:09</span> Alternatives: Amp, FactoryDroid, OpenCode</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=286s" target="_blank" rel="noopener"><span class="timestamp">4:46</span> Terminal Bench revelation</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=346s" target="_blank" rel="noopener"><span class="timestamp">5:46</span> Pi's architecture: 4 packages, minimal prompt</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=421s" target="_blank" rel="noopener"><span class="timestamp">7:01</span> Four tools: read, write, edit, bash</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=447s" target="_blank" rel="noopener"><span class="timestamp">7:27</span> YOLO security model</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=482s" target="_blank" rel="noopener"><span class="timestamp">8:02</span> Extensions: TypeScript modules, hot reload</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=562s" target="_blank" rel="noopener"><span class="timestamp">9:22</span> Examples: /byTheWay, chat rooms, Doom</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=601s" target="_blank" rel="noopener"><span class="timestamp">10:01</span> "You tell Pi to build it for you"</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=657s" target="_blank" rel="noopener"><span class="timestamp">10:57</span> Act Two: clankers destroying OSS</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=674s" target="_blank" rel="noopener"><span class="timestamp">11:14</span> Anti-clanker vouching system</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=724s" target="_blank" rel="noopener"><span class="timestamp">12:04</span> Act Three: slow down, everything's broken</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=780s" target="_blank" rel="noopener"><span class="timestamp">13:00</span> Compounding booboos visualization</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=840s" target="_blank" rel="noopener"><span class="timestamp">14:00</span> Why agents produce complexity</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=972s" target="_blank" rel="noopener"><span class="timestamp">16:12</span> How we should work: good agent tasks</a>
+<a href="https://www.youtube.com/watch?v=RjfbvDXpFls&t=1016s" target="_blank" rel="noopener"><span class="timestamp">16:56</span> Final advice: say no, read the code, write by hand</a>
+</div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// Fallback for file:// and drive.google.com contexts where iframe embed won't work
+(function(){
+  var loc = window.location.href;
+  if(loc.startsWith('file://') || loc.indexOf('drive.google.com') !== -1){
+    var iframe = document.getElementById('ytEmbed');
+    var fallback = document.getElementById('fallback');
+    if(iframe) iframe.style.display = 'none';
+    if(fallback) fallback.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>
