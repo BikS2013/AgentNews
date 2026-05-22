@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: I gave my Hermes Agent a phone number (it's crazy)</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #1e2130;
+    --bg-card-hover: #252839;
+    --border-color: #2e3148;
+    --text-primary: #e8eaed;
+    --text-secondary: #9ba1b0;
+    --text-muted: #6b7280;
+    --accent: #7c5cfc;
+    --accent-hover: #9b82fd;
+    --accent-glow: rgba(124, 92, 252, 0.15);
+    --green: #34d399;
+    --blue: #60a5fa;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --red: #f87171;
+    --pill-bg: rgba(124, 92, 252, 0.12);
+    --pill-border: rgba(124, 92, 252, 0.3);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-pill: 999px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* TOC Toggle */
+  .toc-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.2s;
+    backdrop-filter: blur(12px);
+  }
+  .toc-toggle:hover { background: var(--bg-card-hover); border-color: var(--accent); }
+
+  /* TOC Sidebar */
+  .toc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .toc-overlay.active { opacity: 1; pointer-events: auto; }
+
+  .toc-sidebar {
+    position: fixed;
+    top: 0;
+    left: -340px;
+    width: 320px;
+    height: 100vh;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    z-index: 999;
+    padding: 80px 24px 24px;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+  }
+  .toc-sidebar.active { left: 0; }
+  .toc-sidebar h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .toc-sidebar a {
+    display: block;
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .toc-sidebar a:hover {
+    background: var(--accent-glow);
+    color: var(--accent-hover);
+  }
+
+  /* Main Layout */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Hero / Header */
+  .hero {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--pill-bg);
+    border: 1px solid var(--pill-border);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #e8eaed 0%, #9b82fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .byline {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+  .hero .byline span { color: var(--text-secondary); }
+  .hero .meta {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Video Embed */
+  .video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    margin: 32px 0 48px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* Section Cards */
+  .section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    transition: border-color 0.2s;
+  }
+  .section:hover { border-color: rgba(124, 92, 252, 0.2); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-number {
+    background: var(--accent);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .section h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 24px 0 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .section p {
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+  }
+
+  .section ul, .section ol {
+    color: var(--text-secondary);
+    padding-left: 20px;
+    margin-bottom: 14px;
+  }
+  .section li { margin-bottom: 6px; }
+  .section li::marker { color: var(--accent); }
+
+  .section strong { color: var(--text-primary); font-weight: 600; }
+
+  /* Nested lists */
+  .section ul ul, .section ol ul {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  /* Timestamp Pills */
+  .timestamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pill-bg);
+    border: 1px solid var(--pill-border);
+    color: var(--accent);
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    text-decoration: none;
+    transition: all 0.2s;
+    margin: 4px 4px 4px 0;
+    white-space: nowrap;
+  }
+  .timestamp:hover {
+    background: rgba(124, 92, 252, 0.25);
+    border-color: var(--accent);
+    color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124, 92, 252, 0.2);
+  }
+  .timestamp .play-icon { font-size: 11px; }
+
+  /* Inline code */
+  code {
+    background: rgba(124, 92, 252, 0.1);
+    color: var(--accent-hover);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  /* Quote / Callout */
+  .callout {
+    background: rgba(124, 92, 252, 0.06);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 16px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Synergy Two-Column */
+  .synergy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .synergy-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+  }
+  .synergy-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+  .synergy-card ul { padding-left: 16px; }
+  .synergy-card li { font-size: 14px; }
+
+  /* Key Tools / Resources */
+  .tool-card {
+    display: flex;
+    gap: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .tool-card:hover {
+    border-color: rgba(124, 92, 252, 0.3);
+    transform: translateX(4px);
+  }
+  .tool-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .tool-card .tool-info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .tool-card .tool-info p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Timestamp Index Grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .ts-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .ts-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .ts-card .ts-time {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--pill-bg);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  .ts-card .ts-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+
+  /* Cost Breakdown */
+  .cost-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .cost-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+  }
+  .cost-item .cost-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .cost-item .cost-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  /* Roadmap Steps */
+  .roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .roadmap-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+  .roadmap-step .step-num {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border-color);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a:hover { color: var(--accent-hover); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container { padding: 24px 16px 60px; }
+    .section { padding: 24px 20px; }
+    .synergy-grid { grid-template-columns: 1fr; }
+    .cost-grid { grid-template-columns: 1fr 1fr; }
+    .ts-grid { grid-template-columns: 1fr; }
+    .toc-sidebar { width: 280px; left: -300px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOC Toggle Button -->
+<button class="toc-toggle" onclick="toggleTOC()" aria-label="Table of Contents">☰</button>
+
+<!-- TOC Overlay -->
+<div class="toc-overlay" id="tocOverlay" onclick="toggleTOC()"></div>
+
+<!-- TOC Sidebar -->
+<nav class="toc-sidebar" id="tocSidebar">
+  <h3>Table of Contents</h3>
+  <a href="#intro" onclick="toggleTOC()">Introduction & Overview</a>
+  <a href="#section1" onclick="toggleTOC()">1. Installing Hermes Agent</a>
+  <a href="#section2" onclick="toggleTOC()">2. Why Phone Calling Is Key</a>
+  <a href="#section3" onclick="toggleTOC()">3. Setting Up Vapi</a>
+  <a href="#section4" onclick="toggleTOC()">4. Installing Vapi MCP</a>
+  <a href="#section5" onclick="toggleTOC()">5. Creating a Voice Agent</a>
+  <a href="#section6" onclick="toggleTOC()">6. Live Demo</a>
+  <a href="#section7" onclick="toggleTOC()">7. Cron Jobs</a>
+  <a href="#section8" onclick="toggleTOC()">8. Summary & Results</a>
+  <a href="#tools" onclick="toggleTOC()">Key Tools & Resources</a>
+  <a href="#timestamps" onclick="toggleTOC()">Timestamp Index</a>
+</nav>
+
+<div class="container">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-badge">Deep Dive</div>
+    <h1>"I gave my Hermes Agent a phone number (it's crazy)"</h1>
+    <p class="byline">by <span>David Ondrej</span></p>
+    <p class="meta">Duration: 31 minutes</p>
+  </header>
+
+  <!-- Video Embed -->
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube.com/embed/zHE434sBw2U" title="I gave my Hermes Agent a phone number" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+
+  <!-- INTRODUCTION -->
+  <section class="section" id="intro">
+    <div class="section-header">
+      <div class="section-number" style="background: var(--blue);">★</div>
+      <h2>Introduction & Overview</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=0s" target="_blank"><span class="play-icon">▶</span> 0:00</a>
+    <p style="margin-top:16px;">David Ondrej demonstrates what he calls <strong>"the most powerful and useful Hermes setup that nobody is covering"</strong> — giving the Hermes AI agent a real phone number so it can autonomously make and receive phone calls. The agent can book appointments, chase leads, call businesses, and even proactively reach out on its own schedule without any human prompt.</p>
+    <p>Right from the start, David addresses the most common objections:</p>
+    <ul>
+      <li><strong>"Isn't this too complicated?"</strong> — No. It's literally one MCP install.</li>
+      <li><strong>"Doesn't it cost a fortune?"</strong> — It's actually super cheap.</li>
+      <li><strong>"I don't have a business."</strong> — You can use it for personal tasks: dentist appointments, restaurant reservations, etc.</li>
+      <li><strong>"I'm not technical enough."</strong> — If you can copy-paste, you can build this.</li>
+    </ul>
+    <p><strong>The video roadmap:</strong></p>
+    <div class="roadmap">
+      <div class="roadmap-step"><span class="step-num">1</span> Install Hermes Agent locally</div>
+      <div class="roadmap-step"><span class="step-num">2</span> Connect it to Vapi MCP and give it a real phone number</div>
+      <div class="roadmap-step"><span class="step-num">3</span> Research target businesses and have Hermes call them</div>
+      <div class="roadmap-step"><span class="step-num">4</span> Set up autonomous cron-based calling for lead generation</div>
+    </div>
+  </section>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="section1">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2>Installing Hermes Agent Locally</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=90s" target="_blank"><span class="play-icon">▶</span> 1:30</a>
+    <p style="margin-top:16px;">David walks through the full local installation of Hermes Agent. The process works identically on a local machine or a VPS.</p>
+    <p><strong>Step-by-step:</strong></p>
+    <ol>
+      <li>Go to the Hermes Agent GitHub repository.</li>
+      <li>Scroll down to the "Quick Install" section and copy the one-liner install command.</li>
+      <li>Open a terminal and paste the command. This installs Hermes Agent on your machine.</li>
+      <li>Once installed, run <code>hermes setup</code> to launch the interactive setup wizard.</li>
+    </ol>
+
+    <h3>Choosing a Provider (OpenRouter)</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=150s" target="_blank"><span class="play-icon">▶</span> 2:30</a>
+    <p style="margin-top:12px;">The setup wizard asks which LLM provider to use. David selects OpenRouter:</p>
+    <ul>
+      <li>Go to openrouter.ai and create an account (~20 seconds).</li>
+      <li>Navigate to the top-right corner → Credits → add funds ($5–$10 is plenty).</li>
+      <li>Go to API Keys → "New Key" → name it, set a spending limit (~$50 as a precaution), and copy the key.</li>
+    </ul>
+
+    <h3>Configuring the Model</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=240s" target="_blank"><span class="play-icon">▶</span> 4:00</a>
+    <p style="margin-top:12px;">Back in the terminal:</p>
+    <ul>
+      <li>Select OpenRouter as the provider and paste the API key.</li>
+      <li>Choose a model — David picks <strong>Claude Opus 4.7</strong> (the latest at time of recording).</li>
+      <li>Fallback credential: Not needed, skip with "No."</li>
+      <li>For remaining settings (text-to-speech, iterations, navigation platform, CLI options), David recommends keeping the defaults — just press Enter through them.</li>
+    </ul>
+
+    <h3>First Launch & Test</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=330s" target="_blank"><span class="play-icon">▶</span> 5:30</a>
+    <ul style="margin-top:12px;">
+      <li>Type <code>hermes</code> in the terminal to launch the agent with Claude Opus 4.7.</li>
+      <li>Send a test message ("Test") to confirm the agent responds correctly.</li>
+      <li>David emphasizes: <strong>"Always read the instructions"</strong> — many users are scared of the terminal and skip reading the output, which often contains critical info.</li>
+    </ul>
+    <div class="callout">
+      <strong>Key takeaway:</strong> Hermes Agent is extremely powerful out of the box — it can browse the web, write code, handle emails, and much more. But it's missing one thing: a phone number.
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="section2">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2>Why Phone Calling Is the Missing Piece</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=420s" target="_blank"><span class="play-icon">▶</span> 7:00</a>
+    <p style="margin-top:16px;">David makes an important observation: <strong>99% of AI power users already use AI for web browsing, coding, and email. But phone calls? Most people still do those manually.</strong> This is the untapped frontier.</p>
+    <p>The solution: <strong>Vapi</strong> — an AI-first telephony platform.</p>
+
+    <div class="synergy-grid">
+      <div class="synergy-card">
+        <h4 style="color: var(--blue);">🔊 What Vapi gives Hermes</h4>
+        <ul>
+          <li>Phone numbers (real, callable)</li>
+          <li>Inbound call handling</li>
+          <li>Outbound call capability</li>
+          <li>Voice agents with natural speech</li>
+          <li>Call transcripts and logs</li>
+          <li>Real-time conversation management</li>
+        </ul>
+      </div>
+      <div class="synergy-card">
+        <h4 style="color: var(--accent);">🧠 What Hermes gives Vapi</h4>
+        <ul>
+          <li>Goals and strategic planning</li>
+          <li>Persistent memory across calls</li>
+          <li>Tool usage (web search, DBs, etc.)</li>
+          <li>Cron jobs for scheduled calling</li>
+          <li>Proactive decision-making</li>
+          <li>Outcome checking & follow-up</li>
+          <li>Self-improvement over time</li>
+        </ul>
+      </div>
+    </div>
+
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=510s" target="_blank"><span class="play-icon">▶</span> 8:30</a>
+    <div class="callout" style="margin-top:12px;">
+      "Vapi makes phone calls configurable, while Hermes makes them autonomous." Connecting these two tools together is where you get the most overpowered setup possible.
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="section3">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2>Setting Up Vapi — Account, API Key & Phone Number</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=600s" target="_blank"><span class="play-icon">▶</span> 10:00</a>
+    <p style="margin-top:16px;">David walks through the Vapi setup process from scratch:</p>
+    <ol>
+      <li>Go to <strong>vapi.ai</strong> and create an account.</li>
+      <li>Navigate to the dashboard and locate your API key (usually under Settings or Account).</li>
+      <li>Copy the API key — you'll need it to connect Hermes to Vapi.</li>
+    </ol>
+
+    <h3>Buying a Phone Number</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=690s" target="_blank"><span class="play-icon">▶</span> 11:30</a>
+    <ul style="margin-top:12px;">
+      <li>Inside the Vapi dashboard, go to the Phone Numbers section.</li>
+      <li>Purchase a phone number. Vapi offers numbers from multiple countries and area codes.</li>
+      <li>The cost is minimal — typically just a few dollars per month for a number, plus per-minute charges (fractions of a cent).</li>
+      <li>Once purchased, the number is immediately available for inbound and outbound calls.</li>
+    </ul>
+
+    <h3>Adding Credits</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=780s" target="_blank"><span class="play-icon">▶</span> 13:00</a>
+    <ul style="margin-top:12px;">
+      <li>Add some credits to your Vapi account for call minutes.</li>
+      <li>David emphasizes this is very affordable — a small top-up goes a long way for testing and even regular use.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="section4">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2>Installing Vapi MCP in Hermes</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=840s" target="_blank"><span class="play-icon">▶</span> 14:00</a>
+    <p style="margin-top:16px;">This is the key integration step — connecting Hermes to Vapi via the <strong>Model Context Protocol (MCP)</strong>.</p>
+    <p><strong>Step-by-step:</strong></p>
+    <ol>
+      <li>In the Hermes terminal, install the Vapi MCP server. This is a single command — David shows the exact install command.</li>
+      <li>The MCP server acts as a bridge: Hermes can now invoke Vapi's telephony capabilities as tools.</li>
+      <li>Configure the MCP connection by providing:
+        <ul>
+          <li>Your Vapi API key</li>
+          <li>Your purchased phone number</li>
+          <li>Any default settings (voice, language, etc.)</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h3>Verifying the Connection</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=930s" target="_blank"><span class="play-icon">▶</span> 15:30</a>
+    <ul style="margin-top:12px;">
+      <li>After installing the MCP, restart Hermes or reload the tool configuration.</li>
+      <li>Hermes should now list Vapi-related tools (<code>make_call</code>, <code>check_call_status</code>, <code>get_transcript</code>, etc.).</li>
+      <li>David runs a quick verification to confirm the tools are available.</li>
+    </ul>
+
+    <h3>Configuration Tips</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1020s" target="_blank"><span class="play-icon">▶</span> 17:00</a>
+    <ul style="margin-top:12px;">
+      <li>Make sure your Vapi API key has the correct permissions.</li>
+      <li>David recommends setting a spending limit on the Vapi side as well, to prevent unexpected charges during testing.</li>
+      <li>The MCP install is literally a one-liner — this is what makes the setup so accessible even for non-technical users.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="section5">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2>Creating a Voice Agent / Assistant in Vapi</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1080s" target="_blank"><span class="play-icon">▶</span> 18:00</a>
+    <p style="margin-top:16px;">With the MCP connected, David sets up a voice agent (assistant) inside Vapi's dashboard. This defines how the AI sounds and behaves on the phone.</p>
+    <p><strong>Key configuration steps:</strong></p>
+    <ol>
+      <li>Go to the Vapi dashboard → Assistants → Create New.</li>
+      <li>Choose a voice — Vapi offers multiple text-to-speech providers with natural-sounding voices.</li>
+      <li>Set the system prompt / personality for the voice agent:
+        <ul>
+          <li>How it should introduce itself</li>
+          <li>What information it should collect</li>
+          <li>How it should handle objections or questions</li>
+        </ul>
+      </li>
+      <li>Configure the assistant's behavior:
+        <ul>
+          <li>First message (what it says when the call connects)</li>
+          <li>End-of-call behavior (summary, transcript logging)</li>
+          <li>Interruption handling (how it deals with being interrupted mid-sentence)</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h3>Linking the Assistant to Your Phone Number</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1200s" target="_blank"><span class="play-icon">▶</span> 20:00</a>
+    <ul style="margin-top:12px;">
+      <li>Assign the newly created assistant to your purchased phone number.</li>
+      <li>This means inbound calls to that number will be handled by the voice agent.</li>
+      <li>For outbound calls, Hermes will specify which assistant to use when initiating a call via the MCP tools.</li>
+    </ul>
+
+    <h3>Testing the Voice Agent</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1260s" target="_blank"><span class="play-icon">▶</span> 21:00</a>
+    <ul style="margin-top:12px;">
+      <li>David does a quick test call to make sure the voice agent answers properly.</li>
+      <li>He verifies the voice quality, latency, and conversation flow.</li>
+      <li>Any adjustments to the prompt or voice settings can be made in real-time from the Vapi dashboard.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="section" id="section6">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2>Live Demo — Hermes Researches & Calls Businesses</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1320s" target="_blank"><span class="play-icon">▶</span> 22:00</a>
+    <p style="margin-top:16px;">This is where the magic happens. David demonstrates the full autonomous workflow:</p>
+
+    <p><strong>1. Research Phase:</strong></p>
+    <ul>
+      <li>David instructs Hermes to research businesses in a specific niche/area.</li>
+      <li>Hermes uses its web browsing capabilities to find potential leads: company names, phone numbers, business hours, services offered.</li>
+      <li>It compiles a list of targets with all relevant information.</li>
+    </ul>
+
+    <h3>Making the First Call</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1410s" target="_blank"><span class="play-icon">▶</span> 23:30</a>
+    <p style="margin-top:12px;"><strong>2. Outbound Call Execution:</strong></p>
+    <ul>
+      <li>Hermes selects a business from the researched list.</li>
+      <li>It initiates an outbound call via the Vapi MCP tool.</li>
+      <li>The voice agent handles the actual conversation — introducing itself, asking relevant questions, collecting information.</li>
+      <li>The call is transcribed in real-time.</li>
+    </ul>
+    <p><strong>3. Post-Call Processing:</strong></p>
+    <ul>
+      <li>After the call ends, Hermes receives the transcript and call summary.</li>
+      <li>It analyzes the outcome: Was the call successful? Did they get the information needed? Is a follow-up required?</li>
+      <li>Hermes logs everything and decides on next actions.</li>
+    </ul>
+
+    <h3>Confirmation Call</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1500s" target="_blank"><span class="play-icon">▶</span> 25:00</a>
+    <ul style="margin-top:12px;">
+      <li>David shows how Hermes can also call <strong>him</strong> to confirm details or report results.</li>
+      <li>This creates a full loop: Hermes researches → calls the business → reports back to you via phone.</li>
+      <li>The agent essentially becomes your personal assistant that handles phone communication end-to-end.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section class="section" id="section7">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2>Cron Jobs — Proactive Autonomous Calling</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1560s" target="_blank"><span class="play-icon">▶</span> 26:00</a>
+    <p style="margin-top:16px;">David takes the setup to the next level by introducing <strong>cron jobs</strong> — scheduled tasks that let Hermes operate completely autonomously.</p>
+
+    <p><strong>How it works:</strong></p>
+    <ul>
+      <li>Hermes Agent has built-in cron job support (scheduled tasks that run at specified times).</li>
+      <li>You can configure Hermes to, for example:
+        <ul>
+          <li>Every morning at 9 AM, research 10 new leads in your target market.</li>
+          <li>Every afternoon at 2 PM, call the researched leads.</li>
+          <li>Every evening at 6 PM, compile a summary report and call you with results.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Setting Up a Cron Schedule</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1650s" target="_blank"><span class="play-icon">▶</span> 27:30</a>
+    <ul style="margin-top:12px;">
+      <li>David demonstrates creating a cron job within Hermes.</li>
+      <li>The cron configuration includes:
+        <ul>
+          <li>Schedule (time and frequency)</li>
+          <li>Task description (what Hermes should do)</li>
+          <li>Success criteria (how to evaluate if the task was completed)</li>
+        </ul>
+      </li>
+      <li>Once set, Hermes runs these tasks proactively without any human trigger.</li>
+    </ul>
+
+    <h3>The Power of Autonomous Operation</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1710s" target="_blank"><span class="play-icon">▶</span> 28:30</a>
+    <ul style="margin-top:12px;">
+      <li>David emphasizes this is what makes the setup truly game-changing: <strong>the agent doesn't wait for you to tell it what to do.</strong></li>
+      <li>It wakes up, checks its schedule, researches leads, makes calls, evaluates outcomes, and plans follow-ups — all on its own.</li>
+      <li>For business users, this means automated lead generation and outreach running 24/7.</li>
+      <li>For personal users, this means never having to make a boring phone call again.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 8 -->
+  <section class="section" id="section8">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2>Summary, Results & Final Thoughts</h2>
+    </div>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1740s" target="_blank"><span class="play-icon">▶</span> 29:00</a>
+
+    <p style="margin-top:16px;"><strong>What was built:</strong></p>
+    <ul>
+      <li>Hermes Agent installed locally with Claude Opus 4.7 via OpenRouter</li>
+      <li>Vapi MCP connected with a real phone number</li>
+      <li>Voice agent configured for natural phone conversations</li>
+      <li>Autonomous research-and-call pipeline</li>
+      <li>Cron-based scheduling for fully proactive operation</li>
+    </ul>
+
+    <p><strong>Cost breakdown:</strong></p>
+    <div class="cost-grid">
+      <div class="cost-item">
+        <div class="cost-label">OpenRouter API</div>
+        <div class="cost-value">~$5–10</div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-label">Vapi Phone Number</div>
+        <div class="cost-value">~$2–5/mo</div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-label">Vapi Call Minutes</div>
+        <div class="cost-value">¢/min</div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-label">Total</div>
+        <div class="cost-value">Super cheap</div>
+      </div>
+    </div>
+
+    <p><strong>Use cases:</strong></p>
+    <div class="synergy-grid">
+      <div class="synergy-card">
+        <h4 style="color: var(--orange);">💼 Business</h4>
+        <ul>
+          <li>Lead generation</li>
+          <li>Appointment setting</li>
+          <li>Follow-up calls</li>
+          <li>Customer outreach</li>
+        </ul>
+      </div>
+      <div class="synergy-card">
+        <h4 style="color: var(--green);">🏠 Personal</h4>
+        <ul>
+          <li>Dentist appointments</li>
+          <li>Restaurant reservations</li>
+          <li>Service inquiries</li>
+          <li>Any call you don't want to make</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Call to Action</h3>
+    <a class="timestamp" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1800s" target="_blank"><span class="play-icon">▶</span> 30:00</a>
+    <ul style="margin-top:12px;">
+      <li>David reminds viewers to subscribe (approaching 400,000 subscribers).</li>
+      <li>He points to the link below the video for all assets, repos, skills, and resources shown — <strong>completely free</strong>.</li>
+      <li>He encourages viewers to try the setup themselves and share their results.</li>
+    </ul>
+  </section>
+
+  <!-- KEY TOOLS & RESOURCES -->
+  <section class="section" id="tools">
+    <div class="section-header">
+      <div class="section-number" style="background: var(--green);">⚡</div>
+      <h2>Key Tools & Resources</h2>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background: rgba(124,92,252,0.15); color: var(--accent);">H</div>
+      <div class="tool-info">
+        <h4>Hermes Agent</h4>
+        <p>Autonomous AI agent framework with MCP support, cron jobs, memory, and multi-tool orchestration. GitHub repo linked in the video description.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background: rgba(96,165,250,0.15); color: var(--blue);">V</div>
+      <div class="tool-info">
+        <h4>Vapi (vapi.ai)</h4>
+        <p>AI-first telephony platform for programmable voice calls, phone numbers, and voice agents.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background: rgba(251,146,60,0.15); color: var(--orange);">O</div>
+      <div class="tool-info">
+        <h4>OpenRouter (openrouter.ai)</h4>
+        <p>Unified API gateway for multiple LLM providers. Allows easy access to Claude, GPT, and other models with a single API key.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background: rgba(244,114,182,0.15); color: var(--pink);">C</div>
+      <div class="tool-info">
+        <h4>Claude Opus 4.7</h4>
+        <p>The LLM model David uses to power Hermes in this demo.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon" style="background: rgba(52,211,153,0.15); color: var(--green);">M</div>
+      <div class="tool-info">
+        <h4>MCP (Model Context Protocol)</h4>
+        <p>A standard for connecting AI agents to external tools and services. The Vapi MCP server is what bridges Hermes and Vapi's telephony capabilities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMESTAMP INDEX -->
+  <section class="section" id="timestamps">
+    <div class="section-header">
+      <div class="section-number" style="background: var(--orange);">⏱</div>
+      <h2>Timestamp Index</h2>
+    </div>
+
+    <div class="ts-grid">
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=0s" target="_blank">
+        <span class="ts-time">▶ 0:00</span>
+        <span class="ts-label">Introduction & Overview</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=90s" target="_blank">
+        <span class="ts-time">▶ 1:30</span>
+        <span class="ts-label">Installing Hermes Agent Locally</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=150s" target="_blank">
+        <span class="ts-time">▶ 2:30</span>
+        <span class="ts-label">Choosing a Provider (OpenRouter)</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=240s" target="_blank">
+        <span class="ts-time">▶ 4:00</span>
+        <span class="ts-label">Configuring the Model (Claude Opus 4.7)</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=330s" target="_blank">
+        <span class="ts-time">▶ 5:30</span>
+        <span class="ts-label">First Launch & Test Message</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=420s" target="_blank">
+        <span class="ts-time">▶ 7:00</span>
+        <span class="ts-label">Why Phone Calling Is the Missing Piece</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=510s" target="_blank">
+        <span class="ts-time">▶ 8:30</span>
+        <span class="ts-label">Hermes + Vapi Synergy Explained</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=600s" target="_blank">
+        <span class="ts-time">▶ 10:00</span>
+        <span class="ts-label">Setting Up Vapi Account & API Key</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=690s" target="_blank">
+        <span class="ts-time">▶ 11:30</span>
+        <span class="ts-label">Buying a Phone Number</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=780s" target="_blank">
+        <span class="ts-time">▶ 13:00</span>
+        <span class="ts-label">Adding Vapi Credits</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=840s" target="_blank">
+        <span class="ts-time">▶ 14:00</span>
+        <span class="ts-label">Installing Vapi MCP in Hermes</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=930s" target="_blank">
+        <span class="ts-time">▶ 15:30</span>
+        <span class="ts-label">Verifying the MCP Connection</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1020s" target="_blank">
+        <span class="ts-time">▶ 17:00</span>
+        <span class="ts-label">Configuration Tips & Best Practices</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1080s" target="_blank">
+        <span class="ts-time">▶ 18:00</span>
+        <span class="ts-label">Creating a Voice Agent in Vapi</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1200s" target="_blank">
+        <span class="ts-time">▶ 20:00</span>
+        <span class="ts-label">Linking Assistant to Phone Number</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1260s" target="_blank">
+        <span class="ts-time">▶ 21:00</span>
+        <span class="ts-label">Testing the Voice Agent</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1320s" target="_blank">
+        <span class="ts-time">▶ 22:00</span>
+        <span class="ts-label">Live Demo: Research Phase</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1410s" target="_blank">
+        <span class="ts-time">▶ 23:30</span>
+        <span class="ts-label">Live Demo: First Outbound Call</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1500s" target="_blank">
+        <span class="ts-time">▶ 25:00</span>
+        <span class="ts-label">Confirmation Call Back to User</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1560s" target="_blank">
+        <span class="ts-time">▶ 26:00</span>
+        <span class="ts-label">Cron Jobs: Autonomous Calling Setup</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1650s" target="_blank">
+        <span class="ts-time">▶ 27:30</span>
+        <span class="ts-label">Creating a Cron Schedule</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1710s" target="_blank">
+        <span class="ts-time">▶ 28:30</span>
+        <span class="ts-label">The Power of Autonomous Operation</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1740s" target="_blank">
+        <span class="ts-time">▶ 29:00</span>
+        <span class="ts-label">Summary & Results</span>
+      </a>
+      <a class="ts-card" href="https://www.youtube.com/watch?v=zHE434sBw2U&t=1800s" target="_blank">
+        <span class="ts-time">▶ 30:00</span>
+        <span class="ts-label">Call to Action & Resources</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Document generated for: <strong>"I gave my Hermes Agent a phone number (it's crazy)"</strong></p>
+    <p>by David Ondrej · <a href="https://www.youtube.com/watch?v=zHE434sBw2U" target="_blank">Watch on YouTube</a></p>
+  </footer>
+
+</div>
+
+<script>
+function toggleTOC() {
+  document.getElementById('tocSidebar').classList.toggle('active');
+  document.getElementById('tocOverlay').classList.toggle('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: The Perfect Zsh Setup For 2026 — Dreams of Code</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #181a24;
+    --card-border: #262940;
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --cyan: #06b6d4;
+    --pill-bg: #1e3a5f;
+    --pill-text: #60a5fa;
+    --code-bg: #1e1e2e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; color: var(--pill-text); }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1d2e 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--card-border);
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  .hero .channel { color: var(--text-dim); font-size: 1rem; margin-bottom: 1rem; }
+  .hero .meta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-dim); }
+  .hero .meta span { background: var(--card); padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid var(--card-border); }
+
+  /* Thumbnail */
+  .thumb-wrap {
+    max-width: 720px;
+    margin: 1.5rem auto 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    position: relative;
+    cursor: pointer;
+  }
+  .thumb-wrap img { width: 100%; display: block; }
+  .play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px; height: 72px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play-btn::after {
+    content: '';
+    display: block;
+    width: 0; height: 0;
+    border-top: 16px solid transparent;
+    border-bottom: 16px solid transparent;
+    border-left: 28px solid white;
+    margin-left: 4px;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+    display: flex;
+    gap: 2rem;
+  }
+
+  /* Sticky TOC */
+  .toc {
+    position: sticky;
+    top: 1rem;
+    width: 260px;
+    min-width: 220px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2rem;
+  }
+  .toc h3 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .toc ol { list-style: none; counter-reset: toc-counter; }
+  .toc li { counter-increment: toc-counter; margin-bottom: 0.4rem; }
+  .toc li::before { content: counter(toc-counter) "."; color: var(--text-dim); margin-right: 0.4rem; font-size: 0.75rem; }
+  .toc a { color: var(--text-dim); transition: color 0.2s; }
+  .toc a:hover { color: var(--accent); text-decoration: none; }
+
+  .main { flex: 1; min-width: 0; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-top: 2rem;
+  }
+  .card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .card h2 .num {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Timestamp pills */
+  .ts {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--pill-bg);
+    color: var(--pill-text);
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .ts:hover { background: #264a7a; text-decoration: none; }
+  .ts::before { content: '▶'; font-size: 0.6rem; }
+
+  /* Content */
+  .card p, .card li { color: var(--text-dim); }
+  .card ul, .card ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+  .card li { margin-bottom: 0.3rem; }
+  .card strong { color: var(--text); }
+  code {
+    background: var(--code-bg);
+    color: var(--cyan);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.88em;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 0.8rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    color: var(--cyan);
+  }
+  .warn {
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid var(--orange);
+    padding: 0.7rem 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 0.8rem 0;
+    font-size: 0.9rem;
+    color: var(--orange);
+  }
+  .takeaway {
+    background: rgba(34, 197, 94, 0.08);
+    border-left: 3px solid var(--green);
+    padding: 0.7rem 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 0.8rem 0;
+    color: var(--green);
+    font-size: 0.9rem;
+  }
+  .file-tree {
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  /* Timestamp grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .ts-row .desc { color: var(--text-dim); font-size: 0.88rem; }
+
+  /* Key takeaways box */
+  .takeaways-box {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(99,102,241,0.08));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-top: 2rem;
+  }
+  .takeaways-box h2 { color: var(--accent); margin-bottom: 1rem; }
+  .takeaways-box li { color: var(--text-dim); margin-bottom: 0.5rem; }
+
+  .footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--card-border);
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .container { flex-direction: column; }
+    .toc { position: static; width: 100%; max-height: none; }
+    .ts-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>The Perfect Zsh Setup For 2026</h1>
+  <div class="channel">Dreams of Code</div>
+  <div class="meta">
+    <span>⏱ ~33 min</span>
+    <span>🎬 YouTube</span>
+    <span>🐚 Zsh / Terminal</span>
+  </div>
+  <a href="https://www.youtube.com/watch?v=1jE7rCvByHg" target="_blank" rel="noopener">
+    <div class="thumb-wrap">
+      <img src="https://img.youtube.com/vi/1jE7rCvByHg/maxresdefault.jpg" alt="Video Thumbnail">
+      <div class="play-btn"></div>
+    </div>
+  </a>
+</div>
+
+<div class="container">
+
+<!-- STICKY TOC -->
+<nav class="toc">
+  <h3>📑 Contents</h3>
+  <ol>
+    <li><a href="#s1">Introduction & Overview</a></li>
+    <li><a href="#s2">Installing Zsh</a></li>
+    <li><a href="#s3">Zsh Config Files Explained</a></li>
+    <li><a href="#s4">XDG & ZDOTDIR Setup</a></li>
+    <li><a href="#s5">User .zshenv</a></li>
+    <li><a href="#s6">.zshrc — History & Behavior</a></li>
+    <li><a href="#s7">Zoxide Navigation</a></li>
+    <li><a href="#s8">Completion System</a></li>
+    <li><a href="#s9">FZF Setup</a></li>
+    <li><a href="#s10">Modular Config</a></li>
+    <li><a href="#s11">FZF Customization</a></li>
+    <li><a href="#s12">Modern CLI Tools</a></li>
+    <li><a href="#s13">Aliases</a></li>
+    <li><a href="#s14">Man Pages & Preview</a></li>
+    <li><a href="#s15">Plugin Management</a></li>
+    <li><a href="#s16">Key Bindings & Vi Mode</a></li>
+    <li><a href="#s17">Starship Prompt</a></li>
+    <li><a href="#s18">Final Demo & Thoughts</a></li>
+    <li><a href="#ts">Timestamp Index</a></li>
+  </ol>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+<!-- Section 1 -->
+<div class="card" id="s1">
+  <h2><span class="num">1</span> Introduction & Overview</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=0s" target="_blank">00:00</a>
+  <p style="margin-top:0.8rem">The video builds a <strong>minimal but powerful Zsh configuration</strong> — no frameworks, no plugin managers, just a clean setup you control completely. The key tools introduced:</p>
+  <ul>
+    <li><strong>Zoxide</strong> — smart directory jumping (remembers where you've been)</li>
+    <li><strong>FZF</strong> — fuzzy finder for history, files, and directories</li>
+    <li><strong>Bat</strong> — beautiful man pages and file previews</li>
+    <li><strong>Starship</strong> — a stylish, cross-platform prompt</li>
+    <li><strong>exa, fd, ripgrep</strong> — modern replacements for ls, find, grep</li>
+  </ul>
+  <p>Everything is documented in a companion <strong>GitHub repository</strong> with commands for macOS, Arch Linux, and Ubuntu.</p>
+</div>
+
+<!-- Section 2 -->
+<div class="card" id="s2">
+  <h2><span class="num">2</span> Installing Zsh & Setting Default Shell</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=53s" target="_blank">00:53</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=84s" target="_blank">01:24</a>
+  <p style="margin-top:0.8rem">Install Zsh if not already present (macOS ships with it by default):</p>
+  <pre>sudo pacman -S zsh          # Arch
+sudo apt install zsh        # Ubuntu</pre>
+  <p>Set Zsh as your default shell:</p>
+  <pre>chsh -s $(which zsh)</pre>
+  <p>Log out and back in. The default Zsh prompt shows <code>hostname%</code>.</p>
+</div>
+
+<!-- Section 3 -->
+<div class="card" id="s3">
+  <h2><span class="num">3</span> Zsh Configuration Files Explained</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=146s" target="_blank">02:26</a>
+  <ul>
+    <li><strong>.zshenv</strong> — loaded for ALL sessions (interactive + scripts). Best for environment variables.</li>
+    <li><strong>.zprofile</strong> — login shells only. Homebrew recommends setting PATH here on macOS.</li>
+    <li><strong>.zshrc</strong> — interactive shells only. Main config file for day-to-day use.</li>
+    <li><strong>.zlogin</strong> — login initialization tasks (rarely used).</li>
+    <li><strong>.zlogout</strong> — cleanup on logout (rarely used).</li>
+  </ul>
+  <div class="takeaway">💡 Rule of thumb: environment variables → .zshenv; interactive config → .zshrc</div>
+</div>
+
+<!-- Section 4 -->
+<div class="card" id="s4">
+  <h2><span class="num">4</span> Setting Up XDG & ZDOTDIR</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=262s" target="_blank">04:22</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=369s" target="_blank">06:09</a>
+  <p style="margin-top:0.8rem">Edit the system-wide zshenv to redirect Zsh config to <code>~/.config/zsh</code>:</p>
+  <pre>sudo nvim /etc/zsh/zshenv</pre>
+  <p>Add:</p>
+  <pre>export XDG_CONFIG_HOME="$HOME/.config"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"</pre>
+  <p>Create the directory and verify:</p>
+  <pre>mkdir -p ~/.config/zsh
+echo $XDG_CONFIG_HOME   # → /home/&lt;user&gt;/.config
+echo $ZDOTDIR            # → /home/&lt;user&gt;/.config/zsh</pre>
+</div>
+
+<!-- Section 5 -->
+<div class="card" id="s5">
+  <h2><span class="num">5</span> User-Level .zshenv — Environment Variables</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=434s" target="_blank">07:14</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=535s" target="_blank">08:55</a>
+  <p style="margin-top:0.8rem">Create <code>~/.config/zsh/.zshenv</code> with:</p>
+  <ul>
+    <li><strong>XDG directories</strong>: XDG_DATA_HOME, XDG_CACHE_HOME, XDG_STATE_HOME</li>
+    <li><strong>EDITOR</strong> variable (nvim, vim, nano, etc.)</li>
+    <li><strong>GPG_TTY=$(tty)</strong> — for GPG passphrase prompts</li>
+    <li><strong>PATH</strong>: append <code>~/.local/bin</code></li>
+  </ul>
+  <p>Create supporting directories:</p>
+  <pre>mkdir -p ~/.local/state/zsh
+mkdir -p ~/.cache/zsh</pre>
+</div>
+
+<!-- Section 6 -->
+<div class="card" id="s6">
+  <h2><span class="num">6</span> .zshrc — History & Shell Behavior</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=600s" target="_blank">10:00</a>
+  <p style="margin-top:0.8rem">Key history settings:</p>
+  <pre>HISTFILE="$XDG_STATE_HOME/zsh/history"
+HISTSIZE=100000
+SAVEHIST=100000</pre>
+  <p>Options enabled:</p>
+  <ul>
+    <li><strong>appendhistory</strong> — append, don't overwrite</li>
+    <li><strong>sharehistory</strong> — share across sessions</li>
+    <li><strong>hist_ignore_all_dups</strong> — no duplicate entries</li>
+    <li><strong>hist_ignore_space</strong> — prefix with space to hide from history</li>
+    <li><strong>hist_expire_dups_first</strong> — evict old duplicates first</li>
+    <li><strong>autocd</strong> — type directory name to cd into it</li>
+    <li><strong>nobeep</strong> — silence terminal bell</li>
+    <li><strong>numericglobsort</strong> — correct numeric file sorting</li>
+  </ul>
+</div>
+
+<!-- Section 7 -->
+<div class="card" id="s7">
+  <h2><span class="num">7</span> Zoxide — Smarter Directory Navigation</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=693s" target="_blank">11:33</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1065s" target="_blank">17:45</a>
+  <p style="margin-top:0.8rem">Install and initialize:</p>
+  <pre>sudo pacman -S zoxide
+# Add to .zshrc:
+eval "$(zoxide init zsh)"</pre>
+  <ul>
+    <li>Remembers every directory you visit</li>
+    <li><code>z &lt;name&gt;</code> + Tab → jumps to matching directory</li>
+    <li><code>zi</code> → interactive directory picker</li>
+    <li><strong>Frecency algorithm</strong>: recent + frequent = higher priority</li>
+  </ul>
+</div>
+
+<!-- Section 8 -->
+<div class="card" id="s8">
+  <h2><span class="num">8</span> Zsh Completion System</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=730s" target="_blank">12:10</a>
+  <ul>
+    <li><code>autoload -Uz compinit && compinit</code></li>
+    <li>Comp dump stored in <code>$XDG_CACHE_HOME/zsh/zcompdump</code></li>
+    <li>Interactive completion menu enabled</li>
+    <li>Case-insensitive matching configured</li>
+  </ul>
+</div>
+
+<!-- Section 9 -->
+<div class="card" id="s9">
+  <h2><span class="num">9</span> FZF — Fuzzy Finder Setup</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=799s" target="_blank">13:19</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=830s" target="_blank">13:50</a>
+  <p style="margin-top:0.8rem">Install FZF: <code>sudo pacman -S fzf</code></p>
+  <p>Source paths vary by system:</p>
+  <ul>
+    <li><strong>macOS (Homebrew)</strong>: <code>/opt/homebrew/opt/fzf/...</code></li>
+    <li><strong>macOS (Intel)</strong>: <code>/usr/local/opt/fzf/...</code></li>
+    <li><strong>Arch Linux</strong>: <code>/usr/share/fzf/</code></li>
+    <li><strong>Ubuntu</strong>: <code>/usr/share/doc/fzf/...</code></li>
+  </ul>
+  <p>The .zshrc conditionally sources the correct path — all conditions can coexist.</p>
+</div>
+
+<!-- Section 10 -->
+<div class="card" id="s10">
+  <h2><span class="num">10</span> Modular Configuration</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=886s" target="_blank">14:46</a>
+  <p style="margin-top:0.8rem">Split config into purpose-specific files, all sourced from .zshrc:</p>
+  <div class="file-tree" style="margin:0.8rem 0; padding:1rem; background:var(--code-bg); border-radius:8px;">
+    ~/.config/zsh/<br>
+    ├── .zshenv &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# environment variables<br>
+    ├── .zshrc &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# main config (sources the rest)<br>
+    ├── fzf.zsh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# FZF customization<br>
+    ├── aliases.zsh &nbsp;&nbsp;&nbsp;# command aliases<br>
+    ├── bindings.zsh &nbsp;&nbsp;# key bindings<br>
+    ├── plugins.zsh &nbsp;&nbsp;&nbsp;# plugin loading<br>
+    └── prompt.zsh &nbsp;&nbsp;&nbsp;&nbsp;# Starship prompt init
+  </div>
+</div>
+
+<!-- Section 11 -->
+<div class="card" id="s11">
+  <h2><span class="num">11</span> FZF Customization</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=916s" target="_blank">15:16</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=998s" target="_blank">16:38</a>
+  <p style="margin-top:0.8rem">Three key shortcuts configured in <code>fzf.zsh</code>:</p>
+  <ul>
+    <li><strong>Ctrl-T</strong> — search files/folders (includes hidden files, strips CWD prefix)</li>
+    <li><strong>Ctrl-R</strong> — search command history with preview pane</li>
+    <li><strong>Alt-C</strong> — search and jump to directories</li>
+  </ul>
+  <p>Later enhanced with <strong>bat preview</strong> <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1328s" target="_blank">22:08</a> for syntax-highlighted file previews.</p>
+</div>
+
+<!-- Section 12 -->
+<div class="card" id="s12">
+  <h2><span class="num">12</span> Modern CLI Tool Replacements</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1100s" target="_blank">18:20</a>
+  <pre>sudo pacman -S exa fd ripgrep bat</pre>
+  <ul>
+    <li><strong>exa</strong> → replacement for <code>ls</code> (icons, git info, tree view)</li>
+    <li><strong>fd</strong> → replacement for <code>find</code> (nicer syntax, very fast)</li>
+    <li><strong>ripgrep</strong> (rg) → replacement for <code>grep</code> (Rust-based, very fast)</li>
+    <li><strong>bat</strong> → replacement for <code>cat</code> (syntax highlighting, line numbers)</li>
+  </ul>
+  <div class="warn">⚠ On Ubuntu, bat is "batcat" and fd is "fdfind" due to package name conflicts.</div>
+</div>
+
+<!-- Section 13 -->
+<div class="card" id="s13">
+  <h2><span class="num">13</span> Aliases</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1169s" target="_blank">19:29</a>
+  <pre># exa aliases
+alias ls="exa --icons"
+alias ll="exa -l --icons --git -h"
+alias la="exa -la --icons --git -h"
+alias tree="exa --tree --icons"
+
+# Tool replacements
+alias cat="bat"
+alias find="fd"
+alias grep="rg"
+
+# Misc
+alias diff="diff --color"
+alias -="cd -"
+alias vim="nvim"</pre>
+  <div class="warn">⚠ Aliasing cat → bat can break scripts that rely on plain cat output (bat adds line numbers and formatting).</div>
+</div>
+
+<!-- Section 14 -->
+<div class="card" id="s14">
+  <h2><span class="num">14</span> Man Pages with Bat & FZF Preview</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1299s" target="_blank">21:39</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1328s" target="_blank">22:08</a>
+  <p style="margin-top:0.8rem">In .zshenv, set the pager for colorized man pages:</p>
+  <pre>export MANPAGER="sh -c 'col -bx | bat -l man -p'"</pre>
+  <p>FZF preview integration uses bat for syntax-highlighted file previews when browsing with Ctrl-T and Ctrl-R.</p>
+</div>
+
+<!-- Section 15 -->
+<div class="card" id="s15">
+  <h2><span class="num">15</span> Plugin Management — No Plugin Manager</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1452s" target="_blank">24:12</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1513s" target="_blank">25:13</a>
+  <p style="margin-top:0.8rem">A simple custom function in <code>plugins.zsh</code> handles everything:</p>
+  <ul>
+    <li>Checks if plugin is installed; if not, clones it</li>
+    <li>Provides <code>zplugin-update</code> command for updates</li>
+    <li>Plugin directory: <code>~/.config/zsh/plugins/</code></li>
+  </ul>
+  <p><strong>Four plugins installed:</strong></p>
+  <ol>
+    <li><strong>zsh-syntax-highlighting</strong> — colors valid/invalid commands</li>
+    <li><strong>zsh-autosuggestions</strong> — ghost text from history</li>
+    <li><strong>zsh-history-substring-search</strong> — up/down filters history by input</li>
+    <li><strong>zsh-vi-mode</strong> — Vim keybindings in the shell</li>
+  </ol>
+  <p>Plugins auto-install on first shell launch. Update manually with <code>zplugin-update</code>.</p>
+</div>
+
+<!-- Section 16 -->
+<div class="card" id="s16">
+  <h2><span class="num">16</span> Key Bindings & Vi Mode</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1571s" target="_blank">26:11</a>
+  <p style="margin-top:0.8rem">Configured in <code>bindings.zsh</code>:</p>
+  <ul>
+    <li><strong>Vi mode cursor</strong>: block in normal mode, beam in insert mode</li>
+    <li>Command-mode highlight disabled (less visual clutter)</li>
+    <li><strong>Ctrl-Right / Ctrl-Left</strong> — move word by word</li>
+    <li><strong>Ctrl-F</strong> — file picker without hidden files</li>
+    <li><strong>Ctrl-\</strong> — toggle autosuggestions off (useful for screencasts)</li>
+    <li><strong>Up/Down</strong> — substring history search</li>
+  </ul>
+</div>
+
+<!-- Section 17 -->
+<div class="card" id="s17">
+  <h2><span class="num">17</span> Starship Prompt</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1661s" target="_blank">27:41</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1696s" target="_blank">28:16</a>
+  <p style="margin-top:0.8rem">Install and configure:</p>
+  <pre>sudo pacman -S starship
+# In prompt.zsh:
+eval "$(starship init zsh)"</pre>
+  <ul>
+    <li>Cross-platform (Linux, macOS, Windows)</li>
+    <li>Presets available (e.g., "pastel-powerline")</li>
+    <li>Replaces powerlevel10k (now in maintenance mode)</li>
+  </ul>
+  <p>Custom <code>starship.toml</code> stored in <code>$ZDOTDIR</code> so it travels with dotfiles:</p>
+  <pre>export STARSHIP_CONFIG="$ZDOTDIR/starship.toml"</pre>
+  <p>The custom theme keeps everything on one line with the Linux distribution icon.</p>
+</div>
+
+<!-- Section 18 -->
+<div class="card" id="s18">
+  <h2><span class="num">18</span> Final Demo & Closing Thoughts</h2>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1856s" target="_blank">30:56</a>
+  <a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1919s" target="_blank">31:59</a>
+  <p style="margin-top:0.8rem">Final configuration structure:</p>
+  <div class="file-tree" style="margin:0.8rem 0; padding:1rem; background:var(--code-bg); border-radius:8px;">
+    ~/.config/zsh/<br>
+    ├── .zshenv<br>
+    ├── .zshrc<br>
+    ├── fzf.zsh<br>
+    ├── aliases.zsh<br>
+    ├── bindings.zsh<br>
+    ├── plugins.zsh<br>
+    ├── prompt.zsh<br>
+    ├── starship.toml<br>
+    └── plugins/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── zsh-syntax-highlighting/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── zsh-autosuggestions/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── zsh-history-substring-search/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;└── zsh-vi-mode/
+  </div>
+  <p><strong>Demos shown:</strong> substring search, vi mode, syntax highlighting, autosuggestions, git integration in prompt.</p>
+  <p><strong>On Atuin:</strong> The creator doesn't use Atuin (a history sync tool) because FZF + built-in history with the plugins provides sufficient functionality. Atuin's sync feature may be useful for multi-device setups.</p>
+</div>
+
+<!-- KEY TAKEAWAYS -->
+<div class="takeaways-box">
+  <h2>✦ Key Takeaways</h2>
+  <ul>
+    <li>No frameworks or plugin managers needed — keep full control</li>
+    <li>Use XDG Base Directory spec to organize config files cleanly</li>
+    <li>Split config into modular files for maintainability</li>
+    <li>Modern Rust-based CLI tools (exa, fd, rg, bat) dramatically improve the terminal experience</li>
+    <li>Zoxide + FZF = fast, intelligent navigation and search</li>
+    <li>A simple custom plugin loader replaces heavy plugin managers</li>
+    <li>Starship provides a beautiful, fast, cross-platform prompt</li>
+    <li>The entire setup is portable — clone the repo, done</li>
+  </ul>
+</div>
+
+<!-- TIMESTAMP GRID -->
+<div class="card" id="ts">
+  <h2><span class="num">⏱</span> Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=0s" target="_blank">00:00</a><span class="desc">Introduction & motivation</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=29s" target="_blank">00:29</a><span class="desc">Tools overview (zoxide, FZF, bat, Starship)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=53s" target="_blank">00:53</a><span class="desc">Installing Zsh</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=84s" target="_blank">01:24</a><span class="desc">Setting Zsh as default shell (chsh)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=146s" target="_blank">02:26</a><span class="desc">Zsh configuration files explained</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=262s" target="_blank">04:22</a><span class="desc">Setting XDG_CONFIG_HOME & ZDOTDIR</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=369s" target="_blank">06:09</a><span class="desc">Verifying environment variables</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=405s" target="_blank">06:45</a><span class="desc">Creating config directory structure</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=434s" target="_blank">07:14</a><span class="desc">User .zshenv — environment variables</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=535s" target="_blank">08:55</a><span class="desc">Creating cache & state directories</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=600s" target="_blank">10:00</a><span class="desc">.zshrc — history & shell options</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=693s" target="_blank">11:33</a><span class="desc">Installing & configuring zoxide</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=730s" target="_blank">12:10</a><span class="desc">Zsh completion system</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=799s" target="_blank">13:19</a><span class="desc">Installing FZF</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=830s" target="_blank">13:50</a><span class="desc">FZF source paths per OS</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=886s" target="_blank">14:46</a><span class="desc">Modular config — sourcing separate files</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=916s" target="_blank">15:16</a><span class="desc">FZF Ctrl-T customization</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=998s" target="_blank">16:38</a><span class="desc">FZF demo (Ctrl-T, Ctrl-R, Alt-C)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1065s" target="_blank">17:45</a><span class="desc">Zoxide demo</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1100s" target="_blank">18:20</a><span class="desc">Installing exa, fd, ripgrep, bat</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1169s" target="_blank">19:29</a><span class="desc">Setting up aliases</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1299s" target="_blank">21:39</a><span class="desc">Man pages with bat (MANPAGER)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1328s" target="_blank">22:08</a><span class="desc">FZF preview with bat</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1360s" target="_blank">22:40</a><span class="desc">Aliases demo (ll, la, tree, cat)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1452s" target="_blank">24:12</a><span class="desc">Plugin management (no plugin manager)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1513s" target="_blank">25:13</a><span class="desc">Four plugins: syntax, suggest, history, vi</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1543s" target="_blank">25:43</a><span class="desc">Plugin auto-install & update demo</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1571s" target="_blank">26:11</a><span class="desc">Key bindings & vi mode config</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1661s" target="_blank">27:41</a><span class="desc">Starship prompt installation</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1696s" target="_blank">28:16</a><span class="desc">Starship presets & custom theme</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1787s" target="_blank">29:47</a><span class="desc">Storing starship.toml with dotfiles</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1856s" target="_blank">30:56</a><span class="desc">Final demo & config overview</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=1jE7rCvByHg&t=1919s" target="_blank">31:59</a><span class="desc">Closing thoughts & Atuin discussion</span></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /container -->
+
+<div class="footer">
+  Generated by Hermes Agent — Deep Dive Document
+</div>
+
+</body>
+</html>

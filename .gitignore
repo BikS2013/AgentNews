@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+.env
+
+# NOTE: data/catalog.json is intentionally NOT ignored.
+# It is the catalog persistence file and must be committed/preserved.

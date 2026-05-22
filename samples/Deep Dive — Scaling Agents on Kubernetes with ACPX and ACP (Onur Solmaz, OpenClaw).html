@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: Scaling Agents on Kubernetes with ACPX and ACP</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #181a20;
+    --card-border: #23262f;
+    --accent: #3b82f6;
+    --accent-dim: #1e3a5f;
+    --text: #e4e4e7;
+    --text-dim: #9ca3af;
+    --heading: #f1f5f9;
+    --pill-bg: #1e3a5f;
+    --pill-text: #60a5fa;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --purple: #a78bfa;
+    --red: #f87171;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #1a1c25 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--card-border);
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  .hero h1 {
+    color: var(--heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+  }
+  .hero .meta {
+    color: var(--text-dim);
+    font-size: .95rem;
+  }
+  .hero .meta span { margin: 0 .5rem; }
+
+  /* Thumbnail */
+  .thumb-wrap {
+    display: block;
+    max-width: 720px;
+    margin: 1.5rem auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--card-border);
+    position: relative;
+  }
+  .thumb-wrap img { width: 100%; display: block; }
+  .play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 68px; height: 48px;
+    background: rgba(0,0,0,.75);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play-btn::after {
+    content: '';
+    border-style: solid;
+    border-width: 10px 0 10px 20px;
+    border-color: transparent transparent transparent #fff;
+  }
+
+  /* Layout */
+  .container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+
+  /* Sticky TOC */
+  .toc {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+    width: 260px;
+    min-width: 220px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    font-size: .85rem;
+  }
+  .toc h3 {
+    color: var(--heading);
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: .8rem;
+  }
+  .toc ol { list-style: none; counter-reset: toc; }
+  .toc li { counter-increment: toc; margin-bottom: .45rem; }
+  .toc li a { color: var(--text-dim); transition: color .2s; }
+  .toc li a:hover { color: var(--accent); text-decoration: none; }
+  .toc li a::before {
+    content: counter(toc) ". ";
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Main content */
+  .main { flex: 1; min-width: 0; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 {
+    color: var(--heading);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .card h2 .num {
+    background: var(--accent);
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Timestamp pills */
+  .ts {
+    display: inline-block;
+    background: var(--pill-bg);
+    color: var(--pill-text);
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-right: .3rem;
+    vertical-align: middle;
+    text-decoration: none;
+  }
+  .ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+  /* Lists */
+  .card ul, .card ol { margin: .6rem 0 .6rem 1.4rem; }
+  .card li { margin-bottom: .35rem; }
+
+  /* Highlights */
+  .highlight {
+    background: rgba(59,130,246,.1);
+    border-left: 3px solid var(--accent);
+    padding: .8rem 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+
+  /* Key takeaways */
+  .takeaway {
+    display: flex;
+    gap: .7rem;
+    padding: .7rem 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .takeaway:last-child { border-bottom: none; }
+  .takeaway .star {
+    color: var(--yellow);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Timestamp grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: .6rem;
+  }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .5rem .7rem;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    font-size: .85rem;
+  }
+  .ts-row .label { color: var(--text-dim); }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    .container { flex-direction: column; }
+    .toc { width: 100%; position: static; }
+    .ts-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <h1>🚀 Scaling Agents on Kubernetes with ACPX and ACP</h1>
+  <div class="meta">
+    <span>🎤 Onur Solmaz — OpenClaw / TextCortex</span>
+    <span>•</span>
+    <span>📺 AI Engineer</span>
+    <span>•</span>
+    <span>⏱ ~19 min</span>
+  </div>
+  <a class="thumb-wrap" href="https://www.youtube.com/watch?v=VaS2h-dY1-4" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/VaS2h-dY1-4/maxresdefault.jpg" alt="Video thumbnail">
+    <div class="play-btn"></div>
+  </a>
+</header>
+
+<div class="container">
+  <!-- SIDEBAR TOC -->
+  <nav class="toc">
+    <h3>📑 Contents</h3>
+    <ol>
+      <li><a href="#s1">Introduction & Background</a></li>
+      <li><a href="#s2">OpenClaw Journey</a></li>
+      <li><a href="#s3">What is ACP?</a></li>
+      <li><a href="#s4">ACPX — Swiss Army Knife</a></li>
+      <li><a href="#s5">Open-Source Firehose</a></li>
+      <li><a href="#s6">On-Demand Agents on K8s</a></li>
+      <li><a href="#s7">Spritz Orchestrator</a></li>
+      <li><a href="#s8">Demo: Slack Agents</a></li>
+      <li><a href="#s9">Key Takeaways</a></li>
+      <li><a href="#s10">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Introduction & Background</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=15s" target="_blank">▶ 00:15</a>
+      Onur Solmaz is a founding engineer who has been building AI harnesses since <strong>before ChatGPT launched</strong>. He started with a JupyterLab extension on the original OpenAI Codex model (DaVinci Code 2). That initial coding harness evolved over time—like a "Ship of Theseus"—being ripped apart and rebuilt repeatedly.</p>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=54s" target="_blank">▶ 00:54</a>
+      He's been active in the OpenClaw community since ClaudeBot first appeared in Discord, followed maintainer Peter early on, and became a maintainer himself. His current focus: <strong>agent interoperability and orchestration</strong>, with a goal of accelerating enterprise adoption of OpenClaw.</p>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> OpenClaw Journey — From Discord Bot to Multi-Agent IDE</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=156s" target="_blank">▶ 02:36</a>
+      Onur coined <strong>"Telegram Driven Development" (TDD)</strong> — developing software by commanding agents through chat platforms. Early on he played a "telephone game": telling Opus to tell Codex to do something. The paraphrasing was lossy ("God knows what it's saying"), but it worked.</p>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=235s" target="_blank">▶ 03:55</a>
+      Today he runs a <strong>full IDE experience on Discord</strong>:</p>
+      <ul>
+        <li>1–5 parallel agent channels active at any time (Codex 1–5)</li>
+        <li>Each Discord channel bound to a Codex session via ACP</li>
+        <li>Great for "coding on the go" and executing side projects</li>
+        <li>Built ACPX itself through this Discord-based workflow</li>
+      </ul>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=302s" target="_blank">▶ 05:02</a>
+      He also added MS Teams integration for enterprise use cases, and demonstrated using the setup to convert ACP docs to PDF while traveling—coordinating across channels.</p>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> What is ACP (Agent Client Protocol)?</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=338s" target="_blank">▶ 05:38</a>
+      ACP is <strong>NOT the same as MCP</strong>:</p>
+      <ul>
+        <li><strong>MCP</strong> (Model Context Protocol) = giving tools to the model</li>
+        <li><strong>ACP</strong> (Agent Client Protocol) = standardizing human-to-agent interaction (agents can also use it for agent-to-agent)</li>
+      </ul>
+      <div class="highlight">The motivation comes from the Zed editor team: VS Code, Cloud Code, and others all build separate plugins for the same agent frameworks — massive duplicated work. ACP standardizes this so you build once and ship everywhere.</div>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=367s" target="_blank">▶ 06:07</a>
+      Competing standards landscape:</p>
+      <ul>
+        <li><strong>A2A</strong> (Agent-to-Agent Protocol) — agents talking to agents</li>
+        <li><strong>ACP</strong> (Agent Client Protocol) — humans talking to agents</li>
+        <li>OpenClaw plans to support all protocols in the long run</li>
+      </ul>
+      <p>Onur chose ACP because it already had adapters for <strong>Codex and Cloud Code</strong> — Google's A2A didn't have those at the time.</p>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> ACPX — Swiss Army Knife for ACP</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=405s" target="_blank">▶ 06:45</a>
+      ACPX started as a <strong>CLI tool for ACP</strong> — "let any agent call any other agent over the command line." It is evolving into a Swiss Army knife:</p>
+      <ul>
+        <li>CLI interface for agent-to-agent communication</li>
+        <li><strong>Workflow engine</strong> (Airflow-like) that drives Codex sessions</li>
+        <li>Standard Operating Procedures (SOPs) for agents</li>
+        <li>Structured JSON output for workflow state tracking</li>
+      </ul>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Managing the Open-Source Firehose with Agent Workflows</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=439s" target="_blank">▶ 07:19</a>
+      The scale problem at OpenClaw:</p>
+      <ul>
+        <li>60+ open PRs total at any time</li>
+        <li><strong>300–500 new PRs per day</strong> on average</li>
+        <li>Tens of thousands of stakeholders wanting features</li>
+        <li>Biggest challenge: absorbing community needs without creating "AI slop"</li>
+      </ul>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=485s" target="_blank">▶ 08:05</a>
+      Peter's PR review workflow (which Onur automated):</p>
+      <ol>
+        <li><strong>"What is this?"</strong> — Understand the PR</li>
+        <li><strong>"Is this the best possible fix?"</strong> — Usually no</li>
+        <li>Back-and-forth with the contributor's agent</li>
+        <li>Categorize and bin the feedback — even unmergeable PRs carry signal</li>
+      </ol>
+      <div class="highlight">"People just run into an issue, go to GitHub, say 'Please fix,' and submit some slop. You can't merge it, but you can't discard the signal — it's crucial user feedback about broken code paths."</div>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=583s" target="_blank">▶ 09:43</a>
+      The abstract workflow built into ACPX:</p>
+      <ol>
+        <li>PR arrives → Find intent</li>
+        <li>Judge implementation quality</li>
+        <li>Check for conflicts</li>
+        <li>Address review issues</li>
+        <li>Make CI pass</li>
+        <li>Review-refactor loops (superficial → agent; fundamental → human)</li>
+        <li>Conflict resolution (automated)</li>
+      </ol>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=690s" target="_blank">▶ 11:30</a>
+      Live demo showed ACPX processing a PR: reproducing bugs, judging refactors, running review loops, and outputting structured JSON.</p>
+      <div class="highlight">"Apply agents generously like an ointment on any problem that can be solved with agents. Take yourself out of the loop."</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> On-Demand Disposable Agents on Kubernetes</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=776s" target="_blank">▶ 12:56</a>
+      Enterprise agents will consume <strong>far more inference</strong> than personal ones — the gap between work tools and personal tools will widen in the agent era.</p>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=808s" target="_blank">▶ 13:28</a>
+      <strong>The multi-agent provisioning problem:</strong></p>
+      <ul>
+        <li>Chat platforms (Slack, Teams, Discord) don't support multi-agent provisioning natively</li>
+        <li>Each new agent needs a new app, name, profile picture, manifest — all manual</li>
+        <li>Platforms need a standard for cosmetically spawning different agents from one app</li>
+      </ul>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=876s" target="_blank">▶ 14:36</a>
+      The vision: <strong>one agent per task</strong>, working in parallel, with synchronized state. Key infrastructure:</p>
+      <ul>
+        <li><strong>Kubernetes</strong> — orchestration layer</li>
+        <li><strong>Agent harness</strong> — OpenClaw, Codex, Cloud Code</li>
+        <li><strong>ACP</strong> — interoperability protocol</li>
+        <li><strong>State sync</strong> — rsync-like / Dropbox-like algorithms</li>
+      </ul>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Spritz — Open-Source Agent Orchestrator</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=908s" target="_blank">▶ 15:08</a>
+      <strong>Spritz</strong> (<a href="https://github.com/textcortex/spritz" target="_blank">textcortex/spritz</a>) is an open-source Kubernetes orchestrator built at TextCortex:</p>
+      <ul>
+        <li>Kubernetes operator handling complicated agent lifecycle wiring</li>
+        <li>Creates concierge agents on Slack</li>
+        <li>Scales when bottlenecked (100+ employees hitting one agent)</li>
+        <li>Dispatches new agent instances with web UI links</li>
+        <li>React-based frontend hosted in-cluster</li>
+        <li>Helm chart deployment</li>
+        <li><strong>Not locked into any agent</strong> — fully abstract via ACP</li>
+      </ul>
+      <div class="highlight">"Each agent runs in a full Kubernetes pod. Wasteful, but the better abstraction — when you give a full computer to an agent, it's a lot more powerful."</div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Demo: Error Reporting & Slack-Dispatched Agents</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=973s" target="_blank">▶ 16:13</a>
+      Live demo of the Spritz workflow:</p>
+      <ol>
+        <li>User on Slack asks about new bugs after a production release</li>
+        <li>Requests an agent be dispatched to debug the issue</li>
+        <li>Conversation moves to web UI (Slack can't host multiple agent identities)</li>
+        <li>Agent starts working in a full Kubernetes pod</li>
+        <li>Comparable to Codex Web or Devin — but fully open-source</li>
+      </ol>
+      <br>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=1082s" target="_blank">▶ 18:02</a>
+      Onur offered to help open-source projects set up this infrastructure, especially projects drowning in hundreds of issues per day.</p>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Key Takeaways</h2>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span><strong>ACP ≠ MCP:</strong> MCP gives tools to models; ACP standardizes human-to-agent (and agent-to-agent) interaction.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span><strong>ACPX</strong> is a CLI + workflow engine for ACP that enables agents to call other agents, run review-refactor loops, and automate PR triage at massive scale.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span>Open-source projects face a <strong>"firehose problem"</strong> — hundreds of AI-generated PRs daily that can't be merged but contain valuable signal.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span>Chat platforms <strong>lack multi-agent provisioning standards</strong> — a key blocker for on-demand agent scaling.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span><strong>Full Kubernetes pods per agent</strong> are "wasteful but powerful" — giving agents a full computer is worth the overhead.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span><strong>Spritz</strong> (textcortex/spritz) is an open-source K8s operator for deploying disposable agents with Slack integration and web UI.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span>Agent interoperability through ACP means <strong>you're never locked into one agent framework</strong>.</span>
+      </div>
+      <div class="takeaway">
+        <span class="star">★</span>
+        <span><strong>"Apply agents generously like ointment"</strong> — automate the automator; take yourself out of the loop.</span>
+      </div>
+    </div>
+
+    <!-- Section 10: Timestamp Grid -->
+    <div class="card" id="s10">
+      <h2><span class="num">10</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=15s" target="_blank">00:15</a><span class="label">Introduction & speaker background</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=54s" target="_blank">00:54</a><span class="label">Origin story — JupyterLab + DaVinci Codex</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=90s" target="_blank">01:30</a><span class="label">Discovering OpenClaw & ClaudeBot</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=124s" target="_blank">02:04</a><span class="label">Adding MS Teams integration</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=156s" target="_blank">02:36</a><span class="label">Telegram Driven Development (TDD)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=203s" target="_blank">03:23</a><span class="label">Playing telephone with Opus → Codex</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=235s" target="_blank">03:55</a><span class="label">Full IDE on Discord — parallel agents</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=302s" target="_blank">05:02</a><span class="label">Cross-channel agent coordination</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=338s" target="_blank">05:38</a><span class="label">What is ACP? — vs MCP explained</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=367s" target="_blank">06:07</a><span class="label">Competing standards: A2A vs ACP</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=405s" target="_blank">06:45</a><span class="label">ACPX — CLI for ACP</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=439s" target="_blank">07:19</a><span class="label">The OpenClaw PR firehose (300-500/day)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=485s" target="_blank">08:05</a><span class="label">Peter's PR review workflow</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=550s" target="_blank">09:10</a><span class="label">AI-generated PRs as signal</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=583s" target="_blank">09:43</a><span class="label">Abstract PR workflow in ACPX</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=618s" target="_blank">10:18</a><span class="label">Review-refactor loops</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=655s" target="_blank">10:55</a><span class="label">SOPs for agents</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=690s" target="_blank">11:30</a><span class="label">Live demo — ACPX processing a PR</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=732s" target="_blank">12:12</a><span class="label">"Apply agents generously" philosophy</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=776s" target="_blank">12:56</a><span class="label">Enterprise vs personal agents</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=808s" target="_blank">13:28</a><span class="label">Multi-agent provisioning problem</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=876s" target="_blank">14:36</a><span class="label">Vision: one agent per task on K8s</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=908s" target="_blank">15:08</a><span class="label">Spritz — open-source orchestrator</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=973s" target="_blank">16:13</a><span class="label">Demo: Slack-dispatched agents</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=1007s" target="_blank">16:47</a><span class="label">Full K8s pod per agent — tradeoffs</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=1082s" target="_blank">18:02</a><span class="label">Offer to help OSS projects</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=VaS2h-dY1-4&t=1121s" target="_blank">18:41</a><span class="label">Closing & social links</span></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /container -->
+
+<footer style="text-align:center; padding:2rem; color:var(--text-dim); font-size:.8rem; border-top:1px solid var(--card-border);">
+  Generated from AI Engineer conference talk transcript &bull;
+  <a href="https://www.youtube.com/watch?v=VaS2h-dY1-4" target="_blank">Watch on YouTube</a>
+</footer>
+
+</body>
+</html>

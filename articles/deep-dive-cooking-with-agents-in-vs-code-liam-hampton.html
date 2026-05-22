@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: Cooking with Agents in VS Code — Liam Hampton</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #181b23;
+    --card-border: #2a2d38;
+    --text: #e0e0e6;
+    --text-muted: #9a9bab;
+    --accent: #4a9eff;
+    --accent-glow: rgba(74,158,255,0.15);
+    --green: #34d399;
+    --orange: #fb923c;
+    --purple: #a78bfa;
+    --red: #f87171;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0d1525 0%, #141c2e 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--card-border);
+    padding: 2.5rem 1rem 2rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  .thumb-link { display: inline-block; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.5); transition: transform 0.2s; }
+  .thumb-link:hover { transform: scale(1.02); }
+  .thumb-link img { display: block; width: min(640px, 90vw); height: auto; }
+  .meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+  .meta-pill {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* Layout */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 1rem; }
+
+  /* Sticky TOC */
+  .toc-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--card-border);
+    padding: 0.8rem 1rem;
+  }
+  .toc-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+  .toc-link {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .toc-link:hover { background: var(--accent-glow); color: var(--accent); border-color: var(--accent); text-decoration: none; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.5rem 0;
+  }
+  .card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h2 .num {
+    background: var(--accent);
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    color: var(--purple);
+    margin: 1.2rem 0 0.5rem;
+  }
+  .card ul { padding-left: 1.3rem; }
+  .card li { margin-bottom: 0.3rem; }
+
+  /* Timestamp badge */
+  .ts {
+    display: inline-block;
+    background: rgba(74,158,255,0.12);
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 10px;
+    border: 1px solid rgba(74,158,255,0.25);
+    font-family: 'SF Mono', 'Consolas', monospace;
+    vertical-align: middle;
+    transition: background 0.2s;
+  }
+  .ts:hover { background: rgba(74,158,255,0.25); text-decoration: none; }
+
+  /* Agent comparison */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .agent-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+  .agent-card.local { border-left: 3px solid var(--green); }
+  .agent-card.background { border-left: 3px solid var(--orange); }
+  .agent-card.cloud { border-left: 3px solid var(--purple); }
+  .agent-card h4 { margin-bottom: 0.5rem; font-size: 1rem; }
+  .agent-card .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+  .agent-card ul { padding-left: 1.1rem; font-size: 0.92rem; }
+
+  /* Takeaways */
+  .takeaway {
+    background: rgba(74,158,255,0.06);
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1.2rem;
+    margin: 0.6rem 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway strong { color: var(--accent); }
+
+  /* Timestamp grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .ts-row:hover { background: rgba(255,255,255,0.03); }
+  .ts-row .desc { font-size: 0.88rem; color: var(--text-muted); }
+
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--card-border);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.4rem; }
+    .card { padding: 1.2rem; }
+    .ts-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>🍳 Cooking with Agents in VS Code</h1>
+  <div class="subtitle">Liam Hampton — Microsoft · AI Engineer Conference</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=dyHpnnlkTc8" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/dyHpnnlkTc8/maxresdefault.jpg" alt="Video thumbnail" loading="lazy">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~17 min</span>
+    <span class="meta-pill">🎤 Liam Hampton</span>
+    <span class="meta-pill">🏢 Microsoft</span>
+    <span class="meta-pill">🏷 GitHub Copilot · VS Code · Agents</span>
+  </div>
+</div>
+
+<!-- STICKY TOC -->
+<nav class="toc-wrapper">
+  <div class="toc-inner">
+    <a class="toc-link" href="#s1">1. Agent Landscape</a>
+    <a class="toc-link" href="#s2">2. Agent Types</a>
+    <a class="toc-link" href="#s3">3. When to Use</a>
+    <a class="toc-link" href="#s4">4. Single Entry Point</a>
+    <a class="toc-link" href="#s5">5. Demo</a>
+    <a class="toc-link" href="#s6">6. Cloud Internals</a>
+    <a class="toc-link" href="#s7">7. Customization</a>
+    <a class="toc-link" href="#s8">8. Chat Modal</a>
+    <a class="toc-link" href="#s9">9. Resources</a>
+    <a class="toc-link" href="#s10">10. Takeaways</a>
+    <a class="toc-link" href="#timestamps">⏱ Timestamps</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- SECTION 1 -->
+<div class="card" id="s1">
+  <h2><span class="num">1</span> Introduction &amp; The Agent Landscape</h2>
+  <p>
+    <a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=16s" target="_blank">▶ 00:16</a>
+    Liam opens by acknowledging the explosion of AI agents across CLIs, terminals, chat windows, and editors — and warns against the <em>"agents can solve the world's problems"</em> mindset. Developers still attempt one-shot prompts expecting complete applications or fixes in a single request.
+  </p>
+  <p style="margin-top:0.8rem;">
+    <a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=76s" target="_blank">▶ 01:16</a>
+    From a business perspective, companies are asking about ROI and productivity boosts, yet AI infrastructure spending hasn't delivered proportional returns. The key message: <strong>be deliberate about how you use AI tools and be mindful of token spend.</strong>
+  </p>
+  <p style="margin-top:0.8rem;">
+    <a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=102s" target="_blank">▶ 01:42</a>
+    Fun anecdote: a viral repo gained popularity by making LLMs "talk like a pirate" — the compressed language actually <strong>reduces token expenditure</strong> while maintaining quality.
+  </p>
+</div>
+
+<!-- SECTION 2 -->
+<div class="card" id="s2">
+  <h2><span class="num">2</span> Types of Agents: Local, Background &amp; Cloud</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=158s" target="_blank">▶ 02:38</a> Three distinct agent categories:</p>
+  <div class="agent-grid">
+    <div class="agent-card local">
+      <h4 style="color:var(--green);">🟢 Local Agents</h4>
+      <ul>
+        <li>Run inside VS Code on your local machine</li>
+        <li>Use remote models (GPT, Claude) or local ones</li>
+        <li>Side-by-side, hands-on — human in the loop</li>
+        <li>Maximum developer control</li>
+      </ul>
+    </div>
+    <div class="agent-card background">
+      <h4 style="color:var(--orange);">🟠 Background Agents</h4>
+      <div><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=187s" target="_blank">▶ 03:07</a></div>
+      <ul>
+        <li>Via GitHub Copilot CLI (also in VS Code)</li>
+        <li>Isolated via <strong>Git worktrees</strong></li>
+        <li>Semi-autonomous (50/50 oversight)</li>
+        <li><strong>Autopilot mode</strong> (preview) — skips confirmations</li>
+      </ul>
+    </div>
+    <div class="agent-card cloud">
+      <h4 style="color:var(--purple);">🟣 Cloud Agents</h4>
+      <div><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=217s" target="_blank">▶ 03:37</a></div>
+      <ul>
+        <li>Scale outside your organization</li>
+        <li>Leverage GitHub cloud services</li>
+        <li>Best for hands-off tasks</li>
+        <li>Run in GitHub Actions (isolated)</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:0.8rem; font-size:0.9rem; color:var(--text-muted);">
+    <strong>Git worktree explained:</strong> A branch mapped to an isolated subdirectory — its own working copy with an associated branch, similar to a regular Git branch but physically separated.
+  </p>
+</div>
+
+<!-- SECTION 3 -->
+<div class="card" id="s3">
+  <h2><span class="num">3</span> When to Use Each Agent Type</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=247s" target="_blank">▶ 04:07</a></p>
+  <div class="agent-grid">
+    <div class="agent-card local">
+      <div class="label">Local Agent — High Involvement</div>
+      <h4>✅ Writing Tests</h4>
+      <ul>
+        <li>Hands-on with tests</li>
+        <li>Understand the codebase deeply</li>
+        <li>"In the weeds" approach</li>
+      </ul>
+    </div>
+    <div class="agent-card background">
+      <div class="label">Background Agent — Medium Involvement</div>
+      <h4>✅ Building UI / Front-end</h4>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=274s" target="_blank">▶ 04:34</a></p>
+      <ul>
+        <li>50/50 oversight</li>
+        <li>Arduous, time-consuming tasks</li>
+        <li>Don't want to be fully out of the loop</li>
+      </ul>
+    </div>
+    <div class="agent-card cloud">
+      <div class="label">Cloud Agent — Low Involvement</div>
+      <h4>✅ Documentation</h4>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=299s" target="_blank">▶ 04:59</a></p>
+      <ul>
+        <li>READMEs, contribution guidelines</li>
+        <li>Making repos open-source friendly</li>
+        <li>Fully hands-off</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="card" id="s4">
+  <h2><span class="num">4</span> VS Code as the Single Entry Point</h2>
+  <p>
+    <a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=329s" target="_blank">▶ 05:29</a>
+    The core thesis: <strong>VS Code serves as a unified entry point for all AI agent interactions.</strong> It supports:
+  </p>
+  <ul>
+    <li>Third-party agent integrations (Claude, etc.)</li>
+    <li>Background agents via CLI</li>
+    <li>Local agents in the editor</li>
+    <li>Remote/cloud agents</li>
+    <li>All accessible from a single developer workflow</li>
+  </ul>
+  <p style="margin-top:0.6rem;">The goal: <strong>reduce cognitive load</strong> by centralizing agent management in one place.</p>
+</div>
+
+<!-- SECTION 5: DEMO -->
+<div class="card" id="s5">
+  <h2><span class="num">5</span> Live Demo: Three Agents, One Codebase</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=356s" target="_blank">▶ 05:56</a>
+  Liam demonstrates running <strong>three different agent types simultaneously</strong> on a single Python CRUD (product store) application.</p>
+
+  <h3>Step 1 — Background Agent: Create Front-End UI</h3>
+  <ul>
+    <li>References GitHub issue #25 ("add a front end")</li>
+    <li>Uses CLI background agent with <strong>Autopilot mode</strong></li>
+    <li>Prompt: <em>"Summarize and plan a solution to issue 25"</em></li>
+    <li>Instructs agent to stop before creating PR for local testing</li>
+    <li>Agent works in a Git worktree (isolated directory)</li>
+  </ul>
+
+  <h3>Step 2 — Cloud Agent: Open-Source Documentation</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=444s" target="_blank">▶ 07:24</a></p>
+  <ul>
+    <li>Repo is not open-source friendly</li>
+    <li>Prompt: <em>"Make this open source friendly, add all necessary files"</em></li>
+    <li>Handles README, contribution guidelines, etc. — fully hands-off</li>
+  </ul>
+
+  <h3>Step 3 — Local Agent: Write Unit Tests</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=470s" target="_blank">▶ 07:50</a></p>
+  <ul>
+    <li>Uses a <strong>custom test-writing agent</strong> in VS Code</li>
+    <li>Selects Claude Opus 4/6 with medium reasoning</li>
+    <li>Writes tests → runs them → tests pass</li>
+    <li><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=526s" target="_blank">▶ 08:46</a> Iterates: updates error handling and tests</li>
+  </ul>
+
+  <h3>Results</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=581s" target="_blank">▶ 09:41</a> All three agents complete successfully:</p>
+  <ul>
+    <li>✅ Tests pass (local agent)</li>
+    <li>✅ PR created (background agent via worktree)</li>
+    <li>✅ Documentation generated (cloud agent)</li>
+  </ul>
+  <p style="margin-top:0.8rem;">
+    <a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=666s" target="_blank">▶ 11:06</a>
+    <strong style="color:var(--green);">"One codebase, three problems, three separate agents fixed all at the same time."</strong>
+  </p>
+</div>
+
+<!-- SECTION 6 -->
+<div class="card" id="s6">
+  <h2><span class="num">6</span> How Cloud Agents Work Under the Hood</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=695s" target="_blank">▶ 11:35</a></p>
+  <ul>
+    <li>Run inside <strong>GitHub Actions</strong> (isolated environment)</li>
+    <li>Extended context via <strong>MCP servers</strong>:
+      <ul>
+        <li>GitHub MCP server (repository operations)</li>
+        <li>Playwright MCP server (screenshot-based front-end testing)</li>
+      </ul>
+    </li>
+    <li>Dynamic workflows support</li>
+    <li><strong>Built-in safeguards:</strong>
+      <ul>
+        <li>Network firewalls with whitelisted access</li>
+        <li>No direct access to main branch (must go through PRs)</li>
+        <li>Restricted and secure by design</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- SECTION 7 -->
+<div class="card" id="s7">
+  <h2><span class="num">7</span> Customization: Instructions, Skills &amp; Agents</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=753s" target="_blank">▶ 12:33</a>
+  Four customization layers (applicable to Copilot <strong>AND</strong> other AI tools):</p>
+  <div class="agent-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+    <div class="agent-card" style="border-left-color: var(--accent);">
+      <h4>📋 Custom Instructions</h4>
+      <p style="font-size:0.9rem;">Define how the agent behaves</p>
+    </div>
+    <div class="agent-card" style="border-left-color: var(--green);">
+      <h4>🤖 Custom Agents</h4>
+      <p style="font-size:0.9rem;">Specialized agents for specific tasks (e.g., test writing)</p>
+    </div>
+    <div class="agent-card" style="border-left-color: var(--orange);">
+      <h4>📝 Prompt Files</h4>
+      <p style="font-size:0.9rem;">Pre-built prompts for common tasks</p>
+    </div>
+    <div class="agent-card" style="border-left-color: var(--purple);">
+      <h4>⚡ Agent Skills</h4>
+      <p style="font-size:0.9rem;">Newer version of agents.md — reusable capabilities</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 8 -->
+<div class="card" id="s8">
+  <h2><span class="num">8</span> VS Code Chat Customization Modal</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=809s" target="_blank">▶ 13:29</a>
+  Liam walks through the VS Code chat settings (via the cog icon in Copilot chat pane):</p>
+  <ul>
+    <li><strong>Agents</strong> — Custom agents + built-in (Ask, Explore, Plan)</li>
+    <li><strong>Skills</strong> — Pre-configured actions (Address PR comments, Create PR) — editable</li>
+    <li><strong>Instructions</strong> — Custom instruction files</li>
+    <li><strong>Prompts</strong> — Built-in templates (e.g., "create an agent")</li>
+    <li><strong>Hooks</strong> — Event-triggered automations</li>
+    <li><strong>MCP Servers</strong> — External tool integrations</li>
+  </ul>
+  <p style="margin-top:0.8rem;">
+    <a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=884s" target="_blank">▶ 14:44</a>
+    <strong>Third-party support:</strong> Claude plugins, hooks, instructions, and skills are all accessible from the same modal. Not restricted to GitHub Copilot.
+  </p>
+</div>
+
+<!-- SECTION 9 -->
+<div class="card" id="s9">
+  <h2><span class="num">9</span> Resources: Awesome Copilot &amp; MCP Servers</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=914s" target="_blank">▶ 15:14</a></p>
+  <h3>Awesome Copilot</h3>
+  <ul>
+    <li>Open-source project: <a href="https://aka.ms/awesomecopilot" target="_blank"><strong>aka.ms/awesomecopilot</strong></a></li>
+    <li>Collection of skills and customizations</li>
+    <li>Works with Copilot but adaptable to other AI tools</li>
+    <li>Also available as an MCP server</li>
+  </ul>
+  <h3>MCP (Model Context Protocol)</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=942s" target="_blank">▶ 15:42</a></p>
+  <ul>
+    <li>Extends LLM capabilities by connecting to external services</li>
+    <li>Authenticated: Azure, GCP, AWS resources</li>
+    <li>Free/open: Playwright, Microsoft Learn documentation</li>
+    <li>Full MCP spec support in VS Code</li>
+  </ul>
+</div>
+
+<!-- SECTION 10: TAKEAWAYS -->
+<div class="card" id="s10">
+  <h2><span class="num">10</span> Key Takeaways</h2>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=973s" target="_blank">▶ 16:13</a></p>
+  <div class="takeaway"><strong>1.</strong> Don't rely on one-shot prompts — agents work best with iterative, targeted tasks distributed across the right agent type.</div>
+  <div class="takeaway"><strong>2.</strong> Three agent types serve different needs: Local (high control), Background (semi-autonomous via Git worktrees), Cloud (fully autonomous in GitHub Actions).</div>
+  <div class="takeaway"><strong>3.</strong> VS Code is the hub — a single entry point for managing local, background, cloud, and third-party agents simultaneously.</div>
+  <div class="takeaway"><strong>4.</strong> Autopilot mode (preview) enables background agents to work without constant confirmation — use carefully.</div>
+  <div class="takeaway"><strong>5.</strong> Cloud agents are safe — network firewalls, no main-branch access, isolated environments.</div>
+  <div class="takeaway"><strong>6.</strong> Customization is universal — instructions, agents, prompts, and skills work across Copilot AND third-party tools.</div>
+  <div class="takeaway"><strong>7.</strong> MCP extends everything — connects agents to Azure, Playwright, docs, and more.</div>
+  <div class="takeaway"><strong>8.</strong> Token spend matters — be deliberate about which agent type you use and how you prompt.</div>
+</div>
+
+<!-- TIMESTAMP GRID -->
+<div class="card" id="timestamps">
+  <h2><span class="num">⏱</span> Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=16s" target="_blank">00:16</a><span class="desc">Introduction &amp; agent proliferation warning</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=46s" target="_blank">00:46</a><span class="desc">One-shot prompt fallacy</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=76s" target="_blank">01:16</a><span class="desc">ROI &amp; business perspective on AI spend</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=102s" target="_blank">01:42</a><span class="desc">Token spend &amp; "talk like a pirate" repo</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=127s" target="_blank">02:07</a><span class="desc">GitHub Copilot agents overview</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=158s" target="_blank">02:38</a><span class="desc">Local agents explained</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=187s" target="_blank">03:07</a><span class="desc">Background agents &amp; Git worktrees</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=217s" target="_blank">03:37</a><span class="desc">Cloud agents explained</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=247s" target="_blank">04:07</a><span class="desc">When to use local agents (tests)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=274s" target="_blank">04:34</a><span class="desc">When to use background agents (UI)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=299s" target="_blank">04:59</a><span class="desc">When to use cloud agents (docs)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=329s" target="_blank">05:29</a><span class="desc">VS Code as single entry point</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=356s" target="_blank">05:56</a><span class="desc">Demo begins: Python CRUD app</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=386s" target="_blank">06:26</a><span class="desc">Autopilot mode explained</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=444s" target="_blank">07:24</a><span class="desc">Cloud agent: open-source docs</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=470s" target="_blank">07:50</a><span class="desc">Local agent: custom test agent</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=526s" target="_blank">08:46</a><span class="desc">Iterating with local agent</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=581s" target="_blank">09:41</a><span class="desc">All agents complete</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=631s" target="_blank">10:31</a><span class="desc">Testing background agent output</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=666s" target="_blank">11:06</a><span class="desc">New front-end UI reveal</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=695s" target="_blank">11:35</a><span class="desc">Cloud agents: GitHub Actions</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=724s" target="_blank">12:04</a><span class="desc">MCP servers &amp; safeguards</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=753s" target="_blank">12:33</a><span class="desc">Customization layers</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=809s" target="_blank">13:29</a><span class="desc">VS Code chat modal walkthrough</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=884s" target="_blank">14:44</a><span class="desc">Third-party support (Claude)</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=914s" target="_blank">15:14</a><span class="desc">Awesome Copilot resource</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=942s" target="_blank">15:42</a><span class="desc">MCP overview</span></div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dyHpnnlkTc8&t=973s" target="_blank">16:13</a><span class="desc">Wrap-up &amp; closing</span></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  Deep dive generated from AI Engineer conference talk transcript<br>
+  Video: <a href="https://www.youtube.com/watch?v=dyHpnnlkTc8">youtube.com/watch?v=dyHpnnlkTc8</a>
+</div>
+
+</body>
+</html>

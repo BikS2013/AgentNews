@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: Opus 4.7 and OpenAI 5.5 Made Your Prompting Style Obsolete — Nate B Jones</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card-bg: #181a20;
+    --card-border: #23262f;
+    --accent: #3b82f6;
+    --accent-dim: #2563eb;
+    --text: #e4e4e7;
+    --text-dim: #9ca3af;
+    --text-bright: #f4f4f5;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --purple: #a78bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #1e1b4b 0%, #0f1117 60%);
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .hero h1 {
+    font-size: 1.6rem;
+    color: var(--text-bright);
+    max-width: 800px;
+    margin: 0 auto 0.5rem;
+  }
+  .hero .meta {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .thumb-wrap {
+    max-width: 720px;
+    margin: 1.5rem auto 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  }
+  .thumb-wrap a { display: block; position: relative; }
+  .thumb-wrap img { width: 100%; display: block; }
+  .play-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.25);
+    transition: background 0.2s;
+  }
+  .thumb-wrap a:hover .play-overlay { background: rgba(0,0,0,0.1); }
+  .play-btn {
+    width: 68px; height: 48px;
+    background: rgba(255,0,0,0.85);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play-btn svg { fill: #fff; width: 24px; height: 24px; margin-left: 3px; }
+
+  /* Layout */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+    display: flex;
+    gap: 2rem;
+  }
+
+  /* Sticky TOC */
+  .toc {
+    position: sticky;
+    top: 1rem;
+    width: 240px;
+    min-width: 200px;
+    align-self: flex-start;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 2rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    font-size: 0.78rem;
+  }
+  .toc h3 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+  .toc a {
+    display: block;
+    padding: 0.25rem 0;
+    color: var(--text);
+    border-left: 2px solid transparent;
+    padding-left: 0.6rem;
+    transition: all 0.15s;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    text-decoration: none;
+  }
+  .main { flex: 1; min-width: 0; margin-top: 2rem; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 {
+    font-size: 1.2rem;
+    color: var(--text-bright);
+    margin-bottom: 0.3rem;
+  }
+  .card h3 {
+    font-size: 1rem;
+    color: var(--purple);
+    margin: 1.2rem 0 0.5rem;
+  }
+  .card p, .card li { margin-bottom: 0.6rem; }
+  .card ul { padding-left: 1.4rem; }
+  .card li { list-style: disc; }
+
+  /* Timestamp badge */
+  .ts {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    vertical-align: middle;
+    margin-right: 0.3rem;
+    transition: background 0.15s;
+  }
+  .ts:hover { background: var(--accent); text-decoration: none; }
+
+  /* Key takeaways highlight */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(167,139,250,0.08));
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 1.2rem 1.4rem;
+    margin: 1rem 0;
+  }
+  .highlight-box li { list-style: "→ "; }
+
+  /* Comparison */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .compare-item {
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid var(--card-border);
+  }
+  .compare-item.bad { border-left: 3px solid var(--red); }
+  .compare-item.good { border-left: 3px solid var(--green); }
+  .compare-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .compare-item.bad .compare-label { color: var(--red); }
+  .compare-item.good .compare-label { color: var(--green); }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--purple);
+    padding: 0.6rem 1rem;
+    margin: 1rem 0;
+    background: rgba(167,139,250,0.06);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+
+  /* Timestamp grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    font-size: 0.82rem;
+  }
+  .ts-row:hover { background: rgba(59,130,246,0.08); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container { flex-direction: column; }
+    .toc { position: static; width: 100%; max-height: none; }
+    .compare { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Opus 4.7 and OpenAI 5.5 Made Your Prompting Style Obsolete</h1>
+  <div class="meta">Nate B Jones · ~25 min · Deep-Dive Analysis</div>
+  <div class="thumb-wrap">
+    <a href="https://www.youtube.com/watch?v=ogTLWGBc3cE" target="_blank" rel="noopener">
+      <img src="https://img.youtube.com/vi/ogTLWGBc3cE/maxresdefault.jpg"
+           alt="Video Thumbnail" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- STICKY TOC -->
+<nav class="toc">
+  <h3>Contents</h3>
+  <a href="#takeaways">Key Takeaways</a>
+  <a href="#dead">Prompt Engineering Is Dead</a>
+  <a href="#100x">The 100x Agent Leap</a>
+  <a href="#question-method">AI Question Method</a>
+  <a href="#senior">Senior vs. Junior Partner</a>
+  <a href="#manager">Good Manager Story</a>
+  <a href="#define-agents">Defining "Agents"</a>
+  <a href="#p1">P1: The Flashlight</a>
+  <a href="#p2">P2: Synthesis Questions</a>
+  <a href="#p3">P3: Data Breadth + Opinions</a>
+  <a href="#mrr">Worked Example: MRR</a>
+  <a href="#closing">Closing</a>
+  <a href="#timestamps">Timestamp Index</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+<!-- KEY TAKEAWAYS -->
+<div class="card" id="takeaways">
+  <h2>🔑 Key Takeaways</h2>
+  <div class="highlight-box">
+    <ul>
+      <li>Prompt engineering is <strong>table stakes</strong> — necessary but no longer a differentiator. The new skill is asking great questions.</li>
+      <li>Agents are now <strong>~100x more powerful</strong> than 6–8 months ago (better tool use, longer sessions, larger context).</li>
+      <li><strong>Mental model shift:</strong> AI = senior partner, not junior assistant.</li>
+      <li><strong>Three principles</strong> of the AI Question Method:
+        <ol>
+          <li><em>Flashlight Intent</em> — convey the center of your focus AND the edges.</li>
+          <li><em>Multi-Directional Synthesis</em> — ask questions that force AI to synthesize across complex dimensions.</li>
+          <li><em>Data + Opinion Breadth</em> — ensure AI engages with ALL data sources and knows your thesis across them.</li>
+        </ol>
+      </li>
+      <li>You can <strong>prime AI memory</strong> to remind you when you fall back into flat, directive prompting.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SECTION: Prompt Engineering Is Dead -->
+<div class="card" id="dead">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=0s">00:00</a> Prompt Engineering Is Dead — Long Live It</h2>
+  <p>Nate opens provocatively: <em>"Prompt engineering is a 2025 conversation."</em> He acknowledges the eye-roll — people feel prompting is passé because "you can just ask AI and it works." But his point is nuanced: prompt engineering skills are now baseline requirements. You don't get credit for them anymore.</p>
+  <blockquote>"Yes, absolutely true. It's table stakes now. It is table stakes now. You got to be good at it. You don't get credit. Sorry. Welcome to the way AI moves."</blockquote>
+  <p>He notes that even people at AI labs say "just ask for what you want" — but this only works when people actually <em>know</em> what they want. For complex agentic knowledge work, most people don't.</p>
+</div>
+
+<!-- SECTION: 100x Agent Leap -->
+<div class="card" id="100x">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=60s">01:00</a> The 100x Agent Leap: What Changed with 4.7 &amp; 5.5</h2>
+  <p>Claude <strong>Opus 4.7</strong> and OpenAI <strong>o5.5</strong> (released in the prior ~2 months) represent a qualitative shift:</p>
+  <ul>
+    <li>Better tool calling and data retrieval</li>
+    <li>Ability to work for much longer periods</li>
+    <li>Dramatically expanded scope of corporate impact</li>
+  </ul>
+  <p>Nate frames this as a <strong>100x improvement</strong> in agent power — but our prompting style has NOT evolved 100x. That gap is the core problem.</p>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=432s">07:12</a> He notes a "second acceleration" since these launches, particularly with o5.5 in Codex, making the question-based approach more viable than ever.</p>
+</div>
+
+<!-- SECTION: AI Question Method -->
+<div class="card" id="question-method">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=153s">02:33</a> The AI Question Method — A New Mental Model</h2>
+  <p>Nate introduces the <strong>"AI Question Method"</strong>:</p>
+  <div class="compare">
+    <div class="compare-item bad">
+      <div class="compare-label">❌ Old: Prompting</div>
+      <p>You ask → you get an answer. Transactional. Task-based. You define every detail.</p>
+    </div>
+    <div class="compare-item good">
+      <div class="compare-label">✅ New: Questioning</div>
+      <p>Partnership, exploration, co-thinking. You form questions that enable the agent to do its best work.</p>
+    </div>
+  </div>
+  <blockquote>"We are really in a question world, not a prompt world."</blockquote>
+</div>
+
+<!-- SECTION: Senior vs Junior -->
+<div class="card" id="senior">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=183s">03:03</a> Senior Partner vs. Junior Partner</h2>
+  <p>THE biggest mental model shift for 2026:</p>
+  <div class="compare">
+    <div class="compare-item bad">
+      <div class="compare-label">2025: Junior Partner</div>
+      <p>Be very specific, careful, prescriptive. Define every step.</p>
+    </div>
+    <div class="compare-item good">
+      <div class="compare-label">2026: Senior Partner</div>
+      <p>Share context, ask questions, trust its judgment, let it push back.</p>
+    </div>
+  </div>
+  <p>When you treat AI as a senior partner, you unlock its full capabilities. When you micro-manage it like a junior, you constrain it.</p>
+</div>
+
+<!-- SECTION: Good Manager Story -->
+<div class="card" id="manager">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=218s">03:38</a> The Good Manager Story</h2>
+  <p>From Nate's time on a marketing team at <strong>Amazon</strong>, his manager would:</p>
+  <ol>
+    <li>Share the problem space openly: <em>"I need you to dig into this"</em></li>
+    <li>Provide raw materials: CSVs, Excels, context</li>
+    <li>State the goal: marketing attribution → deck + doc for leadership</li>
+    <li>Set quality standards: <em>"clear, incisive, tells a real story"</em></li>
+    <li>Leave room for autonomy: <em>"I'm going to leave a lot to you"</em></li>
+    <li>Guide with questions along the way</li>
+  </ol>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=281s">04:41</a> That same management approach now looks exactly like a good agentic prompt in 2026.</p>
+</div>
+
+<!-- SECTION: Defining Agents -->
+<div class="card" id="define-agents">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=317s">05:17</a> Defining "Agents" for This Context</h2>
+  <div class="compare">
+    <div class="compare-item good">
+      <div class="compare-label">✅ This Video</div>
+      <p>Heavy knowledge work in <strong>Claude Code, Co-Work, Codex</strong>. Deep partnership thinking with frontier models. Unique, custom, creative problem-solving.</p>
+    </div>
+    <div class="compare-item bad">
+      <div class="compare-label">❌ Not This Video</div>
+      <p>Agentic pipelines (customer service tickets, invoice processing). Defined, predictable workflows. Need evals &amp; structured testing.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PRINCIPLE 1 -->
+<div class="card" id="p1">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=549s">09:09</a> Principle #1: The Flashlight — Intent with Edges</h2>
+  <p>Your questions need a <strong>"center of the flashlight"</strong> and visible edges.</p>
+
+  <h3>🔦 Center = Your thesis / perspective / angle</h3>
+  <div class="compare">
+    <div class="compare-item bad">
+      <div class="compare-label">❌ No Perspective</div>
+      <p>"Help me learn more about the Mona Lisa"</p>
+    </div>
+    <div class="compare-item good">
+      <div class="compare-label">✅ Clear Thesis</div>
+      <p>"I have a thesis that painting the Mona Lisa shaped Da Vinci's relationships late in life. Investigate from that angle."</p>
+    </div>
+  </div>
+
+  <h3>🔲 Edges = Boundaries &amp; exclusions</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=678s">11:18</a> Example: Meeting notes → report, but 15 min was about an unrelated project. Explicitly: <em>"Excise that. Do not include the greenlighting discussion."</em></p>
+
+  <h3>Common Mistakes</h3>
+  <ul>
+    <li>Overly open-ended questions (no center)</li>
+    <li>Overly closed questions (no room to explore)</li>
+    <li>Missing edges (AI wanders into irrelevant territory)</li>
+  </ul>
+</div>
+
+<!-- PRINCIPLE 2 -->
+<div class="card" id="p2">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=771s">12:51</a> Principle #2: Invite the AI to Synthesize Across Complex Questions</h2>
+  <p>Ask the AI to consider what <strong>"good" looks like</strong> in a more open-ended way than writing an eval. Evals are great for pipelines — but for creative knowledge work, you need the AI to <em>explore</em> quality.</p>
+
+  <h3>Worked Example — PR/FAQ Document</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=846s">14:06</a> Fictional scenario: <strong>Prime Video launching 3D holographic soccer players</strong> for the World Cup.</p>
+  <ul>
+    <li><strong>Question 1:</strong> "How is this accessible whether someone has had a 3D experience before or not? How do we convey that in the press release?"</li>
+    <li><strong>Question 2:</strong> "Think about the interrelationship between software and hardware — convey emotion in the press release AND list technical seamlessness in internal FAQs."</li>
+  </ul>
+  <blockquote>"I did not say THIS is how I want it woven together... I asked the AI to wrestle with me on it and think it through and come back."</blockquote>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=958s">15:58</a> <em>"I'm not seeing people doing it. I'm not seeing people actually say, let me ask multiple open-ended questions and let the AI synthesize across."</em></p>
+</div>
+
+<!-- PRINCIPLE 3 -->
+<div class="card" id="p3">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1042s">17:22</a> Principle #3: Data Breadth + Your Opinions</h2>
+  <p>Ensure the AI engages with <strong>ALL</strong> your data sources while knowing your opinions across them.</p>
+
+  <h3>The Working Context Folder</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1071s">17:51</a> Nate's Codex workflow: have the AI organize files into a single working context folder:</p>
+  <ul>
+    <li>Formal files: docs, PowerPoints, Excel, code</li>
+    <li>Informal files: meeting transcripts, notes</li>
+  </ul>
+
+  <h3>The Problem</h3>
+  <p><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1098s">18:18</a> People assume AI will uniformly dig into all files. It often doesn't — your question inadvertently angles it toward one file and it dives deep there while ignoring others.</p>
+
+  <h3>The Fix</h3>
+  <p>Ask questions that explicitly reference the breadth of data and convey your opinions <em>across</em> that breadth, so the AI has reason to engage with every source.</p>
+</div>
+
+<!-- WORKED EXAMPLE: MRR -->
+<div class="card" id="mrr">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1197s">19:57</a> Worked Example: MRR Product-Led Growth Analysis</h2>
+  <p>A full example combining all three principles.</p>
+
+  <h3>Setup</h3>
+  <ul>
+    <li>Goal: Increase MRR (Monthly Recurring Revenue)</li>
+    <li>Data: Voice of customer transcripts, support tickets, PRDs, launch announcements, analytics</li>
+    <li>All organized into one folder</li>
+  </ul>
+
+  <h3>The Question</h3>
+  <blockquote>"My thought is that our product-led growth angle from the last two years is broken. I don't think we're getting good margin. I think that shows up in flatter MRR growth over the last 6 months, in dead-cat-bounce launches, and in our own thinking in the PRDs. Look across ALL the data. Come back with YOUR thesis. You don't have to agree with me. But it needs to be the cleanest, most explanatory thesis you can find — so we can partner to decide what to launch next and why."</blockquote>
+
+  <h3>Why This Works</h3>
+  <ul>
+    <li>✅ <strong>Flashlight intent</strong> — PLG is broken (center of the beam)</li>
+    <li>✅ <strong>Edges</strong> — specific data artifacts named (MRR, launches, PRDs)</li>
+    <li>✅ <strong>Synthesis</strong> — invites AI to agree OR disagree</li>
+    <li>✅ <strong>Data breadth</strong> — explicitly says "look across ALL data sources"</li>
+    <li>✅ <strong>Senior partner</strong> — "you don't have to agree with me"</li>
+  </ul>
+
+  <h3>Anti-Patterns Nate Sees</h3>
+  <ul>
+    <li>❌ Flat prompts that list data without intent or questions</li>
+    <li>❌ Wild rambling opinions where AI just mirrors you back</li>
+    <li>❌ No invitation for AI to push back or explore independently</li>
+  </ul>
+</div>
+
+<!-- CLOSING -->
+<div class="card" id="closing">
+  <h2><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1409s">23:29</a> Closing: The Future of Prompting</h2>
+  <ul>
+    <li><strong>AI memory:</strong> You can prime AI to remind you when you're not asking thoughtful questions. It will nudge you back into question mode.</li>
+    <li><em>"We need to find a new word for the future of prompting."</em></li>
+    <li>The words were never what mattered most — the <strong>INTENT</strong> was always the key. Intent is now best expressed as a sharp series of questions.</li>
+  </ul>
+  <blockquote>"Take this transcript, chat with AI about it. See if that sparks something. And have fun."</blockquote>
+</div>
+
+<!-- TIMESTAMP INDEX -->
+<div class="card" id="timestamps">
+  <h2>⏱️ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=0s">00:00</a> Intro: Prompt engineering is dead / table stakes</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=28s">00:28</a> The eye-roll: why people think prompting doesn't matter</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=60s">01:00</a> What changed with Opus 4.7 &amp; OpenAI 5.5</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=91s">01:31</a> "Just ask AI for what you want" — why it fails</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=124s">02:04</a> Agents are 100x more powerful; prompting hasn't kept up</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=153s">02:33</a> Introducing the AI Question Method</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=183s">03:03</a> Senior partner vs. junior partner mental model</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=218s">03:38</a> The good manager story (Amazon marketing)</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=281s">04:41</a> Good management = good agentic prompting</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=317s">05:17</a> Defining "agents" — knowledge work vs. pipelines</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=373s">06:13</a> Most people haven't transitioned 2025→2026</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=432s">07:12</a> Second acceleration with 4.7 &amp; 5.5</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=464s">07:44</a> Change the mental model; learn the art of questions</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=498s">08:18</a> Substack resources &amp; quick start guides</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=524s">08:44</a> Three key principles intro</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=549s">09:09</a> PRINCIPLE 1: The flashlight — intent + edges</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=591s">09:51</a> Mona Lisa example: perspective in questions</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=621s">10:21</a> Business example: marketing attribution thesis</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=653s">10:53</a> Center of the bullseye + bounds</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=678s">11:18</a> Meeting notes: inclusion and exclusion</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=742s">12:22</a> Common mistakes: too open vs. too closed</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=771s">12:51</a> PRINCIPLE 2: Invite AI to explore "good"</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=808s">13:28</a> Evals vs. open-ended quality exploration</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=846s">14:06</a> PR/FAQ example: 3D World Cup experience</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=929s">15:29</a> Multiple question types force synthesis</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=958s">15:58</a> "I'm not seeing people doing it"</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=982s">16:22</a> How Nate learned: curiosity + senior partner mindset</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1006s">16:46</a> Transition to Principle 3</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1042s">17:22</a> PRINCIPLE 3: Data breadth + opinions across data</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1071s">17:51</a> Working context folder workflow (Codex)</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1098s">18:18</a> Problem: AI angles into one file, ignores others</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1166s">19:26</a> Co-Work and file attachment approach</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1197s">19:57</a> Full example: MRR / product-led growth</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1252s">20:52</a> Naming data artifacts in your question</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1322s">22:02</a> Why this approach challenges AI effectively</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1355s">22:35</a> Anti-patterns: flat prompts, rambling opinions</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1382s">23:02</a> Recap of all three principles</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1409s">23:29</a> AI memory: prime it to remind you</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1436s">23:56</a> "We need a new word for prompting"</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1464s">24:24</a> Intent &gt; words; questions &gt; instructions</div>
+    <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ogTLWGBc3cE&t=1494s">24:54</a> Closing: take this and have fun</div>
+  </div>
+</div>
+
+<div style="text-align:center; color:var(--text-dim); font-size:0.75rem; padding: 2rem 0 0;">
+  Generated by Hermes Agent · Deep-Dive Document
+</div>
+
+</div><!-- /main -->
+</div><!-- /container -->
+
+</body>
+</html>

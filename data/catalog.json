@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "slug": "deep-dive-handoff-is-my-new-favourite-skill-matt-pocock",
+      "title": "Deep Dive: /handoff is my new favourite skill — Matt Pocock",
+      "publishedAt": "2026-05-22T17:27:10.446Z",
+      "sourcePath": "samples/Deep Dive — _handoff is my new favourite skill (Matt Pocock).html",
+      "articlePath": "articles/deep-dive-handoff-is-my-new-favourite-skill-matt-pocock.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/dtAJ2dOd3ko/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "604a15a3ca5aff0b1e134861d04b07839c41ada99f313cddf5646843a2eeea04"
+    },
+    {
+      "slug": "deep-dive-building-agent-harnesses-for-large-codebases-cole-medin",
+      "title": "Deep Dive: Building Agent Harnesses for Large Codebases — Cole Medin",
+      "publishedAt": "2026-05-22T17:27:14.627Z",
+      "sourcePath": "samples/Deep Dive — Anthropic Masterclass Agent Harnesses (Cole Medin).html",
+      "articlePath": "articles/deep-dive-building-agent-harnesses-for-large-codebases-cole-medin.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/efRIrLXoOVA/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "556e880950bc9a594bc3785601ffdbed16961e30b5792cc4e5477d0b6bbf07da"
+    },
+    {
+      "slug": "deep-dive-cooking-with-agents-in-vs-code-liam-hampton",
+      "title": "Deep Dive: Cooking with Agents in VS Code — Liam Hampton",
+      "publishedAt": "2026-05-22T17:27:18.463Z",
+      "sourcePath": "samples/Deep Dive — Cooking with Agents in VS Code (Liam Hampton, Microsoft).html",
+      "articlePath": "articles/deep-dive-cooking-with-agents-in-vs-code-liam-hampton.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/dyHpnnlkTc8/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "fdd884c05370361f8f584c55b834ee8081386bf2b4c773f2b8341a3b2dc9a240"
+    },
+    {
+      "slug": "deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy",
+      "title": "Deep Dive: I gave my Hermes Agent a phone number (it's crazy)",
+      "publishedAt": "2026-05-22T17:27:25.227Z",
+      "sourcePath": "samples/Deep Dive — Hermes Agent Phone Number (David Ondrej).html",
+      "articlePath": "articles/deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/zHE434sBw2U/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "cd102494acc1485ca4e013479025cc7f001221f61cf6bf30144d0239c7a4a9dd"
+    },
+    {
+      "slug": "deep-dive-opus-4-7-and-openai-5-5-made-your-prompting-style-obsolete-nate-b-jones",
+      "title": "Deep Dive: Opus 4.7 and OpenAI 5.5 Made Your Prompting Style Obsolete — Nate B Jones",
+      "publishedAt": "2026-05-22T17:27:29.503Z",
+      "sourcePath": "samples/Deep Dive — Opus 4.7 & OpenAI 5.5 Made Your Prompting Style Obsolete (Nate B Jones).html",
+      "articlePath": "articles/deep-dive-opus-4-7-and-openai-5-5-made-your-prompting-style-obsolete-nate-b-jones.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/ogTLWGBc3cE/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "3ebda83c9158a74cf70a9d26f773f6de80afdf52aaf64cabc298ad44dc331be2"
+    },
+    {
+      "slug": "deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp",
+      "title": "Deep Dive: Scaling Agents on Kubernetes with ACPX and ACP",
+      "publishedAt": "2026-05-22T17:27:33.790Z",
+      "sourcePath": "samples/Deep Dive — Scaling Agents on Kubernetes with ACPX and ACP (Onur Solmaz, OpenClaw).html",
+      "articlePath": "articles/deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/VaS2h-dY1-4/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "0fb86ab1bb78e67c75bb25e988e8af78a8edbbd55430df931abb78e5dd161637"
+    },
+    {
+      "slug": "deep-dive-the-perfect-zsh-setup-for-2026-dreams-of-code",
+      "title": "Deep Dive: The Perfect Zsh Setup For 2026 — Dreams of Code",
+      "publishedAt": "2026-05-22T17:27:42.439Z",
+      "sourcePath": "samples/Deep Dive — The Perfect Zsh Setup For 2026 (Dreams of Code).html",
+      "articlePath": "articles/deep-dive-the-perfect-zsh-setup-for-2026-dreams-of-code.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/1jE7rCvByHg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "cedbdb5a85dd8f45dff9b6cfb0f7886510ba263bb62cd0491e5a30fb2ecfb978"
+    }
+  ],
+  "updatedAt": "2026-05-22T17:27:42.448Z"
+}

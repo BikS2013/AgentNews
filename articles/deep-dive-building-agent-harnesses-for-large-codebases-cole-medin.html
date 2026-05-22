@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: Building Agent Harnesses for Large Codebases — Cole Medin</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg-card: #161922;
+    --bg-card-hover: #1c1f2e;
+    --border: #2a2d3a;
+    --text: #e1e4ed;
+    --text-muted: #8b8fa3;
+    --text-dim: #6b6f82;
+    --accent: #4e8cff;
+    --accent-glow: rgba(78,140,255,0.15);
+    --accent-hover: #6aa0ff;
+    --green: #34d399;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --toc-bg: #13151e;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* Header */
+  .hero {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 32px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(78,140,255,0.25);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.25;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .hero .meta {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+  .hero .meta span { margin: 0 8px; }
+
+  /* Thumbnail */
+  .thumbnail-wrap {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+  }
+  .thumbnail-wrap a { display: block; position: relative; }
+  .thumbnail-wrap img {
+    width: 100%;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .thumbnail-wrap:hover img { transform: scale(1.02); }
+  .play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px; height: 72px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .thumbnail-wrap:hover .play-btn { background: rgba(255,0,0,0.85); }
+  .play-btn::after {
+    content: '';
+    display: block;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 14px 0 14px 26px;
+    border-color: transparent transparent transparent #fff;
+    margin-left: 4px;
+  }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .toc-sidebar { display: none; }
+  }
+
+  /* Sticky TOC */
+  .toc-sidebar {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    background: var(--toc-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+  }
+
+  .toc-sidebar::-webkit-scrollbar { width: 4px; }
+  .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+  .toc-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .toc-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .toc-sidebar a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    margin-bottom: 2px;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-sidebar a:hover {
+    color: var(--accent);
+    background: var(--accent-glow);
+    border-left-color: var(--accent);
+  }
+
+  /* Cards / Sections */
+  .content-area { max-width: 800px; }
+
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    transition: border-color 0.2s;
+  }
+  .section-card:hover { border-color: rgba(78,140,255,0.3); }
+
+  .section-card h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .section-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--purple);
+    margin: 20px 0 10px;
+  }
+
+  .section-card p {
+    color: var(--text);
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+
+  /* Timestamp badges */
+  .ts {
+    display: inline-flex;
+    align-items: center;
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(78,140,255,0.25);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .ts:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  /* Bullet lists */
+  .section-card ul {
+    margin: 12px 0 16px 6px;
+    padding-left: 18px;
+  }
+  .section-card li {
+    color: var(--text);
+    font-size: 14.5px;
+    margin-bottom: 7px;
+    line-height: 1.6;
+  }
+  .section-card li::marker { color: var(--accent); }
+
+  /* Highlight boxes */
+  .callout {
+    background: rgba(78,140,255,0.06);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .callout strong { color: var(--accent); }
+
+  .callout.green { border-left-color: var(--green); background: rgba(52,211,153,0.06); }
+  .callout.green strong { color: var(--green); }
+  .callout.purple { border-left-color: var(--purple); background: rgba(167,139,250,0.06); }
+  .callout.purple strong { color: var(--purple); }
+  .callout.orange { border-left-color: var(--orange); background: rgba(251,146,60,0.06); }
+  .callout.orange strong { color: var(--orange); }
+
+  code {
+    background: rgba(78,140,255,0.1);
+    color: var(--accent);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+
+  /* Timestamp Grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .ts-grid-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(78,140,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: border-color 0.15s;
+  }
+  .ts-grid-item:hover { border-color: var(--accent); }
+  .ts-grid-item span {
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  /* Section number */
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Key tools tags */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .tag {
+    display: inline-block;
+    background: rgba(167,139,250,0.1);
+    color: var(--purple);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(167,139,250,0.2);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">📺 Video Deep Dive</div>
+  <h1>Anthropic Just Dropped a Masterclass on Building Agent Harnesses</h1>
+  <p class="meta">
+    <strong>Cole Medin</strong> <span>•</span> 28:09 <span>•</span> YouTube
+  </p>
+</div>
+
+<!-- THUMBNAIL -->
+<div class="thumbnail-wrap">
+  <a href="https://www.youtube.com/watch?v=efRIrLXoOVA" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/efRIrLXoOVA/maxresdefault.jpg"
+         alt="Video thumbnail" loading="lazy"
+         onerror="this.src='https://img.youtube.com/vi/efRIrLXoOVA/hqdefault.jpg'">
+    <div class="play-btn"></div>
+  </a>
+</div>
+
+<!-- KEY TOOLS -->
+<div style="max-width:800px;margin:0 auto 32px;padding:0 24px;text-align:center;">
+  <div class="tags" style="justify-content:center;">
+    <span class="tag">Claude Code</span>
+    <span class="tag">claude.md Files</span>
+    <span class="tag">Hooks (Start/Stop)</span>
+    <span class="tag">Path-Scoped Skills</span>
+    <span class="tag">LSP</span>
+    <span class="tag">MCP Servers</span>
+    <span class="tag">Sub-Agents</span>
+    <span class="tag">Plugins</span>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- TOC SIDEBAR -->
+  <nav class="toc-sidebar">
+    <div class="toc-title">Contents</div>
+    <a href="#s1">1. Introduction & The Problem</a>
+    <a href="#s2">2. Agentic Search</a>
+    <a href="#s3">3. Harness vs Model</a>
+    <a href="#s4">4. Lean & Layered Rules</a>
+    <a href="#s5">5. Codebase Maps</a>
+    <a href="#s6">6. Self-Improving Hooks</a>
+    <a href="#s7">7. Scoped Skills</a>
+    <a href="#s8">8. LSP + MCP Servers</a>
+    <a href="#s9">9. Sub-Agents</a>
+    <a href="#s10">10. Plugin & Getting Started</a>
+    <a href="#s11">11. Organizational Adoption</a>
+    <a href="#s12">12. Key Takeaways & Index</a>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="content-area">
+
+    <!-- SECTION 1 -->
+    <div class="section-card" id="s1">
+      <h2>
+        <span class="section-num">1</span>
+        Introduction & The Problem
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=0s" target="_blank">0:00</a>
+      </h2>
+      <p>Cole Medin opens the video by highlighting a critical gap in the current AI coding ecosystem: while tools like Cursor, Windsurf, and even Claude Code work impressively on small-to-medium projects, they frequently struggle when applied to large, complex codebases. The promise of "vibe coding" falls apart at scale—agents get lost, hallucinate file paths, and produce code that doesn't integrate well with existing architecture.</p>
+      <p>Anthropic recently published what Cole calls a "masterclass"—a comprehensive guide specifically addressing how to build effective agent harnesses for large codebases. This isn't about making the underlying model smarter; it's about wrapping the model in the right tooling, rules, and context management so it can perform reliably at enterprise scale.</p>
+      <p>The video is structured around the six core strategies Anthropic outlines, each progressively adding sophistication to how an AI agent interacts with a codebase. Cole emphasizes that these strategies aren't theoretical—they're immediately applicable and he's already built a plugin implementing many of them.</p>
+      <div class="callout">
+        <strong>Core insight:</strong> The biggest bottleneck to AI coding at scale isn't model intelligence—it's how you structure the context and tooling around the model.
+      </div>
+      <ul>
+        <li>AI coding tools hit a wall with codebases beyond ~50K lines of code</li>
+        <li>Anthropic published a detailed guide focused specifically on large codebase challenges</li>
+        <li>Six strategies are presented, from simple to advanced</li>
+        <li>The guide is model-agnostic in principle but demonstrated via Claude Code</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section-card" id="s2">
+      <h2>
+        <span class="section-num">2</span>
+        How Claude Code Navigates Codebases
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=112s" target="_blank">1:52</a>
+      </h2>
+      <p>A key revelation in the video is how Claude Code actually navigates large codebases. Unlike what many assume, it does <em>not</em> use RAG (Retrieval-Augmented Generation), pre-built indexes, or embeddings. Instead, Claude Code uses an entirely agentic approach to search—it reads files, searches for symbols, navigates directories, and explores the codebase step by step, much like a human developer would.</p>
+      <p>This agentic search approach has both strengths and limitations. On the positive side, it means Claude Code doesn't require any pre-processing, indexing, or infrastructure setup—you just point it at a repo and it starts working. However, the downside is that without proper guidance, the agent can waste significant tokens (and time) exploring irrelevant parts of the codebase.</p>
+      <p>Cole explains that this architectural choice is precisely why the harness strategies matter so much. If the agent is searching agentically, then giving it better starting context, maps of the codebase, and scoped rules dramatically improves both the speed and accuracy of its work. The harness essentially gives the agent a "cheat sheet" so it doesn't have to discover everything from scratch on every task.</p>
+      <ul>
+        <li><strong>No RAG or embeddings:</strong> Claude Code searches codebases agentically at runtime</li>
+        <li><strong>No pre-indexing:</strong> Works immediately without setup infrastructure</li>
+        <li><strong>Agentic search tools:</strong> Uses grep, file reading, directory listing, and symbol search</li>
+        <li>Better context upfront = fewer wasted tokens and faster results</li>
+        <li>This approach makes the harness/context layer critical for large repos</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section-card" id="s3">
+      <h2>
+        <span class="section-num">3</span>
+        The Harness Matters More Than The Model
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=169s" target="_blank">2:49</a>
+      </h2>
+      <p>This is arguably the most important conceptual point in the entire video. Anthropic's guide emphasizes that the "AI layer"—the harness of tools, rules, context, and integrations wrapped around the LLM—matters more than the underlying model itself. A well-configured harness with a good model will dramatically outperform a frontier model with no harness.</p>
+      <p>Cole introduces Anthropic's concept of the "AI Layer" at <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=255s" target="_blank">4:15</a>—a dedicated layer in your software stack sitting between the codebase and the AI model. This layer includes custom rules, hooks, skills, tool integrations, and sub-agent configurations. Think of it as the "developer experience" layer, but for AI agents instead of human developers.</p>
+      <p>The practical implication is significant: teams should invest as much (or more) effort into configuring their agent harness as they do into prompt engineering. This means maintaining <code>claude.md</code> files, setting up hooks, creating codebase maps, and configuring MCP servers—all of which are explored in the subsequent strategies.</p>
+      <div class="callout green">
+        <strong>Key principle:</strong> "The harness matters more than the model." A Sonnet-class model in a well-built harness outperforms Opus with no harness on large codebases.
+      </div>
+      <ul>
+        <li>The "AI Layer" is a new concept for structuring agent integration</li>
+        <li>Invest in harness configuration, not just prompt engineering</li>
+        <li>The harness includes: rules, hooks, skills, tools, and sub-agent patterns</li>
+        <li>This is a shift from "better model" thinking to "better tooling" thinking</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section-card" id="s4">
+      <h2>
+        <span class="section-num">4</span>
+        Strategy 1: Lean & Layered Global Rules
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=287s" target="_blank">4:47</a>
+      </h2>
+      <p>The first and most foundational strategy is creating lean, layered rules using <code>claude.md</code> files. These files serve as the system prompt or instruction set that Claude Code reads before working on your codebase. The key word here is "lean"—Anthropic explicitly warns against bloated rule files that try to cover every edge case. Instead, rules should be concise, actionable, and structured.</p>
+      <p>The layering aspect is what makes this strategy powerful at scale. You place a root-level <code>claude.md</code> at the project root with global conventions (coding style, commit message format, testing requirements). Then, at <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=342s" target="_blank">5:42</a>, Cole explains how subdirectory-scoped <code>claude.md</code> files override or extend the root rules for specific parts of the codebase. A <code>frontend/claude.md</code> might specify React conventions while <code>backend/claude.md</code> specifies API patterns.</p>
+      <p>This hierarchical approach mirrors how large engineering teams actually work—global standards with team-specific conventions. The agent automatically picks up the relevant rules based on which files it's working with, ensuring it follows the right patterns without being overwhelmed by irrelevant information.</p>
+      <p>Cole emphasizes that rules should be treated like code: version-controlled, reviewed in PRs, and iterated on continuously. When the agent makes a recurring mistake, the fix isn't to yell at it in the prompt—it's to add a rule to the appropriate <code>claude.md</code> file.</p>
+      <div class="callout orange">
+        <strong>Anti-pattern:</strong> Stuffing everything into one massive rules file. Keep it lean—under 500 lines for root, and scope specifics to subdirectories.
+      </div>
+      <ul>
+        <li><code>claude.md</code> at project root for global rules and coding standards</li>
+        <li>Subdirectory <code>claude.md</code> files for team/module-specific conventions</li>
+        <li>Rules should be lean, actionable, and version-controlled</li>
+        <li>Scoping at <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=620s" target="_blank">10:20</a> — test and lint configurations should be scoped per directory</li>
+        <li>Treat rules like code: iterate, review, and refine over time</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section-card" id="s5">
+      <h2>
+        <span class="section-num">5</span>
+        Strategy 2: Codebase Maps
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=459s" target="_blank">7:39</a>
+      </h2>
+      <p>The second strategy addresses one of the biggest challenges agents face in large codebases: knowing where things are. A codebase map is essentially a high-level directory structure document that describes the purpose and contents of each major directory and key file in the project. Think of it as a README specifically written for the AI agent.</p>
+      <p>Cole explains that this map goes beyond a simple <code>tree</code> command output. It should include semantic descriptions: not just that <code>src/services/</code> exists, but that it contains "business logic services for user authentication, payment processing, and notification dispatch." This semantic layer helps the agent make intelligent decisions about where to look for existing code and where to place new code.</p>
+      <p>The codebase map is typically placed in the root <code>claude.md</code> or in a dedicated file referenced from it. For very large monorepos, each major package or service can have its own map. The key insight is that a few hundred tokens of map information can save thousands of tokens of agentic search, making the agent both faster and more accurate.</p>
+      <p>Anthropic recommends keeping these maps updated as part of your regular development process. When new directories are added or major refactors happen, the map should be updated alongside the code changes. Some teams even automate map generation as part of their CI pipeline.</p>
+      <ul>
+        <li>A codebase map is a semantic directory structure document</li>
+        <li>Goes beyond <code>tree</code> output—includes purpose descriptions for each area</li>
+        <li>Dramatically reduces wasted agentic search tokens</li>
+        <li>Can be placed in root <code>claude.md</code> or a separate referenced file</li>
+        <li>Should be maintained alongside code changes, possibly automated via CI</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="section-card" id="s6">
+      <h2>
+        <span class="section-num">6</span>
+        Strategy 3: Self-Improving Hooks
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=647s" target="_blank">10:47</a>
+      </h2>
+      <p>Hooks are one of the most powerful and underutilized features covered in the video. Claude Code supports lifecycle hooks—scripts that run automatically at defined points during the agent's execution. The two primary hooks discussed are <strong>stop hooks</strong> (run when the agent finishes a task) and <strong>start hooks</strong> (run when the agent begins a new task).</p>
+      <p>At <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=677s" target="_blank">11:17</a>, Cole demonstrates a stop hook that automatically runs linting, type checking, and tests after the agent completes its work. If any checks fail, the hook feeds the errors back to the agent so it can fix them—creating a self-correcting loop. This is similar to how a senior developer would review and fix their own work before submitting a PR.</p>
+      <p>The start hook, demonstrated at <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=738s" target="_blank">12:18</a>, is even more interesting. It can load relevant context, recent git changes, or previously learned lessons before the agent begins work. Cole shows how a start hook can read from a "lessons learned" file, giving the agent memory across sessions—essentially making it smarter over time.</p>
+      <p>At <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=815s" target="_blank">13:35</a>, Cole discusses the self-reflection process: when the agent encounters and fixes an error, a hook can append the lesson to a knowledge base. The next time the agent starts, it reads these lessons. Over time, the agent accumulates project-specific knowledge, effectively becoming a specialist in your codebase.</p>
+      <div class="callout purple">
+        <strong>Self-improvement loop:</strong> Stop hook catches errors → Agent fixes them → Lesson is logged → Start hook loads lessons next session → Agent avoids repeating the mistake.
+      </div>
+      <ul>
+        <li><strong>Stop hooks:</strong> Run linting, tests, and type checks automatically after completion</li>
+        <li><strong>Start hooks:</strong> Load context, recent changes, and learned lessons</li>
+        <li><strong>Self-reflection:</strong> Agents can log lessons from errors for future sessions</li>
+        <li>Creates a continuously improving agent experience per-project</li>
+        <li>Hooks are configured in Claude Code's settings and are fully customizable</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="section-card" id="s7">
+      <h2>
+        <span class="section-num">7</span>
+        Strategy 4: Scoped Skills
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=923s" target="_blank">15:23</a>
+      </h2>
+      <p>Skills represent a more sophisticated evolution of the rules concept. While <code>claude.md</code> files provide always-on context, skills are loaded on-demand based on what the agent is doing. This implements what Cole calls "progressive disclosure"—the agent only receives the detailed instructions it needs for the specific task at hand, keeping its context window lean and focused.</p>
+      <p>Skills are defined as markdown files that describe how to perform specific operations. For example, you might have a skill for "creating a new API endpoint," another for "adding a database migration," and another for "setting up a new React component." Each skill contains step-by-step instructions, conventions, and examples specific to your project.</p>
+      <p>The critical innovation is <strong>path scoping</strong>: skills are associated with specific file paths or glob patterns. A skill for API endpoint creation activates only when the agent is working in the <code>backend/routes/</code> directory. This prevents context pollution—the agent working on frontend code never sees backend-specific skills.</p>
+      <p>At <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1006s" target="_blank">16:46</a>, Cole clarifies the distinction between skills and rules. Rules (in <code>claude.md</code>) are always loaded and describe general conventions. Skills are conditionally loaded and describe specific workflows. Rules say "use TypeScript strict mode"; skills say "here's the exact 12-step process for adding a new service endpoint."</p>
+      <ul>
+        <li><strong>Progressive disclosure:</strong> Load instructions only when relevant</li>
+        <li><strong>Path-scoped:</strong> Skills activate based on which files the agent is working with</li>
+        <li>Defined as markdown files with step-by-step procedures</li>
+        <li>Keeps context window lean—agent only sees what it needs</li>
+        <li><strong>Rules vs Skills:</strong> Rules = always-on conventions; Skills = on-demand workflows</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 8 -->
+    <div class="section-card" id="s8">
+      <h2>
+        <span class="section-num">8</span>
+        Strategy 5: LSP + MCP Servers
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1062s" target="_blank">17:42</a>
+      </h2>
+      <p>The fifth strategy brings IDE-grade intelligence to the agent through the Language Server Protocol (LSP) and Model Context Protocol (MCP) servers. LSP gives the agent access to the same symbol-level code intelligence that powers features like "Go to Definition," "Find References," and "Rename Symbol" in your IDE. This is a game-changer for large codebases where understanding code relationships is critical.</p>
+      <p>At <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1150s" target="_blank">19:10</a>, Cole demonstrates a custom MCP server that exposes LSP capabilities to Claude Code. Instead of the agent having to grep for function names and guess at import chains, it can directly query "find all references to this function" or "what's the type signature of this class." This dramatically reduces hallucination and improves the agent's understanding of code structure.</p>
+      <p>Cole explains at <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1229s" target="_blank">20:29</a> why this matters especially for large codebases: when you have hundreds of files with similar naming patterns, grep-based search produces too many false positives. LSP provides semantic understanding—it knows the difference between a function definition, a function call, and a comment that mentions the function name.</p>
+      <p>The MCP server acts as a bridge, translating LSP capabilities into tools that Claude Code can call. This means you can create custom MCP servers that expose project-specific tooling—database schema queries, API documentation lookups, dependency graph traversals—anything that helps the agent understand your specific codebase better.</p>
+      <div class="callout">
+        <strong>LSP advantage:</strong> Semantic code understanding vs. text-based search. The agent can follow type hierarchies, call chains, and import graphs with precision.
+      </div>
+      <ul>
+        <li><strong>LSP integration:</strong> Symbol search, go-to-definition, find-references for agents</li>
+        <li><strong>MCP servers:</strong> Custom tool bridges exposing any capability to the agent</li>
+        <li>Eliminates grep-based false positives in large codebases</li>
+        <li>Provides semantic understanding of code relationships</li>
+        <li>Can expose project-specific tools: DB schema, API docs, dependency graphs</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 9 -->
+    <div class="section-card" id="s9">
+      <h2>
+        <span class="section-num">9</span>
+        Strategy 6: Sub-Agents
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1317s" target="_blank">21:57</a>
+      </h2>
+      <p>The final and most advanced strategy is the use of sub-agents—spawning specialized child agents for different phases of a task. The key insight from Anthropic is to <strong>separate exploration from editing</strong>. One agent explores the codebase, gathers context, and builds a plan; another agent takes that plan and executes the actual code changes.</p>
+      <p>This separation addresses a fundamental problem: exploration and editing require different modes of operation. An exploring agent needs broad access and should read many files without modifying anything. An editing agent needs focused context and precise instructions. Combining both in one agent leads to context window bloat and confused behavior.</p>
+      <p>Cole explains that sub-agents can be configured with different tools, permissions, and even different models. The exploration agent might use a cheaper, faster model since it's just reading and summarizing. The editing agent might use a more capable model since precision matters for code changes. Each sub-agent gets its own context window, effectively multiplying the available context.</p>
+      <p>In practice, this pattern looks like: a main orchestrator agent receives a task, spawns an explorer sub-agent that reads relevant files and produces a summary/plan, then spawns an editor sub-agent with that focused plan to make changes. The orchestrator can then spawn a reviewer sub-agent to validate the changes—creating a multi-agent review pipeline.</p>
+      <ul>
+        <li><strong>Separate exploration from editing:</strong> Different agents for different phases</li>
+        <li>Each sub-agent gets its own clean context window</li>
+        <li>Can use different models for different sub-agents (cost optimization)</li>
+        <li>Orchestrator pattern: explore → plan → edit → review</li>
+        <li>Effectively multiplies available context for complex tasks</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 10 -->
+    <div class="section-card" id="s10">
+      <h2>
+        <span class="section-num">10</span>
+        Cole's Plugin & Getting Started
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1423s" target="_blank">23:43</a>
+      </h2>
+      <p>At <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1448s" target="_blank">24:08</a>, Cole transitions from theory to practice by introducing his open-source plugin that implements many of these strategies out of the box. The plugin provides pre-configured <code>claude.md</code> templates, hook scripts, skill definitions, and MCP server configurations that teams can adopt immediately rather than building everything from scratch.</p>
+      <p>The plugin is designed as a starting point, not a rigid framework. Teams are expected to customize the templates and configurations for their specific codebase. Cole walks through the installation process, which involves cloning the plugin repo, running a setup script, and then customizing the generated files for your project.</p>
+      <p>Cole emphasizes that you don't need to implement all six strategies at once. The recommended approach is progressive: start with <code>claude.md</code> rules (Strategy 1), add a codebase map (Strategy 2), then gradually introduce hooks, skills, and MCP servers as your team gets comfortable. Each strategy builds on the previous ones.</p>
+      <ul>
+        <li>Open-source plugin implementing multiple strategies out of the box</li>
+        <li>Includes pre-configured templates for rules, hooks, and skills</li>
+        <li>Designed as a customizable starting point for teams</li>
+        <li><strong>Progressive adoption:</strong> Start with rules, add complexity over time</li>
+        <li>Available on Cole Medin's GitHub with documentation</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 11 -->
+    <div class="section-card" id="s11">
+      <h2>
+        <span class="section-num">11</span>
+        Organizational Adoption
+        <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1554s" target="_blank">25:54</a>
+      </h2>
+      <p>The final strategic section covers Anthropic's advice on rolling out agent harnesses across engineering organizations. This isn't just a technical challenge—it's an organizational change management challenge. Anthropic recommends starting with a small group of enthusiastic early adopters, letting them build and refine the harness configuration, and then gradually expanding to more teams.</p>
+      <p>A critical recommendation is to make the AI layer a shared, maintained artifact—not something individual developers configure on their own machines. The <code>claude.md</code> files, skills, hooks, and MCP configurations should all live in the repository and be reviewed like any other code. This ensures consistency and allows the entire team to benefit from improvements.</p>
+      <p>Cole highlights that Anthropic suggests designating "AI champions" or "harness maintainers" on each team—people who take ownership of refining the agent configuration based on feedback from their teammates. These maintainers collect common failure patterns and translate them into rules, skills, or hooks that prevent the failures from recurring.</p>
+      <p>The end goal is a flywheel effect: as the harness improves, developers use the agent more; as they use it more, they discover more edge cases; those edge cases get codified into better harness configuration; which makes the agent even more reliable. Over time, the organization builds a highly customized, deeply knowledgeable AI assistant tuned specifically for their codebase.</p>
+      <div class="callout green">
+        <strong>Flywheel:</strong> Better harness → More usage → More edge case discovery → Better harness → Even more reliable AI assistance.
+      </div>
+      <ul>
+        <li>Start with enthusiastic early adopters, expand gradually</li>
+        <li>AI layer configuration should live in the repo and be version-controlled</li>
+        <li>Designate "AI champions" or harness maintainers per team</li>
+        <li>Collect failure patterns and codify them into rules/skills/hooks</li>
+        <li>Goal: a self-improving flywheel of AI capability</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 12: TAKEAWAYS + TIMESTAMPS -->
+    <div class="section-card" id="s12">
+      <h2>
+        <span class="section-num">12</span>
+        Key Takeaways & Timestamp Index
+      </h2>
+
+      <h3>🎯 Key Takeaways</h3>
+      <ul>
+        <li><strong>The harness matters more than the model</strong> — invest in your AI Layer configuration</li>
+        <li><strong>Start lean, layer up</strong> — begin with <code>claude.md</code>, progressively add hooks, skills, and tools</li>
+        <li><strong>Scope everything</strong> — rules, skills, and tools should be scoped to relevant directories</li>
+        <li><strong>Self-improvement loops</strong> — use hooks to create agents that learn from their mistakes</li>
+        <li><strong>Separate exploration from editing</strong> — sub-agents prevent context window bloat</li>
+        <li><strong>LSP > grep</strong> — semantic code understanding beats text search at scale</li>
+        <li><strong>Organizational adoption is a process</strong> — start small, iterate, create a flywheel</li>
+      </ul>
+
+      <h3>📍 Full Timestamp Index</h3>
+      <div class="ts-grid">
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=0s" target="_blank">0:00</a>
+          <span>Introduction</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=112s" target="_blank">1:52</a>
+          <span>Agentic Search</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=169s" target="_blank">2:49</a>
+          <span>Harness vs Model</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=255s" target="_blank">4:15</a>
+          <span>The AI Layer</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=287s" target="_blank">4:47</a>
+          <span>Lean & Layered Rules</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=342s" target="_blank">5:42</a>
+          <span>Subdirectory claude.md</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=459s" target="_blank">7:39</a>
+          <span>Codebase Maps</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=513s" target="_blank">8:33</a>
+          <span>Sponsor</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=620s" target="_blank">10:20</a>
+          <span>Test/Lint Scoping</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=647s" target="_blank">10:47</a>
+          <span>Hooks Introduction</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=677s" target="_blank">11:17</a>
+          <span>Stop Hook Demo</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=738s" target="_blank">12:18</a>
+          <span>Start Hook Demo</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=815s" target="_blank">13:35</a>
+          <span>Self-Reflection Process</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=923s" target="_blank">15:23</a>
+          <span>Skills Overview</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1006s" target="_blank">16:46</a>
+          <span>Skills vs Rules</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1062s" target="_blank">17:42</a>
+          <span>LSP Introduction</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1150s" target="_blank">19:10</a>
+          <span>MCP Server Demo</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1229s" target="_blank">20:29</a>
+          <span>LSP for Large Codebases</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1317s" target="_blank">21:57</a>
+          <span>Sub-Agents</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1423s" target="_blank">23:43</a>
+          <span>Plugin Overview</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1554s" target="_blank">25:54</a>
+          <span>Organizational Adoption</span>
+        </div>
+        <div class="ts-grid-item">
+          <a class="ts" href="https://www.youtube.com/watch?v=efRIrLXoOVA&t=1687s" target="_blank">28:07</a>
+          <span>End</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /layout -->
+
+<div class="footer">
+  Deep dive generated from Cole Medin's video analysis &nbsp;•&nbsp; Video © Cole Medin &nbsp;•&nbsp; Anthropic's guide on building agent harnesses for large codebases
+</div>
+
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Dive: /handoff is my new favourite skill — Matt Pocock</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card-bg: #1a1d27;
+    --card-border: #2a2d3a;
+    --accent: #3b82f6;
+    --accent-dim: #1e3a5f;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --text-bright: #f8fafc;
+    --green: #22c55e;
+    --red: #ef4444;
+    --orange: #f59e0b;
+    --purple: #a78bfa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.7;
+    padding: 0;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--card-border);
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 1.8rem;
+    color: var(--text-bright);
+    margin-bottom: 0.5rem;
+  }
+  .hero h1 code {
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 1.6rem;
+  }
+  .hero .meta {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  .thumb-link {
+    display: inline-block;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+    max-width: 560px;
+    width: 100%;
+  }
+  .thumb-link:hover { transform: scale(1.02); }
+  .thumb-link img { width: 100%; display: block; }
+
+  /* Layout */
+  .container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+
+  /* Sticky TOC */
+  .toc {
+    position: sticky;
+    top: 1rem;
+    width: 260px;
+    min-width: 220px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .toc h3 {
+    color: var(--accent);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.8rem;
+  }
+  .toc ol { list-style: none; counter-reset: toc; }
+  .toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+  .toc li a {
+    color: var(--text-muted);
+    display: block;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+  .toc li a:hover { color: var(--text-bright); text-decoration: none; }
+  .toc li a::before {
+    content: counter(toc) ". ";
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Main content */
+  .content { flex: 1; min-width: 0; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 {
+    color: var(--text-bright);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--accent-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h2 .num {
+    background: var(--accent);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .card h3 {
+    color: var(--purple);
+    font-size: 1rem;
+    margin: 1rem 0 0.5rem;
+  }
+  .card p, .card li { margin-bottom: 0.6rem; }
+  .card ul, .card ol { padding-left: 1.5rem; }
+  .card ul li::marker { color: var(--accent); }
+
+  /* Timestamp badge */
+  .ts {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin: 2px 4px 2px 0;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+  /* Key takeaways */
+  .takeaways {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+    border: 1px solid var(--accent-dim);
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+  }
+  .takeaways h3 { color: var(--green); margin-top: 0; }
+  .takeaways li { color: var(--text); }
+
+  /* Flow diagram */
+  .flow {
+    background: #12141e;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.2rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    overflow-x: auto;
+    white-space: pre;
+    margin: 1rem 0;
+  }
+  .flow .highlight { color: var(--accent); }
+  .flow .green { color: var(--green); }
+  .flow .orange { color: var(--orange); }
+
+  /* Good / bad markers */
+  .good::before { content: "✓ "; color: var(--green); font-weight: bold; }
+  .bad::before { content: "✗ "; color: var(--red); font-weight: bold; }
+
+  /* Timestamp grid */
+  .ts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 0.6rem;
+  }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(26,29,39,0.6);
+    transition: background 0.15s;
+  }
+  .ts-row:hover { background: var(--card-bg); }
+  .ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .container { flex-direction: column; }
+    .toc { position: static; width: 100%; max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1><code>/handoff</code> is my new favourite skill</h1>
+  <div class="meta">Matt Pocock · ~12 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/dtAJ2dOd3ko/maxresdefault.jpg"
+         alt="Video thumbnail — /handoff is my new favourite skill">
+  </a>
+</div>
+
+<!-- ─── BODY ─── -->
+<div class="container">
+
+  <!-- Sticky TOC -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#overview">Overview &amp; Key Takeaways</a></li>
+      <li><a href="#dumb-zone">Context Windows &amp; the "Dumb Zone"</a></li>
+      <li><a href="#compact">Compact — Strengths &amp; Limits</a></li>
+      <li><a href="#handoff-skill">The Handoff Skill</a></li>
+      <li><a href="#grilling">Handoff During Grilling Sessions</a></li>
+      <li><a href="#prototype">Handoff → Prototype → Handoff Back</a></li>
+      <li><a href="#cross-agent">Cross-Agent Portability</a></li>
+      <li><a href="#anatomy">Anatomy of the Skill</a></li>
+      <li><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- 1 Overview -->
+    <div class="card" id="overview">
+      <h2><span class="num">1</span> Overview &amp; Key Takeaways</h2>
+      <p>Matt Pocock introduces his <code>/handoff</code> skill — a simple but powerful productivity pattern for AI-assisted coding. The skill compresses the relevant slice of a context window into a Markdown file that can be passed to a fresh agent session, enabling multi-session workflows without polluting the current session's focus.</p>
+
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li>Context windows have a <strong>"smart zone"</strong> (early) and a <strong>"dumb zone"</strong> (past ~120K tokens) — even if the model advertises 1M tokens.</li>
+          <li><code>/compact</code> is useful for continuing a single long session, but it <strong>clobbers your current context</strong> when you want to branch.</li>
+          <li><code>/handoff</code> lets you <strong>fork context</strong> to a new session while keeping the current one pure and focused.</li>
+          <li>The handoff document is <strong>plain Markdown</strong> → works across any agent (Claude Code, Codex, Copilot CLI, etc.).</li>
+          <li>Powerful pattern: <strong>Grilling → Handoff → Prototype → Handoff back</strong> (DIY sub-agent).</li>
+          <li>Handoff docs should be saved to the <strong>OS temp directory</strong> (disposable), never committed.</li>
+          <li>Always <strong>describe the purpose</strong> of the next session when handing off.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2 Dumb Zone -->
+    <div class="card" id="dumb-zone">
+      <h2><span class="num">2</span> Context Windows &amp; the "Dumb Zone"</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=84s" target="_blank">▶ 01:24</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=142s" target="_blank">▶ 02:22</a>
+      </p>
+      <p>As a coding session progresses, the context window fills with conversation turns, tool calls, and file edits. Claude Code offers up to 1M tokens, but performance degrades well before that limit.</p>
+      <ul>
+        <li><strong>Smart zone (early):</strong> Fewer attention relationships → the agent is sharper and more focused.</li>
+        <li><strong>Dumb zone (past ~120K tokens):</strong> Attention becomes diffuse → noticeably worse responses.</li>
+        <li><strong>Practical usable budget ≈ 120K tokens</strong>, regardless of advertised maximum.</li>
+        <li>You must budget context efficiently and stay aware of usage at all times.</li>
+      </ul>
+    </div>
+
+    <!-- 3 Compact -->
+    <div class="card" id="compact">
+      <h2><span class="num">3</span> Compact — Strengths &amp; Limits</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=199s" target="_blank">▶ 03:19</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=284s" target="_blank">▶ 04:44</a>
+      </p>
+      <p>Compact summarizes a bloated context window so you jump back from the dumb zone into the smart zone — within the <em>same</em> session.</p>
+
+      <h3>How Compact Works</h3>
+      <ol>
+        <li>Takes the current large conversation.</li>
+        <li>Summarizes it (referenced files, user statements, tone).</li>
+        <li>Places the summary at the start of a new session.</li>
+        <li>Subsequent compactions create "sediment" layers from prior conversations.</li>
+      </ol>
+      <p><strong>Auto-compact:</strong> Some harnesses automatically trigger compaction when you approach the context limit.</p>
+
+      <h3>Where Compact Shines</h3>
+      <ul>
+        <li class="good">Long single-session debugging — barrel through, compact, retry.</li>
+        <li class="good">Maintaining continuity on one problem.</li>
+      </ul>
+
+      <h3>Where Compact Falls Short</h3>
+      <ul>
+        <li class="bad">You spot an out-of-scope task mid-session.</li>
+        <li class="bad">You want to branch into a parallel session without losing progress.</li>
+        <li class="bad">You need to keep the current session "pure" and focused.</li>
+      </ul>
+    </div>
+
+    <!-- 4 Handoff Skill -->
+    <div class="card" id="handoff-skill">
+      <h2><span class="num">4</span> The Handoff Skill — Why It Exists</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=312s" target="_blank">▶ 05:12</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=30s" target="_blank">▶ 00:30</a>
+      </p>
+      <p>Mid-session you notice something out of scope. Your options without handoff:</p>
+      <ul>
+        <li><strong>Extend current session</strong> → diluted context, likely hit dumb zone, can't finish original goal.</li>
+        <li><strong>Compact</strong> → clobbers current session progress.</li>
+      </ul>
+      <p>What you actually want: extract just the relevant slice of context for the side task, hand it to a new session, keep your current session untouched.</p>
+      <p>The <code>/handoff</code> skill:</p>
+      <ul>
+        <li>Lives in Matt's skills repo (<code>skills/productivity/handoff</code>).</li>
+        <li>Writes a handoff document summarizing the conversation so a fresh agent can continue.</li>
+        <li>Saves to the OS temp directory (not the workspace).</li>
+        <li>Matt found himself doing this manually so often he formalized it into a skill.</li>
+      </ul>
+    </div>
+
+    <!-- 5 Grilling -->
+    <div class="card" id="grilling">
+      <h2><span class="num">5</span> Handoff During Grilling Sessions</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=368s" target="_blank">▶ 06:08</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=393s" target="_blank">▶ 06:33</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=422s" target="_blank">▶ 07:02</a>
+      </p>
+      <p>Matt most often uses <code>/handoff</code> during "grilling" sessions — structured Q&amp;A sessions with the agent for planning features.</p>
+      <h3>Example — Sand Castle Feature Planning</h3>
+      <ol>
+        <li>Mid-grilling (Q2), he realizes moving iterations/completion signals to a separate API belongs in a different session.</li>
+        <li>Calls <code>/handoff</code> with a description of <em>why</em> and <em>what</em>.</li>
+        <li><strong>Two benefits:</strong>
+          <ul>
+            <li>Sharpens the current grill — "Q2 collapses" (scope narrows).</li>
+            <li>Creates a focused Markdown file for the next session.</li>
+          </ul>
+        </li>
+        <li>Later, passes the handoff doc to another agent to file a GitHub issue.</li>
+      </ol>
+    </div>
+
+    <!-- 6 Prototype -->
+    <div class="card" id="prototype">
+      <h2><span class="num">6</span> Handoff → Prototype → Handoff Back</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=450s" target="_blank">▶ 07:30</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=505s" target="_blank">▶ 08:25</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=531s" target="_blank">▶ 08:51</a>
+      </p>
+      <p>During grilling, some questions can't be answered without seeing code — UI prototypes, tricky logic. The solution is the <strong>round-trip handoff</strong>:</p>
+
+      <div class="flow"><span class="highlight">Session A</span> (Grilling, Q13)
+    │
+    ├─ <span class="orange">/handoff</span> → "prototype the difficult bits"
+    │    (window communication, TL Draw SDK integration)
+    ▼
+<span class="highlight">Session B</span> (Prototype) — <span class="orange">169K tokens</span>, way too big for grilling
+    │
+    ├─ Build prototype, explore interaction model
+    │
+    ├─ <span class="orange">/handoff back</span> → "take all learnings, return to planner"
+    ▼
+<span class="highlight">Session A</span> (resumed)
+    │
+    └─ <span class="green">Finish grilling, create PRDs &amp; issues with prototype baked in</span></div>
+
+      <p>This is the <strong>"DIY sub-agent" pattern</strong>: use a full context window for one specific task, compress learnings, pass back to the parent session.</p>
+    </div>
+
+    <!-- 7 Cross-agent -->
+    <div class="card" id="cross-agent">
+      <h2><span class="num">7</span> Cross-Agent Portability</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=561s" target="_blank">▶ 09:21</a>
+      </p>
+      <p>Because handoff docs are plain Markdown (not tied to any agent's native format), they're universally portable:</p>
+      <ul>
+        <li>Claude Code → Codex</li>
+        <li>Claude Code → Copilot CLI</li>
+        <li>Any agent → any other agent</li>
+      </ul>
+      <p><strong>Use cases:</strong> Adversarial review (second agent critiques the first), cross-tool workflows when different agents have different strengths.</p>
+    </div>
+
+    <!-- 8 Anatomy -->
+    <div class="card" id="anatomy">
+      <h2><span class="num">8</span> Anatomy of the Handoff Skill</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=589s" target="_blank">▶ 09:49</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=644s" target="_blank">▶ 10:44</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=670s" target="_blank">▶ 11:10</a>
+      </p>
+      <p>The skill file contains several important directives:</p>
+
+      <h3>① Suggested Skills Section</h3>
+      <p>The handoff doc includes which skills the next session should invoke (e.g., <code>grill-with-docs</code>, <code>diagnose</code>, <code>prototype</code>). Paste the doc and the new session self-configures.</p>
+
+      <h3>② No Duplication of Artifacts</h3>
+      <p>"Do not duplicate content already captured in other artifacts." Use <strong>pointers</strong> (file paths, issue URLs) instead of copy-pasting existing content.</p>
+
+      <h3>③ Save to OS Temp Directory</h3>
+      <p>Handoff files are <strong>disposable</strong> — they should NOT persist in the codebase as stale documentation.</p>
+
+      <h3>④ Redact Sensitive Information</h3>
+      <p>Strip API keys, passwords, PII. These Markdown files can end up in random places.</p>
+
+      <h3>⑤ User Arguments = Next Session Description</h3>
+      <p>When you call <code>/handoff</code> with arguments, they describe what the next session will focus on. The agent tailors the document accordingly. Matt <strong>always</strong> describes the purpose — he considers it essential for quality.</p>
+    </div>
+
+    <!-- 9 Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">9</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=0s" target="_blank">00:00</a><span class="label">Intro — discovering the handoff pattern</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=30s" target="_blank">00:30</a><span class="label">The handoff skill in the skills repo</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=57s" target="_blank">00:57</a><span class="label">Experiment: how much would I use it?</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=84s" target="_blank">01:24</a><span class="label">Course plug — AI Coding for Real Engineers</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=111s" target="_blank">01:51</a><span class="label">Context windows explained (smart vs dumb zone)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=172s" target="_blank">02:52</a><span class="label">~120K practical token budget</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=199s" target="_blank">03:19</a><span class="label">What compact does and how it works</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=227s" target="_blank">03:47</a><span class="label">Auto-compact buffer explained</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=254s" target="_blank">04:14</a><span class="label">Sediment layers from repeated compaction</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=284s" target="_blank">04:44</a><span class="label">Compact's limitation: single-session only</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=312s" target="_blank">05:12</a><span class="label">The branching problem — wanting to fork context</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=339s" target="_blank">05:39</a><span class="label">The handoff solution: extract &amp; fork</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=368s" target="_blank">06:08</a><span class="label">Doing it manually → formalizing as a skill</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=393s" target="_blank">06:33</a><span class="label">Real example: grilling for Sand Castle features</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=422s" target="_blank">07:02</a><span class="label">Handoff sharpens the current session</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=450s" target="_blank">07:30</a><span class="label">Pattern: handoff to prototype during grilling</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=475s" target="_blank">07:55</a><span class="label">Known unknowns vs. needs-to-be-seen-in-code</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=505s" target="_blank">08:25</a><span class="label">Prototype session: 169K tokens</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=531s" target="_blank">08:51</a><span class="label">Handoff back — DIY sub-agent pattern</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=561s" target="_blank">09:21</a><span class="label">Cross-agent portability (Markdown is universal)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=589s" target="_blank">09:49</a><span class="label">Skill anatomy: suggested skills section</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=618s" target="_blank">10:18</a><span class="label">Auto-invoke skills in next session</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=644s" target="_blank">10:44</a><span class="label">No duplication, use pointers</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=670s" target="_blank">11:10</a><span class="label">Temp dir, redact secrets, arguments</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=696s" target="_blank">11:36</a><span class="label">Always describe the purpose when handing off</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=dtAJ2dOd3ko&t=720s" target="_blank">12:00</a><span class="label">Outro — course plug, bookshelf teaser</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer style="text-align:center; padding:2rem; color:var(--text-muted); font-size:0.8rem; border-top:1px solid var(--card-border);">
+  Generated by Deep Dive Document Builder
+</footer>
+
+</body>
+</html>
