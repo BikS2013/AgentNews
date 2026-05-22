@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Stopped Using /grill-me for Coding — Deep Dive</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1117;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 80px}
+a{color:#a78bfa;text-decoration:none}
+a:hover{color:#c4b5fd}
+.container{max-width:860px;margin:0 auto}
+/* Header */
+.header{text-align:center;margin-bottom:40px}
+.header h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;color:#f1f5f9;line-height:1.3;margin-bottom:8px}
+.header .meta{font-size:14px;color:#94a3b8;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+.header .meta span{display:inline-flex;align-items:center;gap:4px}
+.badge-channel{background:rgba(139,92,246,0.15);color:#a78bfa;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:500}
+/* Video embed */
+.video-wrapper{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;margin-bottom:36px;background:#000}
+.video-wrapper iframe,.video-wrapper .fallback{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.fallback{display:none;cursor:pointer;background-size:cover;background-position:center;background-image:url('https://img.youtube.com/vi/6BB6exR8Zd8/maxresdefault.jpg')}
+.fallback .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
+.fallback:hover .play-btn{background:rgba(139,92,246,0.8)}
+.fallback .play-btn svg{width:32px;height:32px;fill:#fff;margin-left:4px}
+/* Timestamp pills */
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd}
+/* Cards */
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:28px 24px;margin-bottom:20px}
+.card h2{font-size:1.2rem;font-weight:600;color:#f1f5f9;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.card h3{font-size:1rem;font-weight:600;color:#cbd5e1;margin:16px 0 8px}
+.card p,.card li{color:#c0c9d6;font-size:15px}
+.card ul,.card ol{padding-left:20px;margin:10px 0}
+.card li{margin-bottom:6px}
+.card li strong{color:#e2e8f0}
+.card blockquote{border-left:3px solid #a78bfa;padding:8px 16px;margin:12px 0;background:rgba(139,92,246,0.06);border-radius:0 8px 8px 0;font-style:italic;color:#b8bfcc}
+/* Overview card accent */
+.card.overview{border-left:3px solid #a78bfa}
+/* Key takeaways */
+.takeaways ol{counter-reset:t}
+.takeaways ol li{counter-increment:t;list-style:none;position:relative;padding-left:28px}
+.takeaways ol li::before{content:counter(t);position:absolute;left:0;top:1px;width:20px;height:20px;background:rgba(139,92,246,0.2);color:#a78bfa;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* Timestamp index grid */
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-top:14px}
+.ts-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:8px;font-size:14px;color:#b8bfcc;transition:background 0.15s}
+.ts-item:hover{background:rgba(139,92,246,0.08)}
+.ts-item .timestamp{flex-shrink:0}
+/* Responsive */
+@media(max-width:600px){.card{padding:20px 16px}.ts-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+<h1>I Stopped Using /grill-me for Coding. Here's What I Use Instead — Deep Dive</h1>
+<div class="meta">
+<span class="badge-channel">Matt Pocock</span>
+<span>⏱ ~15:16</span>
+<span><a href="https://www.youtube.com/watch?v=6BB6exR8Zd8" target="_blank">Watch on YouTube ↗</a></span>
+</div>
+</div>
+
+<!-- Video Embed -->
+<div class="video-wrapper">
+<iframe id="yt-embed" src="https://www.youtube.com/embed/6BB6exR8Zd8" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="fallback" id="yt-fallback" onclick="window.open('https://www.youtube.com/watch?v=6BB6exR8Zd8','_blank')">
+<div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"/></svg></div>
+</div>
+</div>
+<script>
+(function(){
+var loc=window.location.href;
+if(loc.startsWith('file://')||loc.indexOf('drive.google.com')!==-1){
+document.getElementById('yt-embed').style.display='none';
+document.getElementById('yt-fallback').style.display='block';
+}
+})();
+</script>
+
+<!-- Overview -->
+<div class="card overview">
+<h2>Overview</h2>
+<p>Matt Pocock reveals the successor to his wildly popular <strong>Grill Me</strong> Claude skill. The new skill, <strong>Grill with Docs</strong>, combines the relentless interviewing of Grill Me with <em>ubiquitous language</em> documentation inspired by Domain-Driven Design. The result: AI that aligns with your thinking using fewer tokens, sharper language, and better code.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="card">
+<h2>The Phenomenon of Grill Me <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=0s" target="_blank">▶ 0:00</a></h2>
+<p>Matt wrote <strong>4 sentences</strong> that became the most influential he's ever written — the <em>Grill Me</em> skill. It interviews you relentlessly until reaching shared understanding, walking down each branch of the design tree, resolving dependencies between decisions one by one. He receives ~5 messages daily from people praising it.</p>
+<blockquote>"Absolute game-changer" · "Goated" · "Might save time — you just one-shot everything after gathering context."</blockquote>
+</div>
+
+<!-- Section 2 -->
+<div class="card">
+<h2>Where Grill Me Falls Short <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=63s" target="_blank">▶ 1:03</a></h2>
+<p>Despite the praise, Matt found recurring problems:</p>
+<ul>
+<li>The agent would be <strong>verbose about concepts</strong> that already had established terms</li>
+<li>He'd have to remind it <em>"there's already a term for that"</em></li>
+<li>When they <em>did</em> land on good shared language, it <strong>wasn't documented anywhere</strong></li>
+<li>He had to <strong>re-explain</strong> all non-obvious things about the codebase and domain before every productive session</li>
+<li>Domain jargon (e.g., "standalone video" = a video with <code>lessonId === null</code>) wasn't captured</li>
+</ul>
+<blockquote>Core frustration: communication was effective, but lacked persistent shared vocabulary.</blockquote>
+</div>
+
+<!-- Section 3 -->
+<div class="card">
+<h2>Ubiquitous Language — The Missing Piece <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=210s" target="_blank">▶ 3:30</a></h2>
+<p>Inspired by Domain-Driven Design (Eric Evans' <em>"Big Blue Book"</em>), Matt created a <strong>ubiquitous language</strong> skill. The concept: code, developers, and domain experts should all use a shared language documented in a single source of truth.</p>
+<p>He started using it alongside Grill Me — calling the ubiquitous language skill mid-session to sharpen terms and create a <code>context.md</code> file. Then realized: <strong>why not combine both into one skill?</strong></p>
+</div>
+
+<!-- Section 4 -->
+<div class="card">
+<h2>Grill with Docs — The New Skill <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=281s" target="_blank">▶ 4:41</a></h2>
+<p><strong>Grill with Docs</strong> = Grill Me + Ubiquitous Language + ADRs, combined into one skill.</p>
+<h3>Three Layers</h3>
+<ol>
+<li><strong>context.md</strong> — Documents all shared language (glossary of domain terms). Uses DDD's concept of <em>bounded contexts</em>. One context.md per bounded context; scales to monorepos with a context map.</li>
+<li><strong>Grill session enhancements</strong> — Challenges language usage against the existing glossary, sharpens fuzzy language, discusses concrete scenarios, cross-references with code, and updates context.md as you go.</li>
+<li><strong>Architectural Decision Records (ADRs)</strong> — Simple markdown files documenting non-obvious decisions. Created only when a decision is: hard to reverse, surprising without context, and the result of a real trade-off.</li>
+</ol>
+</div>
+
+<!-- Section 5 -->
+<div class="card">
+<h2>Live Demo — Grilling in Action <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=508s" target="_blank">▶ 8:28</a></h2>
+<p>Matt demos adding a <strong>"pitch"</strong> entity to his app (courses/lessons/videos platform). The pitch concept: Mr. Beast-style packaging — create the video title/description/framing <em>before</em> the actual content.</p>
+<h3>What Happens During the Session</h3>
+<ul>
+<li>Agent immediately reads <code>context.md</code>, finds "standalone video" already defined</li>
+<li>Surfaces a <strong>terminology tension</strong>: cardinality between pitch and standalone video (one-to-many)</li>
+<li>Detects a <strong>terminology collision</strong>: standalone videos can now be either pitched or unpitched</li>
+<li>Forces a <strong>design decision</strong>: keep "standalone video" as any lessonless video, or redefine to mean specifically unpitched</li>
+<li>This language decision cascades into UI sections, code structure, deletion cascades, variable names</li>
+</ul>
+<blockquote>"This might seem like bike-shedding, but this language affects every variable name, every file name in the generated code."</blockquote>
+</div>
+
+<!-- Section 6 -->
+<div class="card">
+<h2>The context.md Updates <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=674s" target="_blank">▶ 11:14</a></h2>
+<p>After the grilling session, Claude updates <code>context.md</code> with new entries:</p>
+<ul>
+<li><strong>Pitch</strong> — the entity itself</li>
+<li><strong>Pitch status</strong> — idle / scheduled / shipped</li>
+<li><strong>Pitched standalone video</strong></li>
+<li><strong>Unattached standalone video</strong></li>
+</ul>
+<p>The language becomes <strong>precise and persistent</strong> across all future sessions.</p>
+</div>
+
+<!-- Section 7 -->
+<div class="card">
+<h2>Benefits of Grill with Docs <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=745s" target="_blank">▶ 12:25</a></h2>
+<p>Three concrete benefits:</p>
+<ol>
+<li><strong>Concise replies</strong> — AI uses fewer tokens because shared vocabulary eliminates verbose re-descriptions</li>
+<li><strong>Aligned thinking traces</strong> — AI's internal reasoning uses the same language, so fewer tokens spent thinking = more aligned with your intention</li>
+<li><strong>Easier to navigate code</strong> — Code mirrors the documented language, making search and navigation natural</li>
+</ol>
+<blockquote>"These are the same benefits described in Domain-Driven Design. The same techniques that work with humans also work with AI."</blockquote>
+</div>
+
+<!-- Section 8 -->
+<div class="card">
+<h2>When to Use Which Skill <a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=807s" target="_blank">▶ 13:27</a></h2>
+<ul>
+<li><strong>Grill with Docs</strong> — when you have a codebase (even a new one — especially at project start when establishing shared language)</li>
+<li><strong>Grill Me</strong> — when you <em>don't</em> have a codebase (productivity, writing, planning). Moved to the "productivity" area.</li>
+</ul>
+<blockquote>Amazing non-coding use case: someone wrote a eulogy using Grill Me to surface stories about their mom.</blockquote>
+</div>
+
+<!-- Key Takeaways -->
+<div class="card takeaways">
+<h2>🔑 Key Takeaways</h2>
+<ol>
+<li>Grill Me's weakness: <strong>no persistent shared vocabulary</strong> between sessions</li>
+<li><strong>Ubiquitous language</strong> (from DDD) solves this — code, developers, and domain experts use the same terms</li>
+<li><code>context.md</code> is the <strong>single source of truth</strong> for domain vocabulary</li>
+<li>Language decisions <strong>cascade into everything</strong>: variable names, file names, UI, deletion rules</li>
+<li><strong>ADRs</strong> capture non-obvious decisions that context.md can't</li>
+<li>The payoff compounds: 4–5 sessions in, Claude <em>"magically aligns with your thoughts"</em></li>
+<li>Concise replies + aligned thinking + navigable code = the <strong>three concrete benefits</strong></li>
+<li>DDD techniques work just as well with AI as with human teams</li>
+<li><strong>Grill with Docs</strong> for codebases, <strong>Grill Me</strong> for everything else</li>
+<li><em>"Getting the language right is absolutely crucial for feeling aligned with the AI"</em></li>
+</ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="card">
+<h2>⏱ Timestamp Index</h2>
+<div class="ts-grid">
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=0s" target="_blank">0:00</a> The Grill Me phenomenon</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=63s" target="_blank">1:03</a> Where Grill Me falls short</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=126s" target="_blank">2:06</a> The re-explanation problem</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=210s" target="_blank">3:30</a> Ubiquitous language from DDD</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=281s" target="_blank">4:41</a> Grill with Docs: the new skill</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=303s" target="_blank">5:03</a> context.md and bounded contexts</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=342s" target="_blank">5:42</a> Grill session enhancements</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=362s" target="_blank">6:02</a> User feedback: "magically aligned"</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=447s" target="_blank">7:27</a> Architectural Decision Records</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=508s" target="_blank">8:28</a> Live demo: adding a pitch entity</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=552s" target="_blank">9:12</a> Terminology collision detection</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=605s" target="_blank">10:05</a> Language decisions cascade into code</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=674s" target="_blank">11:14</a> context.md updates after grilling</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=745s" target="_blank">12:25</a> Three benefits: concise, aligned, navigable</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=807s" target="_blank">13:27</a> When to use which skill</div>
+<div class="ts-item"><a class="timestamp" href="https://www.youtube.com/watch?v=6BB6exR8Zd8&t=867s" target="_blank">14:27</a> Newsletter and skill updates</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>
