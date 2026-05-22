@@ -23,6 +23,13 @@ export interface CatalogEntry {
   thumbnailSource: 'html' | 'cli-override';
   /** Lower-case hexadecimal SHA-256 of the published HTML file (64 chars). */
   sha256: string;
+  /**
+   * Optional ISO-8601 UTC timestamp of when the underlying YouTube video was
+   * published. Populated at publish time by `publish-article` when the
+   * thumbnail URL resolves to a YouTube video AND `YOUTUBE_API_KEY` is set;
+   * omitted otherwise (soft-skip — see `src/extractor/youtube.ts`).
+   */
+  youtubePublishedAt?: string;
 }
 
 export interface CatalogFile {
@@ -67,6 +74,11 @@ export function isCatalogEntry(value: unknown): value is CatalogEntry {
 
   if (typeof value['sha256'] !== 'string') return false;
   if (!SHA256_REGEX.test(value['sha256'])) return false;
+
+  // Optional field: youtubePublishedAt. If present, must be an ISO-8601
+  // timestamp. If absent (undefined or key missing), accept silently.
+  const yt = value['youtubePublishedAt'];
+  if (yt !== undefined && !isIsoTimestamp(yt)) return false;
 
   return true;
 }

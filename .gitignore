@@ -2,6 +2,9 @@ node_modules/
 dist/
 *.log
 .env
+.DS_Store
 
 # NOTE: data/catalog.json is intentionally NOT ignored.
 # It is the catalog persistence file and must be committed/preserved.
+# Same for articles/ — the published HTML files are the source of truth
+# the GitHub Actions build step reads to assemble dist/.

@@ -9,7 +9,8 @@
       "articlePath": "articles/deep-dive-handoff-is-my-new-favourite-skill-matt-pocock.html",
       "thumbnailUrl": "https://img.youtube.com/vi/dtAJ2dOd3ko/maxresdefault.jpg",
       "thumbnailSource": "html",
-      "sha256": "604a15a3ca5aff0b1e134861d04b07839c41ada99f313cddf5646843a2eeea04"
+      "sha256": "604a15a3ca5aff0b1e134861d04b07839c41ada99f313cddf5646843a2eeea04",
+      "youtubePublishedAt": "2026-05-21T10:32:40.000Z"
     },
     {
       "slug": "deep-dive-building-agent-harnesses-for-large-codebases-cole-medin",
@@ -19,7 +20,8 @@
       "articlePath": "articles/deep-dive-building-agent-harnesses-for-large-codebases-cole-medin.html",
       "thumbnailUrl": "https://img.youtube.com/vi/efRIrLXoOVA/maxresdefault.jpg",
       "thumbnailSource": "html",
-      "sha256": "556e880950bc9a594bc3785601ffdbed16961e30b5792cc4e5477d0b6bbf07da"
+      "sha256": "556e880950bc9a594bc3785601ffdbed16961e30b5792cc4e5477d0b6bbf07da",
+      "youtubePublishedAt": "2026-05-21T00:00:30.000Z"
     },
     {
       "slug": "deep-dive-cooking-with-agents-in-vs-code-liam-hampton",
@@ -29,7 +31,8 @@
       "articlePath": "articles/deep-dive-cooking-with-agents-in-vs-code-liam-hampton.html",
       "thumbnailUrl": "https://img.youtube.com/vi/dyHpnnlkTc8/maxresdefault.jpg",
       "thumbnailSource": "html",
-      "sha256": "fdd884c05370361f8f584c55b834ee8081386bf2b4c773f2b8341a3b2dc9a240"
+      "sha256": "fdd884c05370361f8f584c55b834ee8081386bf2b4c773f2b8341a3b2dc9a240",
+      "youtubePublishedAt": "2026-05-21T17:00:06.000Z"
     },
     {
       "slug": "deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy",
@@ -39,7 +42,8 @@
       "articlePath": "articles/deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy.html",
       "thumbnailUrl": "https://img.youtube.com/vi/zHE434sBw2U/maxresdefault.jpg",
       "thumbnailSource": "cli-override",
-      "sha256": "cd102494acc1485ca4e013479025cc7f001221f61cf6bf30144d0239c7a4a9dd"
+      "sha256": "cd102494acc1485ca4e013479025cc7f001221f61cf6bf30144d0239c7a4a9dd",
+      "youtubePublishedAt": "2026-05-20T17:32:45.000Z"
     },
     {
       "slug": "deep-dive-opus-4-7-and-openai-5-5-made-your-prompting-style-obsolete-nate-b-jones",
@@ -49,7 +53,8 @@
       "articlePath": "articles/deep-dive-opus-4-7-and-openai-5-5-made-your-prompting-style-obsolete-nate-b-jones.html",
       "thumbnailUrl": "https://img.youtube.com/vi/ogTLWGBc3cE/maxresdefault.jpg",
       "thumbnailSource": "html",
-      "sha256": "3ebda83c9158a74cf70a9d26f773f6de80afdf52aaf64cabc298ad44dc331be2"
+      "sha256": "3ebda83c9158a74cf70a9d26f773f6de80afdf52aaf64cabc298ad44dc331be2",
+      "youtubePublishedAt": "2026-05-21T14:01:12.000Z"
     },
     {
       "slug": "deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp",
@@ -59,18 +64,42 @@
       "articlePath": "articles/deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp.html",
       "thumbnailUrl": "https://img.youtube.com/vi/VaS2h-dY1-4/maxresdefault.jpg",
       "thumbnailSource": "html",
-      "sha256": "0fb86ab1bb78e67c75bb25e988e8af78a8edbbd55430df931abb78e5dd161637"
+      "sha256": "0fb86ab1bb78e67c75bb25e988e8af78a8edbbd55430df931abb78e5dd161637",
+      "youtubePublishedAt": "2026-05-21T15:00:06.000Z"
+    },
+    {
+      "slug": "simple-pi-subagents-deep-dive",
+      "title": "Simple Pi Subagents — Deep Dive",
+      "publishedAt": "2026-05-22T18:58:48.426Z",
+      "sourcePath": "/Users/giorgosmarinos/Downloads/Deep Dive — Simple Pi Subagents.html",
+      "articlePath": "articles/simple-pi-subagents-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/KRVYUkM16hE/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "d569632df9a0e985ece19e23190b3426baad7ffec474a42009a52b75e963b2ff",
+      "youtubePublishedAt": "2026-05-21T22:46:15.000Z"
+    },
+    {
+      "slug": "pi-to-pi-two-way-agent-orchestration-deep-dive",
+      "title": "Pi to Pi: Two-Way Agent Orchestration — Deep Dive",
+      "publishedAt": "2026-05-22T18:58:49.027Z",
+      "sourcePath": "/Users/giorgosmarinos/Downloads/Deep Dive — Pi to Pi Two-Way Agent Orchestration.html",
+      "articlePath": "articles/pi-to-pi-two-way-agent-orchestration-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/PIdETjcXNIk/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "db2d75eb38f97797770eca2d8affa543db409fa994db315b001a541ac350682c",
+      "youtubePublishedAt": "2026-05-18T13:00:15.000Z"
     },
     {
       "slug": "deep-dive-the-perfect-zsh-setup-for-2026-dreams-of-code",
       "title": "Deep Dive: The Perfect Zsh Setup For 2026 — Dreams of Code",
-      "publishedAt": "2026-05-22T17:27:42.439Z",
+      "publishedAt": "2026-05-22T19:02:52.342Z",
       "sourcePath": "samples/Deep Dive — The Perfect Zsh Setup For 2026 (Dreams of Code).html",
       "articlePath": "articles/deep-dive-the-perfect-zsh-setup-for-2026-dreams-of-code.html",
       "thumbnailUrl": "https://img.youtube.com/vi/1jE7rCvByHg/maxresdefault.jpg",
       "thumbnailSource": "html",
-      "sha256": "cedbdb5a85dd8f45dff9b6cfb0f7886510ba263bb62cd0491e5a30fb2ecfb978"
+      "sha256": "cedbdb5a85dd8f45dff9b6cfb0f7886510ba263bb62cd0491e5a30fb2ecfb978",
+      "youtubePublishedAt": "2026-05-16T05:30:01.000Z"
     }
   ],
-  "updatedAt": "2026-05-22T17:27:42.448Z"
+  "updatedAt": "2026-05-22T19:02:52.535Z"
 }

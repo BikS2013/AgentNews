@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+# Build the static export and publish it to GitHub Pages.
+# Triggered on every push to `main` and on manual dispatch from the Actions tab.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Two concurrent runs against the same branch would race the deploy step.
+# Cancel in-progress runs so only the latest push deploys.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# Minimal permissions for the deploy-pages action.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Project-page deploy → site is served at /<repo>/, so internal links
+      # must be prefixed accordingly. Driven by the repo name.
+      BASE_PATH: /${{ github.event.repository.name }}
+      CATALOG_PATH: ./data/catalog.json
+      ARTICLES_DIR: ./articles
+      OUT_DIR: ./dist
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build static site
+        run: npm run build:static
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

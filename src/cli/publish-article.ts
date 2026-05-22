@@ -33,6 +33,11 @@ import type { CatalogEntry } from '../catalog/types.js';
 import { loadConfig } from '../config.js';
 import { extractArticleMetadata } from '../extractor/extract.js';
 import { ArticleMetadataError } from '../extractor/errors.js';
+import {
+  extractYouTubeVideoId,
+  fetchYouTubeVideoPublishedAt,
+  YouTubeFetchError,
+} from '../extractor/youtube.js';
 
 // ---------------------------------------------------------------------------
 // argv parsing
@@ -429,6 +434,37 @@ async function main(argv: readonly string[]): Promise<number> {
   // 9. SHA-256.
   const sha256 = sha256Hex(buffer);
 
+  // 9b. YouTube enrichment (soft-skip on any failure path).
+  // Policy: try to fetch `youtubePublishedAt` from the YouTube Data API when
+  // the thumbnail URL resolves to a video AND `YOUTUBE_API_KEY` is set. Any
+  // failure (no API key, non-YouTube URL, deleted video, network/HTTP error)
+  // results in a one-line stderr note and the entry is persisted without the
+  // optional field. This is feature gating, not a configuration fallback —
+  // the rest of the system never substitutes missing config values.
+  let youtubePublishedAt: string | undefined;
+  const videoId = extractYouTubeVideoId(thumbnailUrl);
+  if (videoId === null) {
+    // Thumbnail is not a YouTube URL (e.g. --thumbnail-url pointing elsewhere).
+    // Silent skip — nothing to enrich.
+  } else {
+    const apiKey = process.env['YOUTUBE_API_KEY'];
+    if (apiKey === undefined || apiKey.length === 0) {
+      process.stderr.write(
+        `YOUTUBE_ENRICH_SKIPPED: YOUTUBE_API_KEY is not set; storing entry without youtubePublishedAt for video ${videoId}\n`,
+      );
+    } else {
+      try {
+        youtubePublishedAt = await fetchYouTubeVideoPublishedAt(videoId, apiKey);
+      } catch (err) {
+        const code = err instanceof YouTubeFetchError ? err.code : 'UNKNOWN';
+        const msg = err instanceof Error ? err.message : String(err);
+        process.stderr.write(
+          `YOUTUBE_ENRICH_FAILED(${code}): ${msg}; storing entry without youtubePublishedAt for video ${videoId}\n`,
+        );
+      }
+    }
+  }
+
   // 10. Build catalog entry.
   const articlePath = `articles/${slug}.html`;
   const entry: CatalogEntry = {
@@ -440,6 +476,7 @@ async function main(argv: readonly string[]): Promise<number> {
     thumbnailUrl,
     thumbnailSource,
     sha256,
+    ...(youtubePublishedAt !== undefined ? { youtubePublishedAt } : {}),
   };
 
   // 11. Persist via store.
@@ -452,6 +489,7 @@ async function main(argv: readonly string[]): Promise<number> {
         thumbnailUrl: entry.thumbnailUrl,
         thumbnailSource: entry.thumbnailSource,
         sha256: entry.sha256,
+        ...(youtubePublishedAt !== undefined ? { youtubePublishedAt } : {}),
       });
     } else {
       await store.append(entry);

@@ -10,15 +10,35 @@
  *   5. `fs.rename(tmp, path)` — atomic on POSIX filesystems
  */
 
+import { watch } from 'node:fs';
+import type { FSWatcher } from 'node:fs';
 import { open, readFile, rename } from 'node:fs/promises';
+import * as path from 'node:path';
 
 import { isCatalogFile } from './types.js';
 import type { CatalogEntry, CatalogFile } from './types.js';
+
+/** Callback invoked after a successful hot-reload. */
+export type CatalogChangeListener = (entries: readonly CatalogEntry[]) => void;
+
+/** Default debounce window between an fs event and the reload call. */
+const DEFAULT_WATCH_DEBOUNCE_MS = 150;
 
 export class CatalogStore {
   private entries: CatalogEntry[] = [];
   private updatedAt: string = new Date(0).toISOString();
   private loaded = false;
+
+  // --- hot-reload state ---
+  private watcher: FSWatcher | null = null;
+  private watchDebounceTimer: NodeJS.Timeout | null = null;
+  private watchDebounceMs: number = DEFAULT_WATCH_DEBOUNCE_MS;
+  private changeListeners: CatalogChangeListener[] = [];
+  /** Reload-error handler, defaults to console.error. */
+  private onWatchError: (err: Error) => void = (err) => {
+    // eslint-disable-next-line no-console
+    console.error(`[CatalogStore] hot-reload failed: ${err.message}`);
+  };
 
   constructor(private readonly catalogPath: string) {}
 
@@ -170,6 +190,137 @@ export class CatalogStore {
       throw new Error(
         `CatalogStore at ${this.catalogPath} has not been loaded — call load() first`,
       );
+    }
+  }
+
+  // ===========================================================================
+  // Hot reload
+  // ===========================================================================
+
+  /**
+   * Begin watching the catalog file for external changes (e.g. another
+   * process — typically the `publish-article` CLI — atomically rewrites it).
+   * Each detected change triggers a debounced `load()` so the in-memory
+   * cache reflects what is on disk without requiring a server restart.
+   *
+   * Implementation notes:
+   *
+   * - We watch the *parent directory* of the catalog path rather than the
+   *   file itself, then filter events to the catalog's basename. This is
+   *   robust against the atomic-rename publish protocol — `fs.watch` on a
+   *   single file loses its handle after a `rename()` overwrites it, but
+   *   watching the directory continues to see new-file events for the same
+   *   path.
+   *
+   * - Events are debounced by `debounceMs` (default 150 ms). The publish
+   *   protocol writes a `.tmp`, fsyncs, closes, then renames — depending on
+   *   the platform the dir-watcher may fire two or three events back-to-back
+   *   (rename of `.tmp`, change on target). Debouncing collapses them into
+   *   a single reload.
+   *
+   * - Any reload error (catalog briefly missing during rename, malformed
+   *   JSON mid-write) is routed to `onError` rather than crashing the watch
+   *   loop. The watcher keeps running and will pick up the next valid write.
+   *
+   * - Calling `startWatch()` while already watching is a no-op (idempotent).
+   *
+   * The optional `onError` parameter replaces the default error handler
+   * (which logs via `console.error`). Returns nothing — the watcher is
+   * fire-and-forget; use `stopWatch()` for cleanup.
+   */
+  startWatch(
+    options: {
+      debounceMs?: number;
+      onError?: (err: Error) => void;
+    } = {},
+  ): void {
+    this.assertLoaded();
+    if (this.watcher !== null) return;
+
+    if (typeof options.debounceMs === 'number' && options.debounceMs >= 0) {
+      this.watchDebounceMs = options.debounceMs;
+    }
+    if (typeof options.onError === 'function') {
+      this.onWatchError = options.onError;
+    }
+
+    const absCatalogPath = path.resolve(this.catalogPath);
+    const dir = path.dirname(absCatalogPath);
+    const base = path.basename(absCatalogPath);
+
+    this.watcher = watch(dir, { persistent: false }, (_eventType, filename) => {
+      if (filename === null || filename !== base) return;
+      this.scheduleReload();
+    });
+
+    this.watcher.on('error', (err) => {
+      this.onWatchError(err instanceof Error ? err : new Error(String(err)));
+    });
+  }
+
+  /**
+   * Stop watching for catalog changes. Cancels any pending debounced reload
+   * and releases the underlying `FSWatcher`. Idempotent — safe to call when
+   * the watcher was never started.
+   */
+  async stopWatch(): Promise<void> {
+    if (this.watchDebounceTimer !== null) {
+      clearTimeout(this.watchDebounceTimer);
+      this.watchDebounceTimer = null;
+    }
+    if (this.watcher !== null) {
+      this.watcher.close();
+      this.watcher = null;
+    }
+  }
+
+  /**
+   * Register a callback to be invoked after every successful hot-reload.
+   * The callback receives a fresh `snapshot()` of the entries. Returns an
+   * unsubscribe function. Listeners are called synchronously after the
+   * cache is updated; any exception they throw is routed to `onWatchError`
+   * so a buggy listener cannot break the watcher.
+   */
+  onChange(listener: CatalogChangeListener): () => void {
+    this.changeListeners.push(listener);
+    return () => {
+      const idx = this.changeListeners.indexOf(listener);
+      if (idx !== -1) this.changeListeners.splice(idx, 1);
+    };
+  }
+
+  /**
+   * Debounced reload trigger. Internal — only called by the watch callback.
+   */
+  private scheduleReload(): void {
+    if (this.watchDebounceTimer !== null) {
+      clearTimeout(this.watchDebounceTimer);
+    }
+    this.watchDebounceTimer = setTimeout(() => {
+      this.watchDebounceTimer = null;
+      this.reloadFromDisk().catch((err) => {
+        this.onWatchError(err instanceof Error ? err : new Error(String(err)));
+      });
+    }, this.watchDebounceMs);
+  }
+
+  /**
+   * Internal: re-read the catalog from disk and fire change listeners.
+   * Errors propagate to the caller (the timer callback), which routes them
+   * to `onWatchError`.
+   */
+  private async reloadFromDisk(): Promise<void> {
+    await this.load();
+    if (this.changeListeners.length === 0) return;
+    const snap = this.snapshot();
+    for (const listener of this.changeListeners.slice()) {
+      try {
+        listener(snap);
+      } catch (cause) {
+        this.onWatchError(
+          cause instanceof Error ? cause : new Error(String(cause)),
+        );
+      }
     }
   }
 }

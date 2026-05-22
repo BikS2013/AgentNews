@@ -44,6 +44,27 @@ export default async function start(): Promise<FastifyInstance> {
 
   const fastify = Fastify({ logger: true });
 
+  // Hot-reload: watch the catalog file so external writes (typically the
+  // `publish-article` CLI) refresh the in-memory cache without a server
+  // restart. The watcher is event-driven (fs.watch on the parent dir,
+  // filtered to the catalog basename — see CatalogStore.startWatch) and
+  // debounced to coalesce the multi-event atomic-rename publish protocol.
+  // Reload errors are logged via Fastify and never tear down the server.
+  store.startWatch({
+    onError: (err) => {
+      fastify.log.error({ err }, 'catalog hot-reload failed');
+    },
+  });
+  store.onChange((entries) => {
+    fastify.log.info(
+      { entries: entries.length },
+      'catalog reloaded from disk',
+    );
+  });
+  fastify.addHook('onClose', async () => {
+    await store.stopWatch();
+  });
+
   const articlesRoot = path.resolve(config.articlesDir);
 
   await fastify.register(fastifyStatic, {

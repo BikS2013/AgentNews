@@ -13,7 +13,8 @@
     "publish-article": "tsx src/cli/publish-article.ts",
     "verify": "tsx test_scripts/verify-byte-identity.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test test_scripts/*.test.ts"
+    "test": "tsx --test test_scripts/*.test.ts",
+    "build:static": "tsx scripts/build-static.ts"
   },
   "dependencies": {
     "@fastify/static": "^9.1.3",
