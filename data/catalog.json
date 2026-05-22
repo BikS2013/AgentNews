@@ -143,7 +143,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "a5d5b86b4939d15b3674b9ed180241594de7c42a99035a69c41bc855fa8cbc2b",
       "category": "deep-dive"
+    },
+    {
+      "slug": "deep-dive-how-to-build-mobile-apps-with-claude-code-full-course-2026",
+      "title": "Deep Dive — How to Build Mobile Apps with Claude Code: Full Course (2026)",
+      "publishedAt": "2026-05-11T17:51:20.000Z",
+      "sourcePath": "/tmp/deep_dive_BMMcmmnjrM8.html",
+      "articlePath": "articles/deep-dive-how-to-build-mobile-apps-with-claude-code-full-course-2026.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/BMMcmmnjrM8/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "c9a5254d058af949f906b2b2f1579fa9871f79775f5cd5b4b77979f5e9e9ec37",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-22T21:41:03.336Z"
+  "updatedAt": "2026-05-22T22:03:16.293Z"
 }
