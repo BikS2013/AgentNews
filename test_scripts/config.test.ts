@@ -19,6 +19,7 @@ const baseEnv: NodeJS.ProcessEnv = {
   PORT: '3000',
   ARTICLES_DIR: '/srv/articles',
   CATALOG_PATH: '/srv/data/catalog.json',
+  LINKS_PATH: '/srv/data/links.json',
 };
 
 function mkEnv(overrides: Partial<Record<string, string | undefined>>): NodeJS.ProcessEnv {
@@ -173,6 +174,39 @@ describe('loadConfig — missing CATALOG_PATH throws', () => {
       () => loadConfig(mkEnv({ CATALOG_PATH: '   ' })),
       Error,
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Missing LINKS_PATH → throws
+// ---------------------------------------------------------------------------
+
+describe('loadConfig — missing LINKS_PATH throws', () => {
+  it('throws when LINKS_PATH is undefined', () => {
+    assert.throws(
+      () => loadConfig(mkEnv({ LINKS_PATH: undefined })),
+      (err: unknown) => {
+        assert.ok(err instanceof Error);
+        assert.ok(err.message.includes('LINKS_PATH'));
+        return true;
+      },
+    );
+  });
+
+  it('throws when LINKS_PATH is an empty string', () => {
+    assert.throws(
+      () => loadConfig(mkEnv({ LINKS_PATH: '' })),
+      (err: unknown) => {
+        assert.ok(err instanceof Error);
+        assert.ok(err.message.includes('LINKS_PATH'));
+        return true;
+      },
+    );
+  });
+
+  it('returns linksPath in the AppConfig when LINKS_PATH is set', () => {
+    const config = loadConfig(mkEnv({ LINKS_PATH: '/srv/data/links.json' }));
+    assert.equal(config.linksPath, '/srv/data/links.json');
   });
 });
 

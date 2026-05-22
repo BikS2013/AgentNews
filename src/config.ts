@@ -9,6 +9,7 @@ export interface AppConfig {
   port: number;
   articlesDir: string;
   catalogPath: string;
+  linksPath: string;
 }
 
 function requireEnv(env: NodeJS.ProcessEnv, name: string): string {
@@ -46,6 +47,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const portRaw = requireEnv(env, 'PORT');
   const articlesDirRaw = requireEnv(env, 'ARTICLES_DIR');
   const catalogPathRaw = requireEnv(env, 'CATALOG_PATH');
+  const linksPathRaw = requireEnv(env, 'LINKS_PATH');
 
   const port = parsePositiveInteger('PORT', portRaw);
 
@@ -59,5 +61,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     throw new Error('Invalid CATALOG_PATH: empty value');
   }
 
-  return { port, articlesDir, catalogPath };
+  const linksPath = linksPathRaw.trim();
+  if (linksPath.length === 0) {
+    throw new Error('Invalid LINKS_PATH: empty value');
+  }
+
+  return { port, articlesDir, catalogPath, linksPath };
 }

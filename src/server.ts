@@ -33,6 +33,7 @@ import type { FastifyInstance } from 'fastify';
 
 import { CatalogStore } from './catalog/store.js';
 import { loadConfig } from './config.js';
+import { LinksStore } from './links/store.js';
 import { articleRoute } from './server/routes/article.js';
 import { catalogRoute } from './server/routes/catalog.js';
 
@@ -42,27 +43,37 @@ export default async function start(): Promise<FastifyInstance> {
   const store = new CatalogStore(config.catalogPath);
   await store.load();
 
+  const linksStore = new LinksStore(config.linksPath);
+  await linksStore.load();
+
   const fastify = Fastify({ logger: true });
 
-  // Hot-reload: watch the catalog file so external writes (typically the
-  // `publish-article` CLI) refresh the in-memory cache without a server
-  // restart. The watcher is event-driven (fs.watch on the parent dir,
-  // filtered to the catalog basename — see CatalogStore.startWatch) and
-  // debounced to coalesce the multi-event atomic-rename publish protocol.
-  // Reload errors are logged via Fastify and never tear down the server.
+  // Hot-reload: watch both the catalog file and the links file so external
+  // writes (typically the `publish-article` / `publish-link` CLIs) refresh
+  // the in-memory cache without a server restart. The watchers are event-
+  // driven (fs.watch on the parent dir, filtered to the relevant basename
+  // — see CatalogStore.startWatch / LinksStore.startWatch) and debounced
+  // to coalesce the multi-event atomic-rename publish protocol. Reload
+  // errors are logged via Fastify and never tear down the server.
   store.startWatch({
     onError: (err) => {
       fastify.log.error({ err }, 'catalog hot-reload failed');
     },
   });
   store.onChange((entries) => {
-    fastify.log.info(
-      { entries: entries.length },
-      'catalog reloaded from disk',
-    );
+    fastify.log.info({ entries: entries.length }, 'catalog reloaded from disk');
+  });
+  linksStore.startWatch({
+    onError: (err) => {
+      fastify.log.error({ err }, 'links hot-reload failed');
+    },
+  });
+  linksStore.onChange((entries) => {
+    fastify.log.info({ entries: entries.length }, 'links reloaded from disk');
   });
   fastify.addHook('onClose', async () => {
     await store.stopWatch();
+    await linksStore.stopWatch();
   });
 
   const articlesRoot = path.resolve(config.articlesDir);
@@ -92,7 +103,7 @@ export default async function start(): Promise<FastifyInstance> {
   });
 
   await fastify.register(async (scope) => {
-    await catalogRoute(scope, { store });
+    await catalogRoute(scope, { store, linksStore });
   });
 
   await fastify.listen({ port: config.port, host: '0.0.0.0' });

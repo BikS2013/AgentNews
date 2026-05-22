@@ -15,7 +15,7 @@
  *   dist/a/<slug>.html       — byte-identical copy of every article. We copy
  *                              by Buffer (not by text) and verify SHA-256
  *                              against the catalog entry's stored hash.
- *   dist/404.html            — a Conduit-styled 404 page (matches the live
+ *   dist/404.html            — an Agent-News-styled 404 page (matches the live
  *                              server's article-not-found page).
  *   dist/.nojekyll           — empty marker that tells GitHub Pages to skip
  *                              its Jekyll processing pass, guaranteeing
@@ -42,6 +42,8 @@ import * as process from 'node:process';
 
 import { isCatalogFile } from '../src/catalog/types.js';
 import type { CatalogEntry } from '../src/catalog/types.js';
+import { isLinksFile } from '../src/links/types.js';
+import type { LinkEntry } from '../src/links/types.js';
 import { renderCatalogHtml } from '../src/server/render/catalog.js';
 
 // ---------------------------------------------------------------------------
@@ -83,7 +85,7 @@ const NOT_FOUND_HTML = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Not found — Conduit</title>
+<title>Not found — Agent News</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap" rel="stylesheet">
@@ -121,11 +123,13 @@ function sha256Hex(buf: Buffer): string {
 function main(): number {
   const catalogPath = requireNonEmpty('CATALOG_PATH');
   const articlesDir = requireNonEmpty('ARTICLES_DIR');
+  const linksPath = requireNonEmpty('LINKS_PATH');
   const basePath = requireBasePath('BASE_PATH');
   const outDir = requireNonEmpty('OUT_DIR');
 
   const absCatalog = path.resolve(catalogPath);
   const absArticles = path.resolve(articlesDir);
+  const absLinks = path.resolve(linksPath);
   const absOut = path.resolve(outDir);
 
   if (!existsSync(absCatalog)) {
@@ -133,6 +137,9 @@ function main(): number {
   }
   if (!existsSync(absArticles)) {
     throw new Error(`ARTICLES_DIR does not exist: ${absArticles}`);
+  }
+  if (!existsSync(absLinks)) {
+    throw new Error(`LINKS_PATH does not exist: ${absLinks}`);
   }
 
   // Parse + validate the catalog.
@@ -148,6 +155,19 @@ function main(): number {
   }
   const entries: CatalogEntry[] = parsed.entries;
 
+  // Parse + validate the links file.
+  let parsedLinks: unknown;
+  try {
+    parsedLinks = JSON.parse(readFileSync(absLinks, 'utf8'));
+  } catch (cause) {
+    const msg = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(`Failed to parse ${absLinks} as JSON: ${msg}`);
+  }
+  if (!isLinksFile(parsedLinks)) {
+    throw new Error(`${absLinks} does not match the expected links schema`);
+  }
+  const links: LinkEntry[] = parsedLinks.entries;
+
   // Reset the output directory so stale entries can't ship.
   if (existsSync(absOut)) {
     rmSync(absOut, { recursive: true, force: true });
@@ -156,7 +176,7 @@ function main(): number {
   mkdirSync(path.join(absOut, 'a'), { recursive: true });
 
   // 1. Catalog page → dist/index.html
-  const catalogHtml = renderCatalogHtml(entries, basePath);
+  const catalogHtml = renderCatalogHtml(entries, { links, basePath });
   writeFileSync(path.join(absOut, 'index.html'), catalogHtml, 'utf8');
 
   // 2. Articles → dist/a/<slug>.html (byte-identical, verified)
@@ -192,7 +212,7 @@ function main(): number {
 
   // Summary to stdout.
   process.stdout.write(
-    `static export OK — catalog + ${copied} article${copied === 1 ? '' : 's'} written to ${absOut} (basePath="${basePath}")\n`,
+    `static export OK — catalog + ${copied} article${copied === 1 ? '' : 's'} + ${links.length} link${links.length === 1 ? '' : 's'} written to ${absOut} (basePath="${basePath}")\n`,
   );
   return 0;
 }

@@ -38,6 +38,7 @@ import fastifyStatic from '@fastify/static';
 import type { FastifyInstance } from 'fastify';
 
 import { CatalogStore } from '../src/catalog/store.js';
+import { LinksStore } from '../src/links/store.js';
 import { articleRoute } from '../src/server/routes/article.js';
 import { catalogRoute } from '../src/server/routes/catalog.js';
 
@@ -105,13 +106,23 @@ function initEmptyCatalog(catalogPath: string): void {
   writeFileSync(catalogPath, `${JSON.stringify(initial, null, 2)}\n`, 'utf8');
 }
 
+/** Bootstrap a minimal links JSON at linksPath. */
+function initEmptyLinks(linksPath: string): void {
+  const initial = {
+    schemaVersion: 1,
+    entries: [],
+    updatedAt: new Date(0).toISOString(),
+  };
+  writeFileSync(linksPath, `${JSON.stringify(initial, null, 2)}\n`, 'utf8');
+}
+
 /**
  * Run the publish CLI as a subprocess via `npx tsx`.
  * This avoids any stdout/stderr capture conflicts with the test runner.
  */
 function runCli(
   args: string[],
-  env: { articlesDir: string; catalogPath: string },
+  env: { articlesDir: string; catalogPath: string; linksPath: string },
 ): { exitCode: number; stdout: string; stderr: string } {
   const result = spawnSync(
     'npx',
@@ -122,6 +133,7 @@ function runCli(
         PORT: '9999', // required by loadConfig but unused by CLI
         ARTICLES_DIR: env.articlesDir,
         CATALOG_PATH: env.catalogPath,
+        LINKS_PATH: env.linksPath,
       },
       encoding: 'utf8',
       timeout: 30000,
@@ -153,9 +165,13 @@ function runCli(
 async function buildServer(opts: {
   articlesDir: string;
   catalogPath: string;
+  linksPath: string;
 }): Promise<{ fastify: FastifyInstance; port: number }> {
   const store = new CatalogStore(opts.catalogPath);
   await store.load();
+
+  const linksStore = new LinksStore(opts.linksPath);
+  await linksStore.load();
 
   const fastify = Fastify({ logger: false });
 
@@ -176,7 +192,7 @@ async function buildServer(opts: {
   });
 
   await fastify.register(async (scope) => {
-    await catalogRoute(scope, { store });
+    await catalogRoute(scope, { store, linksStore });
   });
 
   await fastify.listen({ port: 0, host: '127.0.0.1' });
@@ -220,6 +236,7 @@ describe('CLI smoke tests', () => {
   let tempDir: string;
   let articlesDir: string;
   let catalogPath: string;
+  let linksPath: string;
 
   // Two samples with embedded thumbnails (no --thumbnail-url needed).
   const sampleA = path.join(
@@ -235,8 +252,10 @@ describe('CLI smoke tests', () => {
     tempDir = path.join(os.tmpdir(), randomUUID());
     articlesDir = path.join(tempDir, 'articles');
     catalogPath = path.join(tempDir, 'catalog.json');
+    linksPath = path.join(tempDir, 'links.json');
     mkdirSync(articlesDir, { recursive: true });
     initEmptyCatalog(catalogPath);
+    initEmptyLinks(linksPath);
   });
 
   after(() => {
@@ -246,7 +265,7 @@ describe('CLI smoke tests', () => {
   it('publishes first article — exit 0, valid JSON on stdout, disk SHA matches source SHA', () => {
     const { exitCode, stdout, stderr } = runCli(
       ['--source', sampleA],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
 
     assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
@@ -285,7 +304,7 @@ describe('CLI smoke tests', () => {
   it('publishes second article — exit 0, catalog now has two entries', () => {
     const { exitCode, stdout, stderr } = runCli(
       ['--source', sampleB],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
 
     assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
@@ -311,6 +330,7 @@ describe('CLI no-thumbnail policy — Hermes article', () => {
   let tempDir: string;
   let articlesDir: string;
   let catalogPath: string;
+  let linksPath: string;
 
   const hermesSample = path.join(
     SAMPLES_DIR,
@@ -321,8 +341,10 @@ describe('CLI no-thumbnail policy — Hermes article', () => {
     tempDir = path.join(os.tmpdir(), randomUUID());
     articlesDir = path.join(tempDir, 'articles');
     catalogPath = path.join(tempDir, 'catalog.json');
+    linksPath = path.join(tempDir, 'links.json');
     mkdirSync(articlesDir, { recursive: true });
     initEmptyCatalog(catalogPath);
+    initEmptyLinks(linksPath);
   });
 
   after(() => {
@@ -332,7 +354,7 @@ describe('CLI no-thumbnail policy — Hermes article', () => {
   it('exits 1 with NO_THUMBNAIL when Hermes article published without --thumbnail-url', () => {
     const { exitCode, stderr } = runCli(
       ['--source', hermesSample],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
 
     assert.equal(exitCode, 1, `Expected exit 1, got ${exitCode}`);
@@ -345,7 +367,7 @@ describe('CLI no-thumbnail policy — Hermes article', () => {
   it('exits 0 with thumbnailSource=cli-override when --thumbnail-url is supplied', () => {
     const { exitCode, stdout, stderr } = runCli(
       ['--source', hermesSample, '--thumbnail-url', HERMES_THUMBNAIL_OVERRIDE],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
 
     assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
@@ -372,6 +394,7 @@ describe('CLI conflict detection', () => {
   let tempDir: string;
   let articlesDir: string;
   let catalogPath: string;
+  let linksPath: string;
   let originalPublishedAt: string;
   let originalSlug: string;
 
@@ -384,13 +407,15 @@ describe('CLI conflict detection', () => {
     tempDir = path.join(os.tmpdir(), randomUUID());
     articlesDir = path.join(tempDir, 'articles');
     catalogPath = path.join(tempDir, 'catalog.json');
+    linksPath = path.join(tempDir, 'links.json');
     mkdirSync(articlesDir, { recursive: true });
     initEmptyCatalog(catalogPath);
+    initEmptyLinks(linksPath);
 
     // First publish must succeed.
     const { exitCode, stdout, stderr } = runCli(
       ['--source', sampleA],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
     assert.equal(exitCode, 0, `Initial publish in before() must succeed. stderr: ${stderr}`);
 
@@ -406,7 +431,7 @@ describe('CLI conflict detection', () => {
   it('exits 3 with ALREADY_PUBLISHED when same article is published again without --update', () => {
     const { exitCode, stderr } = runCli(
       ['--source', sampleA],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
 
     assert.equal(exitCode, 3, `Expected exit 3, got ${exitCode}`);
@@ -419,7 +444,7 @@ describe('CLI conflict detection', () => {
   it('exits 0 and preserves publishedAt and slug when --update is supplied', () => {
     const { exitCode, stdout, stderr } = runCli(
       ['--source', sampleA, '--update'],
-      { articlesDir, catalogPath },
+      { articlesDir, catalogPath, linksPath },
     );
 
     assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
@@ -456,6 +481,7 @@ describe('HTTP byte-identity — all 7 articles (AC1)', () => {
   let tempDir: string;
   let articlesDir: string;
   let catalogPath: string;
+  let linksPath: string;
   let fastify: FastifyInstance;
   let port: number;
 
@@ -472,8 +498,10 @@ describe('HTTP byte-identity — all 7 articles (AC1)', () => {
     tempDir = path.join(os.tmpdir(), randomUUID());
     articlesDir = path.join(tempDir, 'articles');
     catalogPath = path.join(tempDir, 'catalog.json');
+    linksPath = path.join(tempDir, 'links.json');
     mkdirSync(articlesDir, { recursive: true });
     initEmptyCatalog(catalogPath);
+    initEmptyLinks(linksPath);
 
     // Publish all 7 samples via CLI subprocess.
     for (const sample of SAMPLES) {
@@ -486,6 +514,7 @@ describe('HTTP byte-identity — all 7 articles (AC1)', () => {
       const { exitCode, stdout, stderr } = runCli(cliArgs, {
         articlesDir,
         catalogPath,
+        linksPath,
       });
 
       assert.equal(
@@ -510,7 +539,7 @@ describe('HTTP byte-identity — all 7 articles (AC1)', () => {
     }
 
     // Boot server pointing at temp dir.
-    ({ fastify, port } = await buildServer({ articlesDir, catalogPath }));
+    ({ fastify, port } = await buildServer({ articlesDir, catalogPath, linksPath }));
   });
 
   after(async () => {
@@ -604,7 +633,7 @@ describe('HTTP byte-identity — all 7 articles (AC1)', () => {
 
   // --- catalog index page ---
 
-  it('GET / returns 200, Content-Type text/html, and page contains <title>Article Catalog</title>', async () => {
+  it('GET / returns 200, Content-Type text/html, and page contains <title>Agent News</title>', async () => {
     const url = `http://127.0.0.1:${port}/`;
     const { status, body, headers } = await httpGet(url);
 
@@ -617,8 +646,8 @@ describe('HTTP byte-identity — all 7 articles (AC1)', () => {
 
     const html = body.toString('utf8');
     assert.ok(
-      html.includes('<title>Article Catalog</title>'),
-      'Catalog page must contain <title>Article Catalog</title>',
+      html.includes('<title>Agent News</title>'),
+      'Catalog page must contain <title>Agent News</title>',
     );
   });
 

@@ -39,6 +39,7 @@ jobs:
       BASE_PATH: /${{ github.event.repository.name }}
       CATALOG_PATH: ./data/catalog.json
       ARTICLES_DIR: ./articles
+      LINKS_PATH: ./data/links.json
       OUT_DIR: ./dist
     steps:
       - name: Checkout

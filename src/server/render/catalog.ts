@@ -1,15 +1,20 @@
 /**
  * Pure HTML renderer for the catalog index page (`GET /`).
  *
- * Produces a complete `<!DOCTYPE html>` document listing every published
- * article as a card (thumbnail + title link + publication date), sorted
- * by `publishedAt` descending (newest first). The visual treatment follows
- * the "Conduit — engineering notes" design (IBM Plex Sans + Newsreader
- * serif + IBM Plex Mono accents, cool-teal `#007a8a` on off-white).
+ * Produces a complete `<!DOCTYPE html>` document combining two content
+ * sections:
  *
- * Every string injected into the HTML is escaped via `escapeHtml` to
- * prevent any catalog field from being interpreted as markup. No runtime
- * dependencies; no I/O.
+ *   1. "Latest deep dives" — self-hosted, byte-identical HTML articles
+ *      backed by `CatalogEntry` records, links go to `/a/<slug>` on this
+ *      site.
+ *   2. "From around the web" — curated external article links backed by
+ *      `LinkEntry` records, links open in a new tab to the third-party
+ *      publisher.
+ *
+ * Visual treatment follows the "Agent News" design system (IBM Plex Sans
+ * + Newsreader serif + IBM Plex Mono accents, cool-teal `#007a8a` on
+ * off-white). Every string injected into the HTML is escaped via
+ * `escapeHtml` to prevent any field from being interpreted as markup.
  *
  * IMPORTANT: This renderer styles ONLY the catalog index. Individual
  * article pages (`GET /a/:slug`) are served byte-identically from disk
@@ -17,11 +22,12 @@
  */
 
 import type { CatalogEntry } from '../../catalog/types.js';
+import type { LinkEntry } from '../../links/types.js';
 
 /**
  * Escape the five XML/HTML metacharacters so that arbitrary catalog
- * strings (title, slug, date, thumbnail URL) cannot break out of their
- * attribute or text context.
+ * strings (title, slug, date, URL) cannot break out of their attribute
+ * or text context.
  */
 function escapeHtml(input: string): string {
   return input
@@ -32,16 +38,10 @@ function escapeHtml(input: string): string {
     .replace(/'/g, '&#39;');
 }
 
-/**
- * Format an ISO-8601 timestamp as `YYYY-MM-DD UTC` for display on cards.
- * Falls back to the raw input if it cannot be parsed (shouldn't happen
- * for validated CatalogEntry values, but keeps the renderer robust).
- */
+/** Format an ISO-8601 timestamp as `YYYY-MM-DD UTC` for display on cards. */
 function formatPublishedAt(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) {
-    return iso;
-  }
+  if (Number.isNaN(d.getTime())) return iso;
   const yyyy = d.getUTCFullYear().toString().padStart(4, '0');
   const mm = (d.getUTCMonth() + 1).toString().padStart(2, '0');
   const dd = d.getUTCDate().toString().padStart(2, '0');
@@ -177,6 +177,7 @@ const STYLES = `
 
   /* ---------- SECTION ---------- */
   .section { padding: 56px 0; border-bottom: 1px solid var(--hairline); }
+  .section:last-of-type { border-bottom: 0; }
   .section__head {
     display: flex; align-items: baseline; justify-content: space-between;
     margin-bottom: 32px;
@@ -259,6 +260,16 @@ const STYLES = `
   }
   .card__title a { color: inherit; }
   .card__title a:hover { color: var(--accent); }
+  .card__summary {
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 
   /* eyebrow / tag / dot — mono accents */
   .eyebrow {
@@ -279,6 +290,19 @@ const STYLES = `
     border: 1px solid var(--hairline);
     color: var(--ink-2);
   }
+  .tag.tag--link {
+    color: var(--accent);
+    border-color: var(--accent-soft);
+    background: var(--accent-soft);
+  }
+  .external-host {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .04em;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .external-host svg { color: var(--muted-2); }
   .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-2); }
 
   /* dual date block (video upload date + site publish date) */
@@ -323,7 +347,7 @@ const STYLES = `
     margin: 0 0 8px;
     color: var(--ink);
   }
-  .empty__body { color: var(--muted); font-size: 15px; max-width: 420px; margin: 0 auto; }
+  .empty__body { color: var(--muted); font-size: 15px; max-width: 480px; margin: 0 auto; }
 
   /* ---------- FOOTER ---------- */
   .site-footer {
@@ -372,18 +396,21 @@ const FONT_LINKS = `
 
 const SEARCH_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>';
 
+const EXTERNAL_ICON = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg>';
+
 function renderHeader(bp: string): string {
   const home = `${bp}/`;
+  const articlesAnchor = `${home}#from-around-the-web`;
   return `
 <header class="site-header">
   <div class="wrap site-header__inner">
     <a href="${home}" class="brand">
-      <span class="brand__mark">C</span>
-      <span class="brand__name">Conduit <span>· engineering notes</span></span>
+      <span class="brand__mark">A</span>
+      <span class="brand__name">Agent News</span>
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="${home}" class="active">Latest</a>
-      <a href="${home}">Articles</a>
+      <a href="${articlesAnchor}">Articles</a>
       <a href="${home}">Topics</a>
       <a href="${home}">About</a>
     </nav>
@@ -407,16 +434,16 @@ function renderFooter(bp: string): string {
     <div class="footer-grid">
       <div>
         <a href="${home}" class="brand">
-          <span class="brand__mark">C</span>
-          <span class="brand__name">Conduit <span>· engineering notes</span></span>
+          <span class="brand__mark">A</span>
+          <span class="brand__name">Agent News</span>
         </a>
-        <p>Long-form deep dives on the tools, techniques, and frameworks shaping the agent stack.</p>
+        <p>Deep dives on the agent stack — and a curated stream of the best writing on agents from around the web.</p>
       </div>
       <div>
         <h4>Read</h4>
         <ul>
           <li><a href="${home}">Latest</a></li>
-          <li><a href="${home}">Articles</a></li>
+          <li><a href="${home}#from-around-the-web">Articles</a></li>
           <li><a href="${home}">Topics</a></li>
         </ul>
       </div>
@@ -438,7 +465,7 @@ function renderFooter(bp: string): string {
       </div>
     </div>
     <div class="site-footer__bottom">
-      <span>© 2026 CONDUIT</span>
+      <span>© 2026 AGENT NEWS</span>
       <span>BUILT AS A BYTE-FIDELITY CONTENT PLATFORM</span>
     </div>
   </div>
@@ -447,26 +474,14 @@ function renderFooter(bp: string): string {
 }
 
 /**
- * Sort key: prefer the YouTube video's upload date when present (so the
- * catalog ordering reflects when the underlying content was created), and
- * fall back to the site's own publication date for any entry that lacks the
- * YouTube field (e.g. non-YouTube thumbnails, deleted videos, or API
- * failures at publish time).
+ * Sort key for video catalog entries: prefer YouTube upload date when known,
+ * fall back to site publish date.
  */
 function sortKey(entry: CatalogEntry): string {
   return entry.youtubePublishedAt ?? entry.publishedAt;
 }
 
-/**
- * Normalise a base path: strip trailing slash, ensure leading slash. Empty
- * string is allowed and means "host at root" (the default for the live
- * server). Examples:
- *   ''                -> ''
- *   '/'               -> ''
- *   '/AgentNews'      -> '/AgentNews'
- *   '/AgentNews/'     -> '/AgentNews'
- *   'AgentNews'       -> '/AgentNews'
- */
+/** Normalise a base path for project-page deploys. */
 function normalizeBasePath(basePath: string): string {
   if (basePath === '' || basePath === '/') return '';
   let bp = basePath;
@@ -475,57 +490,57 @@ function normalizeBasePath(basePath: string): string {
   return bp;
 }
 
+export interface RenderCatalogOptions {
+  /** External-article entries to render in the "From around the web" section. Optional. */
+  links?: readonly LinkEntry[];
+  /** URL prefix for internal links (project-page deploy). Default empty. */
+  basePath?: string;
+}
+
 /**
  * Render the full catalog HTML page.
  *
- * @param entries  Catalog entries to render.
- * @param basePath Optional URL prefix for all internal links. Empty for the
- *                 live server (`http://host/`); pass `"/AgentNews"` (or
- *                 similar) for a GitHub Pages project-page deploy so that
- *                 nav, card, and feature anchors point at
- *                 `/AgentNews/a/<slug>/` etc.
+ * @param entries Self-hosted video deep-dive entries.
+ * @param options Optional links (external articles) and basePath.
  */
 export function renderCatalogHtml(
   entries: readonly CatalogEntry[],
-  basePath: string = '',
+  options: RenderCatalogOptions = {},
 ): string {
-  const bp = normalizeBasePath(basePath);
-  const sorted = entries.slice().sort((a, b) => {
+  const bp = normalizeBasePath(options.basePath ?? '');
+  const links = options.links ?? [];
+
+  // --- Videos: sort newest-first by YouTube date, fallback to site date ---
+  const sortedVideos = entries.slice().sort((a, b) => {
     const ka = sortKey(a);
     const kb = sortKey(b);
     if (ka < kb) return 1;
     if (ka > kb) return -1;
-    // Tiebreaker: site publish date DESC.
     if (a.publishedAt < b.publishedAt) return 1;
     if (a.publishedAt > b.publishedAt) return -1;
     return 0;
   });
 
-  const count = sorted.length;
-  const countLabel = `${count} article${count === 1 ? '' : 's'} published`;
+  // --- Links: sort newest-first by publishedAt ---
+  const sortedLinks = links.slice().sort((a, b) => {
+    if (a.publishedAt < b.publishedAt) return 1;
+    if (a.publishedAt > b.publishedAt) return -1;
+    return 0;
+  });
 
+  const videoCount = sortedVideos.length;
+  const linkCount = sortedLinks.length;
+  const videoCountLabel = `${videoCount} article${videoCount === 1 ? '' : 's'} published`;
+  const linkCountLabel = `${linkCount} link${linkCount === 1 ? '' : 's'} curated`;
+
+  // --- Body assembly ---
   let body: string;
-  if (count === 0) {
-    body = renderEmpty();
+  if (videoCount === 0 && linkCount === 0) {
+    body = renderEmptyAll();
   } else {
-    const [lead, ...rest] = sorted;
-    const featureSection = lead === undefined ? '' : renderFeature(lead, bp);
-    const restSection =
-      rest.length === 0
-        ? ''
-        : `
-<section class="section">
-  <div class="wrap">
-    <div class="section__head">
-      <h2>More recent</h2>
-      <span class="count">${escapeHtml(countLabel)}</span>
-    </div>
-    <div class="grid-3">
-${rest.map((e) => renderCard(e, bp)).join('\n')}
-    </div>
-  </div>
-</section>`;
-    body = featureSection + restSection;
+    const videoSection = videoCount === 0 ? '' : renderVideosSection(sortedVideos, videoCountLabel, bp);
+    const linksSection = linkCount === 0 ? '' : renderLinksSection(sortedLinks, linkCountLabel);
+    body = videoSection + linksSection;
   }
 
   return `<!DOCTYPE html>
@@ -533,8 +548,8 @@ ${rest.map((e) => renderCard(e, bp)).join('\n')}
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Article Catalog</title>
-<meta name="description" content="Conduit — engineering notes. ${escapeHtml(countLabel)}.">
+<title>Agent News</title>
+<meta name="description" content="Agent News — deep dives on the agent stack and curated articles from around the web. ${escapeHtml(videoCountLabel)}, ${escapeHtml(linkCountLabel)}.">
 ${FONT_LINKS}
 <style>
 ${STYLES}
@@ -551,12 +566,35 @@ ${renderFooter(bp)}
 `;
 }
 
-/**
- * Render the two-date metadata block used on cards and feature: shows the
- * YouTube upload date (when known) and the site-publish date side by side,
- * each labelled with a mono eyebrow. The video date is omitted entirely
- * when `youtubePublishedAt` is absent.
- */
+// ---------------------------------------------------------------------------
+// Videos
+// ---------------------------------------------------------------------------
+
+function renderVideosSection(
+  videos: readonly CatalogEntry[],
+  countLabel: string,
+  bp: string,
+): string {
+  const [lead, ...rest] = videos;
+  const featureSection = lead === undefined ? '' : renderFeature(lead, bp);
+  const restSection =
+    rest.length === 0
+      ? ''
+      : `
+<section class="section">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>More recent</h2>
+      <span class="count">${escapeHtml(countLabel)}</span>
+    </div>
+    <div class="grid-3">
+${rest.map((e) => renderCard(e, bp)).join('\n')}
+    </div>
+  </div>
+</section>`;
+  return featureSection + restSection;
+}
+
 function renderDates(entry: CatalogEntry): string {
   const site = escapeHtml(formatPublishedAt(entry.publishedAt));
   if (entry.youtubePublishedAt === undefined) {
@@ -587,9 +625,9 @@ function renderFeature(entry: CatalogEntry, bp: string): string {
 <section class="hero">
   <div class="wrap">
     <div class="hero__intro">
-      <h1 class="hero__title">Deep dives on the <em>agent stack.</em></h1>
+      <h1 class="hero__title">News from the <em>agent stack.</em></h1>
       <p class="hero__lede">
-        Long-form notes on the tools, techniques, and frameworks shaping how engineers build with agents — preserved verbatim, served byte-for-byte. Ordered by when the underlying video shipped.
+        Long-form deep dives on the tools, techniques, and frameworks shaping how engineers build with agents — and a curated stream of the best writing from around the web.
         <small>Updated ${siteDate}</small>
       </p>
     </div>
@@ -637,14 +675,67 @@ ${renderDates(entry)}
       </article>`;
 }
 
-function renderEmpty(): string {
+// ---------------------------------------------------------------------------
+// External links
+// ---------------------------------------------------------------------------
+
+function renderLinksSection(
+  links: readonly LinkEntry[],
+  countLabel: string,
+): string {
+  return `
+<section class="section" id="from-around-the-web">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>From around the web</h2>
+      <span class="count">${escapeHtml(countLabel)}</span>
+    </div>
+    <div class="grid-3">
+${links.map(renderLinkCard).join('\n')}
+    </div>
+  </div>
+</section>`.trim();
+}
+
+function renderLinkCard(entry: LinkEntry): string {
+  const title = escapeHtml(entry.title);
+  const url = escapeHtml(entry.url);
+  const image = escapeHtml(entry.imageUrl);
+  const host = escapeHtml(entry.sourceSite);
+  const date = escapeHtml(formatPublishedAt(entry.publishedAt));
+  const summary =
+    entry.summary !== undefined && entry.summary.length > 0
+      ? `\n          <p class="card__summary">${escapeHtml(entry.summary)}</p>`
+      : '';
+  return `      <article class="card">
+        <a href="${url}" class="card__art" target="_blank" rel="noopener noreferrer" aria-label="${title}">
+          <img src="${image}" alt="${title}" loading="lazy" decoding="async">
+        </a>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="tag tag--link">Article</span>
+            <span class="external-host">${EXTERNAL_ICON}${host}</span>
+          </div>
+          <div class="dates">
+            <span class="date-item"><span class="date-label">Published</span><span class="date-value">${date}</span></span>
+          </div>
+          <h3 class="card__title"><a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a></h3>${summary}
+        </div>
+      </article>`;
+}
+
+// ---------------------------------------------------------------------------
+// Empty state (both videos and links empty)
+// ---------------------------------------------------------------------------
+
+function renderEmptyAll(): string {
   return `
 <section class="section">
   <div class="wrap">
     <div class="empty">
       <div class="empty__eyebrow">0 articles published</div>
-      <h2 class="empty__title">No articles published yet.</h2>
-      <p class="empty__body">Publish a sample with <code>npm run publish-article -- --source &lt;path&gt;</code> and reload.</p>
+      <h2 class="empty__title">No articles yet.</h2>
+      <p class="empty__body">Publish a deep dive with <code>npm run publish-article -- --source &lt;path&gt;</code> or curate a third-party article with <code>npm run publish-link -- --url &lt;URL&gt;</code> and reload.</p>
     </div>
   </div>
 </section>`.trim();

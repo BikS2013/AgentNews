@@ -40,11 +40,11 @@ describe('renderCatalogHtml — structural invariants', () => {
     );
   });
 
-  it('output contains <title>Article Catalog</title>', () => {
+  it('output contains <title>Agent News</title>', () => {
     const html = renderCatalogHtml([]);
     assert.ok(
-      html.includes('<title>Article Catalog</title>'),
-      'Expected <title>Article Catalog</title> in output',
+      html.includes('<title>Agent News</title>'),
+      'Expected <title>Agent News</title> in output',
     );
   });
 
