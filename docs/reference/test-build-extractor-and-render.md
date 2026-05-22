@@ -7,7 +7,7 @@ framework: node:test (Node.js built-in)
 test_command_full: npx tsx --test test_scripts/test-extractor.ts && npx tsx --test test_scripts/test-catalog-renderer.ts
 test_command_scope: npx tsx --test test_scripts/test-extractor.ts && npx tsx --test test_scripts/test-catalog-renderer.ts
 test_dir: test_scripts
-target_path: /Users/giorgosmarinos/aiwork/coding-platform/content-place2
+target_path: /Users/giorgosmarinos/aiwork/coding-platform/agent-news
 test_files_owned:
   - test_scripts/test-extractor.ts
   - test_scripts/test-catalog-renderer.ts

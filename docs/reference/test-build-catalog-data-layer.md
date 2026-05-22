@@ -7,7 +7,7 @@ framework: node:test (Node.js built-in)
 test_command_full: node --import tsx --test test_scripts/*.test.ts
 test_command_scope: node --import tsx --test test_scripts/slug.test.ts test_scripts/types.test.ts test_scripts/config.test.ts test_scripts/store.test.ts
 test_dir: test_scripts
-target_path: /Users/giorgosmarinos/aiwork/coding-platform/content-place2
+target_path: /Users/giorgosmarinos/aiwork/coding-platform/agent-news
 test_files_owned:
   - test_scripts/slug.test.ts
   - test_scripts/types.test.ts

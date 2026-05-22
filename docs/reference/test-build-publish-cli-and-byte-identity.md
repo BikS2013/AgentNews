@@ -7,7 +7,7 @@ framework: node:test
 test_command_full: npx tsx --test test_scripts/publish-cli-byte-identity.test.ts
 test_command_scope: npx tsx --test test_scripts/publish-cli-byte-identity.test.ts
 test_dir: test_scripts/
-target_path: /Users/giorgosmarinos/aiwork/coding-platform/content-place2
+target_path: /Users/giorgosmarinos/aiwork/coding-platform/agent-news
 test_files_owned:
   - test_scripts/publish-cli-byte-identity.test.ts
 tests_added: 18

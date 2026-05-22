@@ -8,10 +8,10 @@
 
 | Artifact | Path |
 |---|---|
-| Refined Request | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/reference/refined-request-html-article-publishing-site.md` |
-| Investigation | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/reference/investigation-html-article-publishing.md` |
-| Technical Research — Fastify static | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/research/fastify-static-byte-identical.md` |
-| Technical Research — cheerio extraction | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/research/cheerio-extraction.md` |
+| Refined Request | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/reference/refined-request-html-article-publishing-site.md` |
+| Investigation | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/reference/investigation-html-article-publishing.md` |
+| Technical Research — Fastify static | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/research/fastify-static-byte-identical.md` |
+| Technical Research — cheerio extraction | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/research/cheerio-extraction.md` |
 | Codebase scan | **NONE** — greenfield project, no existing source files |
 
 The implementer MUST read all four upstream documents before executing any phase. The refined-request defines acceptance criteria; the investigation locks the architecture; the two research files lock the implementation details for the byte-identity guarantee and the metadata extraction.
@@ -60,7 +60,7 @@ This plan satisfies all 10 acceptance criteria in the refined spec (AC1–AC10) 
 ## Repository Layout (target)
 
 ```
-content-place2/
+agent-news/
 ├── package.json
 ├── tsconfig.json
 ├── .gitignore

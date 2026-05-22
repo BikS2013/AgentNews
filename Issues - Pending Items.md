@@ -1,6 +1,6 @@
 # Issues - Pending Items
 
-This document tracks open issues, pending items, inconsistencies, and discrepancies detected during development of the content-place2 HTML article publishing site. Pending items are listed at the top in priority order; completed items follow.
+This document tracks open issues, pending items, inconsistencies, and discrepancies detected during development of the Agent News HTML article publishing site. Pending items are listed at the top in priority order; completed items follow.
 
 ## Pending Items
 

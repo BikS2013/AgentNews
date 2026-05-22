@@ -8,11 +8,11 @@
 
 | Artifact | Path |
 |---|---|
-| Refined Request | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/reference/refined-request-html-article-publishing-site.md` |
-| Investigation | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/reference/investigation-html-article-publishing.md` |
-| Research — Fastify static | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/research/fastify-static-byte-identical.md` |
-| Research — cheerio extraction | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/research/cheerio-extraction.md` |
-| Plan | `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/docs/design/plan-001-html-article-publishing-site.md` |
+| Refined Request | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/reference/refined-request-html-article-publishing-site.md` |
+| Investigation | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/reference/investigation-html-article-publishing.md` |
+| Research — Fastify static | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/research/fastify-static-byte-identical.md` |
+| Research — cheerio extraction | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/research/cheerio-extraction.md` |
+| Plan | `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/docs/design/plan-001-html-article-publishing-site.md` |
 | Codebase Scan | NONE — greenfield project |
 
 The implementer MUST read all upstream documents. This design is the contract that the parallel coding agents in Phase 6 of the workflow consume.
@@ -84,7 +84,7 @@ The catalog page (`GET /`) is the only HTML the server ever generates. It is exp
 
 ## 2. Module Organization & File Structure
 
-Absolute paths under `/Users/giorgosmarinos/aiwork/coding-platform/content-place2/`.
+Absolute paths under `/Users/giorgosmarinos/aiwork/coding-platform/agent-news/`.
 
 ### Source (`src/`)
 

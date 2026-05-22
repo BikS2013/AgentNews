@@ -8,12 +8,12 @@ deprecations_initial: 0
 deprecations_final: 0
 vulnerabilities_initial: 0
 vulnerabilities_final: 0
-target_path: /Users/giorgosmarinos/aiwork/coding-platform/content-place2
+target_path: /Users/giorgosmarinos/aiwork/coding-platform/agent-news
 validated_at: 2026-05-22T00:00:00Z
 last_validated_commit: null
 ---
 
-# Dependency Validation — content-place2
+# Dependency Validation — agent-news
 
 ## 1. Summary
 
@@ -74,7 +74,7 @@ No further action is required.
 
 | # | Command | Exit Code |
 |---|---|---|
-| 1 | `npm install` (cwd: /Users/giorgosmarinos/aiwork/coding-platform/content-place2) | 0 |
+| 1 | `npm install` (cwd: /Users/giorgosmarinos/aiwork/coding-platform/agent-news) | 0 |
 | 2 | `npm outdated --json` | 0 |
 | 3 | `npm audit --json` | 0 |
 | 4 | `npm install --prefer-online` (forced fresh registry check) | 0 |

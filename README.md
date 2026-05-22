@@ -1,4 +1,4 @@
-# content-place2
+# Agent News
 
 A small Node.js + TypeScript site that hosts self-contained HTML articles **byte-for-byte identical to their source files** and exposes a catalog page listing every published article (title, publication date, thumbnail).
 
