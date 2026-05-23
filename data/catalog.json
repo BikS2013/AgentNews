@@ -46,17 +46,6 @@
       "youtubePublishedAt": "2026-05-21T14:01:12.000Z"
     },
     {
-      "slug": "deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp",
-      "title": "Scaling Agents on Kubernetes with ACPX and ACP",
-      "publishedAt": "2026-05-22T17:27:33.790Z",
-      "sourcePath": "samples/Deep Dive — Scaling Agents on Kubernetes with ACPX and ACP (Onur Solmaz, OpenClaw).html",
-      "articlePath": "articles/deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp.html",
-      "thumbnailUrl": "https://img.youtube.com/vi/VaS2h-dY1-4/maxresdefault.jpg",
-      "thumbnailSource": "html",
-      "sha256": "d3dde504f3f40359c89defc0c39700a1f4f785f55d8bd2951f8f3273bafbab41",
-      "youtubePublishedAt": "2026-05-21T15:00:06.000Z"
-    },
-    {
       "slug": "simple-pi-subagents-deep-dive",
       "title": "Simple Pi Subagents",
       "publishedAt": "2026-05-22T18:58:48.426Z",
@@ -178,5 +167,5 @@
       "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T07:11:05.000Z"
+  "updatedAt": "2026-05-23T07:20:15.000Z"
 }
