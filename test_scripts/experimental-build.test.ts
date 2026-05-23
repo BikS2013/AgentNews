@@ -816,6 +816,49 @@ describe('public build — zero-leakage from experimental content', () => {
       false,
       'Public hero must NOT contain the lowercase experimental "news from" phrasing',
     );
+    // EXPERIMENTAL_URL was NOT set on this build invocation, so the public
+    // hero must NOT contain the experiments link.
+    assert.equal(
+      publicIndexHtml.includes('+ a path to experiments'),
+      false,
+      'Public hero must NOT render the experiments link when EXPERIMENTAL_URL is unset',
+    );
+  });
+
+  it('renders the experiments link in the public hero when EXPERIMENTAL_URL is set', () => {
+    const outC = path.join(tempDir, 'distC');
+    const exUrl = 'https://example.invalid/agentnews-experimental/';
+    const result = spawnSync(
+      'npx',
+      ['tsx', path.join(PROJECT_ROOT, 'scripts', 'build-static.ts')],
+      {
+        env: {
+          ...process.env,
+          CATALOG_PATH: publicCatalog,
+          ARTICLES_DIR: publicArticles,
+          LINKS_PATH: publicLinks,
+          BASE_PATH: '',
+          OUT_DIR: outC,
+          EXPERIMENTAL_URL: exUrl,
+        },
+        encoding: 'utf8',
+        timeout: 30000,
+      },
+    );
+    assert.equal(
+      result.status,
+      0,
+      `build-static with EXPERIMENTAL_URL set must succeed. stderr: ${result.stderr ?? ''}`,
+    );
+    const indexHtml = readFileSync(path.join(outC, 'index.html'), 'utf8');
+    assert.ok(
+      indexHtml.includes('+ a path to experiments'),
+      'Public hero must render the experiments link text when EXPERIMENTAL_URL is set',
+    );
+    assert.ok(
+      indexHtml.includes(`href="${exUrl}"`),
+      `Public hero link must point at EXPERIMENTAL_URL=${exUrl}`,
+    );
   });
 
   it('public dist contains no file sourced from the experimental tree', () => {

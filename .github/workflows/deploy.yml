@@ -41,6 +41,10 @@ jobs:
       ARTICLES_DIR: ./articles
       LINKS_PATH: ./data/links.json
       OUT_DIR: ./dist
+      # Optional. When set, the public hero gains a discreet link to the
+      # experimental sibling site. Set to an empty value (or remove this
+      # line) to suppress the link.
+      EXPERIMENTAL_URL: https://biks2013.github.io/AgentNews-Experimental/
     steps:
       - name: Checkout
         uses: actions/checkout@v4

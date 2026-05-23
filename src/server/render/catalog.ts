@@ -222,6 +222,12 @@ const STYLES = `
     font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
     color: var(--muted);
   }
+  .hero__lede small a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    padding-bottom: 1px; transition: border-color 120ms ease;
+  }
+  .hero__lede small a:hover { border-bottom-color: var(--accent); }
   @media (max-width: 880px) {
     .hero__intro { grid-template-columns: 1fr; gap: 24px; }
   }
@@ -661,6 +667,14 @@ export interface RenderCatalogOptions {
    * — never feed user input here.
    */
   heroLedeHtml?: string;
+  /**
+   * Optional extra HTML rendered as the final `<small>` block of the
+   * hero lede (one line below the "Updated …" date). The public build
+   * uses this to surface a discreet link to the experimental sibling
+   * site when EXPERIMENTAL_URL is set in the build env. Passed through
+   * unescaped — never feed user input here.
+   */
+  heroExtraHtml?: string;
 }
 
 /**
@@ -707,6 +721,7 @@ export function renderCatalogHtml(
   const enableTools = options.enableToolsSection === true;
   const heroTitle = options.heroTitle ?? DEFAULT_HERO_TITLE;
   const heroLedeHtml = options.heroLedeHtml ?? DEFAULT_HERO_LEDE_HTML;
+  const heroExtraHtml = options.heroExtraHtml ?? '';
 
   // --- Videos: sort newest-first by YouTube date, fallback to site date ---
   const sortedVideos = entries.slice().sort(compareVideos);
@@ -738,10 +753,10 @@ export function renderCatalogHtml(
     toolsTotal === 0 &&
     articleTotal === 0
   ) {
-    body = renderHero(heroDate, heroTitle, heroLedeHtml) + renderEmptyAll();
+    body = renderHero(heroDate, heroTitle, heroLedeHtml, heroExtraHtml) + renderEmptyAll();
   } else {
     body =
-      renderHero(heroDate, heroTitle, heroLedeHtml) +
+      renderHero(heroDate, heroTitle, heroLedeHtml, heroExtraHtml) +
       (aiNewsTotal === 0
         ? ''
         : renderAiNewsSection(aiNewsVideos, aiNewsLinks, bp)) +
@@ -829,8 +844,14 @@ function renderHero(
   latestIso: string,
   title: { prefix: string; accent: string },
   ledeHtml: string,
+  extraHtml: string,
 ): string {
   const date = escapeHtml(formatPublishedAt(latestIso));
+  // The extra slot is rendered as its own <small> block immediately
+  // after "Updated …", inheriting the existing .hero__lede small CSS
+  // (Plex Mono, 11px, uppercase, muted) so it visually reads as a
+  // sibling-line of the date.
+  const extra = extraHtml.length > 0 ? `\n        <small>${extraHtml}</small>` : '';
   return `
 <section class="hero">
   <div class="wrap">
@@ -838,7 +859,7 @@ function renderHero(
       <h1 class="hero__title">${escapeHtml(title.prefix)} <em>${escapeHtml(title.accent)}</em></h1>
       <p class="hero__lede">
         ${ledeHtml}
-        <small>Updated ${date}</small>
+        <small>Updated ${date}</small>${extra}
       </p>
     </div>
   </div>

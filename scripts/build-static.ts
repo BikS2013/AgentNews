@@ -126,12 +126,28 @@ function sha256Hex(buf: Buffer): string {
   return createHash('sha256').update(buf).digest('hex');
 }
 
+/** Minimal HTML attribute-value escape — used only for the optional
+ *  experimental-URL attribute in the hero link. */
+function escapeAttr(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function main(): number {
   const catalogPath = requireNonEmpty('CATALOG_PATH');
   const articlesDir = requireNonEmpty('ARTICLES_DIR');
   const linksPath = requireNonEmpty('LINKS_PATH');
   const basePath = requireBasePath('BASE_PATH');
   const outDir = requireNonEmpty('OUT_DIR');
+  // Optional. When set to a non-empty URL the public hero gains a discreet
+  // extra line linking to the experimental sibling site. Empty / unset →
+  // no link rendered (matches the pre-feature look). Feature-gated rather
+  // than required so local `npm run dev` shows the unadorned hero by
+  // default; the deploy.yml workflow sets it for the deployed public site.
+  const experimentalUrl = (process.env['EXPERIMENTAL_URL'] ?? '').trim();
 
   const absCatalog = path.resolve(catalogPath);
   const absArticles = path.resolve(articlesDir);
@@ -182,7 +198,18 @@ function main(): number {
   mkdirSync(path.join(absOut, 'a'), { recursive: true });
 
   // 1. Catalog page → dist/index.html
-  const catalogHtml = renderCatalogHtml(entries, { links, basePath });
+  //    If EXPERIMENTAL_URL is set, surface a discreet link to the
+  //    experimental sibling site at the bottom of the hero lede. Otherwise
+  //    render the unadorned hero (no link).
+  const heroExtraHtml =
+    experimentalUrl.length > 0
+      ? `<a href="${escapeAttr(experimentalUrl)}">+ a path to experiments</a>`
+      : undefined;
+  const catalogHtml = renderCatalogHtml(entries, {
+    links,
+    basePath,
+    ...(heroExtraHtml !== undefined ? { heroExtraHtml } : {}),
+  });
   writeFileSync(path.join(absOut, 'index.html'), catalogHtml, 'utf8');
 
   // 2. Articles → dist/a/<slug>.html (byte-identical, verified)
