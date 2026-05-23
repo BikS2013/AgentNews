@@ -2,227 +2,224 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Software Fundamentals Matter More Than Ever</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software Fundamentals Matter More Than Ever — Matt Pocock</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+    .container{max-width:860px;margin:0 auto;}
+    h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+    .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+    .meta a{color:#a78bfa;text-decoration:none;}
+    .meta a:hover{text-decoration:underline;}
+    .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+    .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+    .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+    .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+    .overview-card p{color:#b0b4c0;font-size:15px;}
+    .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+    .section-card:hover{border-color:rgba(139,92,246,0.35);}
+    .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+    .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+    .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+    .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+    .section-card li{margin-bottom:5px;}
+    .section-card strong{color:#d0d4dc;}
+    .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+    .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+    .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+    .takeaways ol{margin-left:20px;}
+    .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+    .takeaways li strong{color:#c4b5fd;}
+    .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+    .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+    .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+    .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+    .ts-row .timestamp{flex-shrink:0;}
+    .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+    .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+    footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+    @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+  </style>
 </head>
 <body>
-  <img src="https://img.youtube.com/vi/v4F1gFy-hqg/maxresdefault.jpg" alt="Software Fundamentals Matter More Than Ever — Matt Pocock">
-
-  <h1>Software Fundamentals Matter More Than Ever — Matt Pocock</h1>
-
-  <p><strong>Speaker:</strong> Matt Pocock — TypeScript educator, creator of Total TypeScript, author of the viral "Claude Code Skills" repo<br>
-  <strong>Event:</strong> AI Engineer (April 2026)<br>
-  <strong>Video:</strong> <a href="https://www.youtube.com/watch?v=v4F1gFy-hqg">YouTube</a></p>
-
-  <hr>
-
-  <h2>The Thesis — Code Is Not Cheap</h2>
-
-  <p>Matt Pocock opens with a message of comfort for developers feeling their skills are becoming obsolete: <strong>software fundamentals matter now more than they ever have</strong>. His talk is a systematic argument, grounded in classic software engineering books, that the AI coding revolution doesn't make good engineering practices optional — it makes them essential.</p>
-
-  <p>After 18 months teaching developers to build with AI agents through his "Claude Code for Real Engineers" course, Matt has watched the same patterns emerge repeatedly. The developers who succeed aren't the ones who delegate everything to AI or who refuse to use it at all. <strong>They're the ones who fall back on engineering fundamentals</strong> — decades-old ideas that didn't break when AI arrived. They got more important.</p>
-
-  <hr>
-
-  <h2>The Specs-to-Code Movement — And Why It Fails</h2>
-
-  <p>Matt begins by addressing the <strong>specs-to-code movement</strong> head-on. The premise is seductive: write a specification of how an application should work, use AI to turn it into code, and if there's a problem, go back to the spec — not the code. Change the spec, run the "compiler" again, get new code.</p>
-
-  <p>Matt tried it. The audience tried it. The result was universal:</p>
-
-  <blockquote>
-    <p><em>"I would run it, and I would try not to look at the code, but I would look at the code. I got code out first, then I ran it again and got worse code. I did it again, I got even worse code. I kept running the compiler and I would just end up with garbage."</em></p>
-  </blockquote>
-
-  <p>His diagnosis: <strong>specs-to-code is just vibe coding by another name</strong>. The idea that we can ignore the code and let it manage itself fundamentally misunderstands what makes software systems degrade.</p>
-
-  <hr>
-
-  <h2>Software Entropy — The Physics of Bad Code</h2>
-
-  <p>Instead of trying to fix the "compiler," Matt went back to the classics to understand <em>why</em> iterative AI code generation produces progressively worse results.</p>
-
-  <h3>A Philosophy of Software Design (John Ousterhout)</h3>
-
-  <p>Ousterhout defines <strong>complexity</strong> as <em>"anything related to the structure of a software system that makes it hard to understand and modify the system."</em> A bad codebase is one that's hard to change. If you can't make changes without causing bugs, you have a bad codebase. <strong>Good codebases are easy to change.</strong></p>
-
-  <h3>The Pragmatic Programmer (Hunt & Thomas)</h3>
-
-  <p>The concept of <strong>software entropy</strong> describes exactly what Matt was seeing. Entropy is the tendency of systems toward disorder and collapse. Every time you make a change to a codebase thinking only about that change — without considering the design of the whole system — the codebase gets worse. Each specs-to-code iteration was increasing entropy.</p>
-
-  <h3>The Core Insight</h3>
-
-  <p>There's an assumption driving the specs-to-code movement: <strong>"code is cheap."</strong> Matt disagrees emphatically:</p>
-
-  <blockquote>
-    <p><em>"Code is not cheap. In fact, bad code is the most expensive it's ever been."</em></p>
-  </blockquote>
-
-  <p>Why? Because if you have a codebase that's hard to change, <strong>you can't take advantage of what AI offers</strong>. AI performs exceptionally well in good codebases. It struggles in bad ones. Therefore: good codebases matter more than ever, which means <strong>software fundamentals matter more than ever</strong>.</p>
-
-  <hr>
-
-  <h2>Six Failure Modes and How Classic Engineering Fixes Them</h2>
-
-  <p>Matt structures his practical advice around common AI coding failure modes, each paired with a proven software engineering principle and a concrete Claude Code skill.</p>
-
-  <h3>Failure Mode 1: "The AI Didn't Do What I Wanted"</h3>
-
-  <p>You had a clear idea in your head, but the AI built something completely different. The communication barrier between you and the AI is real.</p>
-
-  <p><strong>The Book:</strong> Frederick P. Brooks' <em>The Design of Design</em> introduces the concept of the <strong>design concept</strong> — the invisible, ephemeral shared understanding of what you're building that floats between collaborators. It's not an asset you can put in a markdown file. It's the theory of the thing.</p>
-
-  <p>The problem: you and the AI don't share a design concept.</p>
-
-  <p><strong>The Solution — "Grill Me" Skill:</strong></p>
-
-  <blockquote>
-    <p><em>"Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one."</em></p>
-  </blockquote>
-
-  <p>This skill (from Matt's viral 13,000+ star GitHub repo) turns the AI into an adversary that asks 40, 60, even 100 questions before it's satisfied a shared understanding exists. The resulting conversation can be turned into a PRD or directly into issues for an AFK agent.</p>
-
-  <p>Matt's strong opinion: <em>"This is better than the default plan mode in Claude Code. Plan mode is extremely eager to create an asset — it really wants to create a plan and start working. Whereas I think it's a lot nicer to reach a shared design concept first."</em></p>
-
-  <h3>Failure Mode 2: "The AI Is Way Too Verbose"</h3>
-
-  <p>You're talking at cross-purposes. The AI uses too many words, and it feels like you're not speaking the same language.</p>
-
-  <p><strong>The Book:</strong> Eric Evans' <em>Domain-Driven Design</em> and the concept of <strong>ubiquitous language</strong> — a shared vocabulary where conversations among developers, expressions in code, and conversations with domain experts all derive from the same domain model.</p>
-
-  <p><strong>The Solution — Ubiquitous Language Skill:</strong> A skill that scans the codebase, identifies terminology, and generates a markdown file with tables of all domain terms and their definitions. This file serves as a shared dictionary between you and the AI.</p>
-
-  <p>The impact goes beyond communication. By reading the AI's thinking traces, Matt discovered that the ubiquitous language file:</p>
-  <ul>
-    <li><strong>Improves planning quality</strong> — the AI reasons more precisely</li>
-    <li><strong>Reduces verbosity</strong> — the AI thinks in less verbose terms</li>
-    <li><strong>Improves implementation alignment</strong> — the code matches the plan more closely</li>
-  </ul>
-
-  <p><em>"This has absolutely been a powerhouse. It's been unbelievably good."</em></p>
-
-  <h3>Failure Mode 3: "It Built the Right Thing, But It Doesn't Work"</h3>
-
-  <p>The AI understood what you wanted and built it, but the result is broken.</p>
-
-  <p>The obvious fix: <strong>feedback loops</strong> — static types (TypeScript), browser access for front-end apps, and automated tests. But even with these tools, the LLM doesn't use them well. It does too much at once, producing huge amounts of code before thinking to type-check or test.</p>
-
-  <p><strong>The Book:</strong> The Pragmatic Programmer calls this <strong>"outrunning your headlights"</strong> — driving too fast for conditions. <em>"The rate of feedback is your speed limit."</em> Testing as you go and taking small deliberate steps is how you stay within the speed limit.</p>
-
-  <p><strong>The Solution — Test-Driven Development (TDD):</strong> TDD forces the LLM to take small steps. Create a test first, make it pass, refactor. The red-green-refactor cycle prevents the AI from generating mountains of untested code.</p>
-
-  <h3>Failure Mode 4: "Testing Is Too Hard"</h3>
-
-  <p>TDD sounds great in theory, but testing is genuinely hard. There are interconnected decisions at every level:</p>
-  <ul>
-    <li>How big a unit do you test?</li>
-    <li>What do you mock?</li>
-    <li>What behaviors do you test?</li>
-  </ul>
-
-  <p>All of these decisions are dependent on each other. And here's the key insight: <strong>good codebases are easy codebases to test</strong>. The quality of your feedback loops depends on the quality of your code architecture.</p>
-
-  <p><strong>The Book:</strong> Ousterhout's <strong>deep modules</strong> concept. Not shallow modules (many small modules with complex interfaces), but <strong>relatively few, large, deep modules with simple interfaces</strong>.</p>
-
-  <ul>
-    <li><strong>Deep modules:</strong> lots of functionality hidden behind a simple interface. You can look inside if you want, but you don't need to.</li>
-    <li><strong>Shallow modules:</strong> not much functionality, complex interface. A codebase full of tiny blobs that the AI has to walk through and navigate — and often fails to understand.</li>
-  </ul>
-
-  <p>AI is really good at <em>creating</em> shallow module codebases (lots of small files, lots of abstractions). But AI is bad at <em>navigating</em> them. It can't find the right module in time, doesn't understand all the dependencies, and loses track of the architecture.</p>
-
-  <p>A codebase full of deep modules is structured inside clear boundaries with interfaces on top. These interfaces are easy to test — you test at the boundary, verify through the interface, and you're done. <strong>This is a codebase that rewards TDD.</strong></p>
-
-  <p><strong>The Solution — "Improve Codebase Architecture" Skill:</strong> A reusable set of steps: explore the codebase, find related code scattered across shallow modules, and wrap it in deep modules with clean interfaces.</p>
-
-  <h3>Failure Mode 5: "My Brain Can't Keep Up"</h3>
-
-  <p>Everything is working — feedback loops are firing, code is shipping faster than ever. But you're exhausted. <em>"Raise your hand if you've felt more tired than you have ever before in your development career."</em></p>
-
-  <p>A shallow-module codebase makes it harder for both the AI <em>and your brain</em>. You both need to keep all that scattered information in your head. A deep-module architecture simplifies this by letting you treat modules as <strong>gray boxes</strong>.</p>
-
-  <p><strong>The Solution — Design the Interface, Delegate the Implementation:</strong></p>
-
-  <p>For non-critical modules (not finance, not security-sensitive), you can:</p>
-  <ol>
-    <li>Design the interface carefully yourself</li>
-    <li>Let AI handle the implementation inside</li>
-    <li>Test from the outside through the boundary</li>
-    <li>Don't review the internal implementation deeply</li>
-  </ol>
-
-  <p><em>"I have found this has really saved my brain because I can just go — 'Okay AI, I'll let you handle what's inside the big blob. I'm just going to test from the outside and verify it.'"</em></p>
-
-  <h3>Failure Mode 6: "The Architecture Keeps Degrading"</h3>
-
-  <p>Whenever touching code, planning, or prompting, you need to be <strong>aware of the modules in your application</strong>. The module map needs to be part of your ubiquitous language. It needs to be built into your planning skills. Matt's PRD skill explicitly includes module changes and interface modifications.</p>
-
-  <p><strong>The Book:</strong> Kent Beck — <em>"Invest in the design of the system every day."</em></p>
-
-  <p>This is the fundamental difference between specs-to-code and what actually works:</p>
-  <ul>
-    <li><strong>Specs-to-code</strong> = divesting from system design. Ignoring the code. Letting entropy win.</li>
-    <li><strong>Fundamentals-driven AI development</strong> = investing in system design daily. Using AI as a tactical programmer while you maintain strategic control.</li>
-  </ul>
-
-  <hr>
-
-  <h2>The Strategic vs. Tactical Programmer</h2>
-
-  <p>Matt's framing for the human-AI relationship in software development:</p>
-
-  <blockquote>
-    <p><em>"Think of AI as a really great on-the-ground programmer — a tactical programmer, a sergeant on the ground making the code changes. You need someone above that, thinking on the strategic level. And that's you."</em></p>
-  </blockquote>
-
-  <p>The strategic level requires software fundamental skills that have been around for 20+ years:</p>
-
-  <ul>
-    <li><strong>Shared design concepts</strong> (Brooks) — align with AI before building</li>
-    <li><strong>Ubiquitous language</strong> (Evans/DDD) — create a shared vocabulary</li>
-    <li><strong>Software entropy management</strong> (Hunt & Thomas) — fight disorder actively</li>
-    <li><strong>Deep modules</strong> (Ousterhout) — architecture that AI can navigate and test</li>
-    <li><strong>Test-driven development</strong> (Beck) — feedback loops that constrain AI's pace</li>
-    <li><strong>Daily design investment</strong> (Beck) — don't divest from code quality</li>
-  </ul>
-
-  <hr>
-
-  <h2>The Skills — Practical Tools</h2>
-
-  <p>All skills mentioned in the talk are available in Matt's GitHub repo (<a href="https://github.com/mattpocock/skills">mattpocock/skills</a>, 13,000+ stars):</p>
-
-  <ol>
-    <li><strong>Grill Me</strong> — adversarial questioning to reach shared design concept before building</li>
-    <li><strong>Ubiquitous Language</strong> — auto-generate a shared vocabulary from your codebase</li>
-    <li><strong>TDD</strong> — force red-green-refactor cycles on the AI</li>
-    <li><strong>Improve Codebase Architecture</strong> — refactor shallow modules into deep modules</li>
-    <li><strong>Write a PRD</strong> — module-aware product requirements with interface specifications</li>
-  </ol>
-
-  <hr>
-
-  <h2>Key Takeaways</h2>
-
-  <ol>
-    <li><strong>Code is not cheap — bad code is the most expensive it's ever been.</strong> A hard-to-change codebase prevents you from leveraging AI effectively.</li>
-    <li><strong>Specs-to-code is vibe coding by another name.</strong> Ignoring the code and repeatedly "running the compiler" produces progressively worse results due to software entropy.</li>
-    <li><strong>Good codebases matter more than ever</strong> because AI performs exceptionally well in well-structured code and poorly in messy code.</li>
-    <li><strong>Reach a shared design concept before building.</strong> The "Grill Me" technique (40–100 adversarial questions) prevents the AI from building the wrong thing.</li>
-    <li><strong>Create a ubiquitous language.</strong> A shared vocabulary between you and the AI improves planning quality, reduces verbosity, and aligns implementation with intent.</li>
-    <li><strong>TDD is essential for AI coding.</strong> It forces the LLM to take small steps instead of outrunning its headlights.</li>
-    <li><strong>Deep modules > shallow modules.</strong> AI creates shallow-module codebases by default but can't navigate them. Design for deep modules with simple interfaces.</li>
-    <li><strong>Design the interface, delegate the implementation.</strong> Treat deep modules as gray boxes — test from outside, let AI handle internals.</li>
-    <li><strong>Invest in system design every day.</strong> The difference between success and failure with AI is whether you invest in or divest from your codebase's architecture.</li>
-    <li><strong>You are the strategic programmer.</strong> AI is the tactical sergeant on the ground. The skills needed at the strategic level are decades-old fundamentals that just became more important.</li>
-  </ol>
-
-  <h3>Recommended Reading</h3>
-  <ul>
-    <li><em>A Philosophy of Software Design</em> — John Ousterhout</li>
-    <li><em>The Pragmatic Programmer</em> — David Thomas & Andrew Hunt</li>
-    <li><em>The Design of Design</em> — Frederick P. Brooks</li>
-    <li><em>Domain-Driven Design</em> — Eric Evans</li>
-  </ul>
-
+  <img src="https://img.youtube.com/vi/v4F1gFy-hqg/maxresdefault.jpg" alt="Software Fundamentals Matter More Than Ever — Matt Pocock" style="display:none;">
+
+  <div class="container">
+    <h1>Software Fundamentals Matter More Than Ever — Matt Pocock</h1>
+
+    <div class="meta">
+      <span class="badge">Deep Dive</span>
+      <span>Speaker: <a href="https://github.com/mattpocock" target="_blank">Matt Pocock</a></span>
+      <span>Event: AI Engineer · April 2026</span>
+      <span>~18 min talk</span>
+    </div>
+
+    <div class="video-wrap">
+      <iframe width="100%" height="430" src="https://www.youtube.com/embed/v4F1gFy-hqg" title="Software Fundamentals Matter More Than Ever — Matt Pocock" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:block;"></iframe>
+      <noscript><a href="https://www.youtube.com/watch?v=v4F1gFy-hqg">Watch on YouTube</a></noscript>
+    </div>
+
+    <!-- Overview -->
+    <div class="overview-card">
+      <h2>Overview</h2>
+      <p>Matt Pocock — TypeScript educator, creator of Total TypeScript, and author of the viral "Claude Code Skills" repo — argues that AI coding doesn't make good engineering practices optional; it makes them essential. After 18 months teaching developers to build with AI agents, he presents a systematic framework grounded in classic software engineering books: six common AI failure modes, each paired with a proven engineering principle and a concrete Claude Code skill. The developers who succeed aren't the ones who delegate everything to AI — they're the ones who fall back on fundamentals.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section-card">
+      <h2><span class="section-num">1</span> The Specs-to-Code Movement — And Why It Fails <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=30" target="_blank">0:30</a></h2>
+      <p>Matt begins by addressing the <strong>specs-to-code movement</strong> head-on. The premise is seductive: write a specification of how an application should work, use AI to turn it into code, and if there's a problem, go back to the spec — not the code. Change the spec, run the "compiler" again, get new code.</p>
+      <p>Matt tried it. The audience tried it. The result was universal:</p>
+      <div class="highlight">"I would run it, and I would try not to look at the code, but I would look at the code. I got code out first, then I ran it again and got worse code. I did it again, I got even worse code. I kept running the compiler and I would just end up with garbage."</div>
+      <p>His diagnosis: <strong>specs-to-code is just vibe coding by another name</strong>. The idea that we can ignore the code and let it manage itself fundamentally misunderstands what makes software systems degrade.</p>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section-card">
+      <h2><span class="section-num">2</span> Software Entropy &amp; Complexity <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=135" target="_blank">2:15</a></h2>
+      <p>Instead of trying to fix the "compiler," Matt went back to the classics to understand <em>why</em> iterative AI code generation produces progressively worse results.</p>
+      <p><strong>A Philosophy of Software Design (Ousterhout)</strong> — defines <strong>complexity</strong> as <em>"anything related to the structure of a software system that makes it hard to understand and modify the system."</em> Good codebases are easy to change. Bad codebases aren't.</p>
+      <p><strong>The Pragmatic Programmer (Hunt &amp; Thomas)</strong> — the concept of <strong>software entropy</strong> describes what Matt was seeing. Every time you make a change to a codebase thinking only about that change — without considering the design of the whole system — the codebase gets worse. Each specs-to-code iteration was increasing entropy.</p>
+      <div class="highlight">"Code is not cheap. In fact, bad code is the most expensive it's ever been."</div>
+      <p>If you have a codebase that's hard to change, <strong>you can't take advantage of what AI offers</strong>. AI performs exceptionally well in good codebases. It struggles in bad ones. Therefore: good codebases matter more than ever, which means <strong>software fundamentals matter more than ever</strong>.</p>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-card">
+      <h2><span class="section-num">3</span> Failure Mode 1: "AI Didn't Do What I Wanted" → Grill Me <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=300" target="_blank">5:00</a></h2>
+      <p>You had a clear idea in your head, but the AI built something completely different. The communication barrier is real.</p>
+      <p><strong>The Book:</strong> Frederick P. Brooks' <em>The Design of Design</em> introduces the concept of the <strong>design concept</strong> — the invisible, ephemeral shared understanding of what you're building that floats between collaborators. The problem: you and the AI don't share one.</p>
+      <div class="highlight">"Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one."</div>
+      <p>The <strong>"Grill Me" skill</strong> (from Matt's viral 13,000+ star GitHub repo) turns the AI into an adversary that asks 40, 60, even 100 questions before it's satisfied a shared understanding exists. The resulting conversation can be turned into a PRD or directly into issues for an AFK agent.</p>
+      <p>Matt's strong opinion: <em>"This is better than the default plan mode in Claude Code. Plan mode is extremely eager to create an asset — it really wants to create a plan and start working. Whereas I think it's a lot nicer to reach a shared design concept first."</em></p>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="section-card">
+      <h2><span class="section-num">4</span> Failure Mode 2: "AI Too Verbose" → Ubiquitous Language / DDD <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=460" target="_blank">7:40</a></h2>
+      <p>You're talking at cross-purposes. The AI uses too many words, and it feels like you're not speaking the same language.</p>
+      <p><strong>The Book:</strong> Eric Evans' <em>Domain-Driven Design</em> and the concept of <strong>ubiquitous language</strong> — a shared vocabulary where conversations among developers, expressions in code, and conversations with domain experts all derive from the same domain model.</p>
+      <p><strong>The Solution:</strong> A skill that scans the codebase, identifies terminology, and generates a markdown file with tables of all domain terms and their definitions. This file serves as a shared dictionary between you and the AI.</p>
+      <p>By reading the AI's thinking traces, Matt discovered the ubiquitous language file:</p>
+      <ul>
+        <li><strong>Improves planning quality</strong> — the AI reasons more precisely</li>
+        <li><strong>Reduces verbosity</strong> — the AI thinks in less verbose terms</li>
+        <li><strong>Improves implementation alignment</strong> — the code matches the plan more closely</li>
+      </ul>
+      <div class="highlight">"This has absolutely been a powerhouse. It's been unbelievably good."</div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="section-card">
+      <h2><span class="section-num">5</span> Failure Mode 3: "Doesn't Work" → TDD <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=600" target="_blank">10:00</a></h2>
+      <p>The AI understood what you wanted and built it, but the result is broken. The obvious fix: <strong>feedback loops</strong> — static types (TypeScript), browser access for front-end apps, and automated tests. But even with these tools, the LLM doesn't use them well. It does too much at once, producing huge amounts of code before thinking to type-check or test.</p>
+      <p><strong>The Book:</strong> The Pragmatic Programmer calls this <strong>"outrunning your headlights"</strong> — driving too fast for conditions. <em>"The rate of feedback is your speed limit."</em></p>
+      <p><strong>The Solution — Test-Driven Development (TDD):</strong> TDD forces the LLM to take small steps. Create a test first, make it pass, refactor. The red-green-refactor cycle prevents the AI from generating mountains of untested code.</p>
+      <div class="highlight">Testing as you go and taking small deliberate steps is how you stay within the speed limit.</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="section-card">
+      <h2><span class="section-num">6</span> Failure Mode 4: "Testing Is Hard" → Deep Modules <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=720" target="_blank">12:00</a></h2>
+      <p>TDD sounds great in theory, but testing is genuinely hard. How big a unit do you test? What do you mock? What behaviors do you test? All decisions are interconnected. The key insight: <strong>good codebases are easy codebases to test</strong>.</p>
+      <p><strong>The Book:</strong> Ousterhout's <strong>deep modules</strong> concept — relatively few, large, deep modules with simple interfaces, not shallow modules with complex interfaces.</p>
+      <ul>
+        <li><strong>Deep modules:</strong> lots of functionality hidden behind a simple interface. You can look inside if you want, but you don't need to.</li>
+        <li><strong>Shallow modules:</strong> not much functionality, complex interface. A codebase full of tiny blobs that the AI has to walk through — and often fails to understand.</li>
+      </ul>
+      <div class="highlight">AI is really good at <em>creating</em> shallow module codebases. But AI is bad at <em>navigating</em> them. It can't find the right module in time, doesn't understand all the dependencies, and loses track of the architecture.</div>
+      <p>A codebase full of deep modules is structured inside clear boundaries with interfaces on top. These interfaces are easy to test — you test at the boundary, verify through the interface, and you're done. <strong>This is a codebase that rewards TDD.</strong></p>
+      <p><strong>The Solution — "Improve Codebase Architecture" Skill:</strong> Explore the codebase, find related code scattered across shallow modules, and wrap it in deep modules with clean interfaces.</p>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="section-card">
+      <h2><span class="section-num">7</span> Failure Mode 5: "Brain Can't Keep Up" → Design Interface, Delegate Implementation <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=840" target="_blank">14:00</a></h2>
+      <p>Everything is working — feedback loops are firing, code is shipping faster than ever. But you're exhausted. A shallow-module codebase makes it harder for both the AI <em>and your brain</em>. A deep-module architecture simplifies this by letting you treat modules as <strong>gray boxes</strong>.</p>
+      <p><strong>The Solution:</strong> For non-critical modules (not finance, not security-sensitive):</p>
+      <ol>
+        <li>Design the interface carefully yourself</li>
+        <li>Let AI handle the implementation inside</li>
+        <li>Test from the outside through the boundary</li>
+        <li>Don't review the internal implementation deeply</li>
+      </ol>
+      <div class="highlight">"I have found this has really saved my brain because I can just go — 'Okay AI, I'll let you handle what's inside the big blob. I'm just going to test from the outside and verify it.'"</div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="section-card">
+      <h2><span class="section-num">8</span> Failure Mode 6: "Architecture Degrades" → Invest in Design Daily <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=930" target="_blank">15:30</a></h2>
+      <p>Whenever touching code, planning, or prompting, you need to be <strong>aware of the modules in your application</strong>. The module map needs to be part of your ubiquitous language. It needs to be built into your planning skills. Matt's PRD skill explicitly includes module changes and interface modifications.</p>
+      <p><strong>The Book:</strong> Kent Beck — <em>"Invest in the design of the system every day."</em></p>
+      <p>This is the fundamental difference between specs-to-code and what actually works:</p>
+      <ul>
+        <li><strong>Specs-to-code</strong> = divesting from system design. Ignoring the code. Letting entropy win.</li>
+        <li><strong>Fundamentals-driven AI development</strong> = investing in system design daily. Using AI as a tactical programmer while you maintain strategic control.</li>
+      </ul>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="section-card">
+      <h2><span class="section-num">9</span> The Strategic vs. Tactical Programmer <a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=1020" target="_blank">17:00</a></h2>
+      <div class="highlight">"Think of AI as a really great on-the-ground programmer — a tactical programmer, a sergeant on the ground making the code changes. You need someone above that, thinking on the strategic level. And that's you."</div>
+      <p>The strategic level requires software fundamental skills that have been around for 20+ years:</p>
+      <ul>
+        <li><strong>Shared design concepts</strong> (Brooks) — align with AI before building</li>
+        <li><strong>Ubiquitous language</strong> (Evans/DDD) — create a shared vocabulary</li>
+        <li><strong>Software entropy management</strong> (Hunt &amp; Thomas) — fight disorder actively</li>
+        <li><strong>Deep modules</strong> (Ousterhout) — architecture that AI can navigate and test</li>
+        <li><strong>Test-driven development</strong> (Beck) — feedback loops that constrain AI's pace</li>
+        <li><strong>Daily design investment</strong> (Beck) — don't divest from code quality</li>
+      </ul>
+      <p>All skills mentioned are available in Matt's GitHub repo (<a href="https://github.com/mattpocock/skills" target="_blank">mattpocock/skills</a>, 13,000+ stars): <strong>Grill Me</strong>, <strong>Ubiquitous Language</strong>, <strong>TDD</strong>, <strong>Improve Codebase Architecture</strong>, and <strong>Write a PRD</strong>.</p>
+    </div>
+
+    <!-- Takeaways -->
+    <div class="takeaways">
+      <h2>⚡ Key Takeaways</h2>
+      <ol>
+        <li><strong>Code is not cheap — bad code is the most expensive it's ever been.</strong> A hard-to-change codebase prevents you from leveraging AI effectively.</li>
+        <li><strong>Specs-to-code is vibe coding by another name.</strong> Ignoring the code and repeatedly "running the compiler" produces progressively worse results due to software entropy.</li>
+        <li><strong>Good codebases matter more than ever</strong> because AI performs exceptionally well in well-structured code and poorly in messy code.</li>
+        <li><strong>Reach a shared design concept before building.</strong> The "Grill Me" technique (40–100 adversarial questions) prevents the AI from building the wrong thing.</li>
+        <li><strong>Create a ubiquitous language.</strong> A shared vocabulary between you and the AI improves planning quality, reduces verbosity, and aligns implementation with intent.</li>
+        <li><strong>TDD is essential for AI coding.</strong> It forces the LLM to take small steps instead of outrunning its headlights.</li>
+        <li><strong>Deep modules &gt; shallow modules.</strong> AI creates shallow-module codebases by default but can't navigate them. Design for deep modules with simple interfaces.</li>
+        <li><strong>Design the interface, delegate the implementation.</strong> Treat deep modules as gray boxes — test from outside, let AI handle internals.</li>
+        <li><strong>Invest in system design every day.</strong> The difference between success and failure with AI is whether you invest in or divest from your codebase's architecture.</li>
+        <li><strong>You are the strategic programmer.</strong> AI is the tactical sergeant on the ground. The skills needed at the strategic level are decades-old fundamentals that just became more important.</li>
+      </ol>
+    </div>
+
+    <!-- Recommended Reading -->
+    <div class="section-card">
+      <h2>📚 Recommended Reading</h2>
+      <ul>
+        <li><strong><em>A Philosophy of Software Design</em></strong> — John Ousterhout</li>
+        <li><strong><em>The Pragmatic Programmer</em></strong> — David Thomas &amp; Andrew Hunt</li>
+        <li><strong><em>The Design of Design</em></strong> — Frederick P. Brooks</li>
+        <li><strong><em>Domain-Driven Design</em></strong> — Eric Evans</li>
+      </ul>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="ts-index">
+      <h2>🕐 Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=30" target="_blank">0:30</a> Specs-to-code criticism</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=135" target="_blank">2:15</a> Software entropy &amp; complexity</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=300" target="_blank">5:00</a> Failure Mode 1 — Grill Me skill</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=460" target="_blank">7:40</a> Failure Mode 2 — Ubiquitous Language</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=600" target="_blank">10:00</a> Failure Mode 3 — TDD</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=720" target="_blank">12:00</a> Failure Mode 4 — Deep Modules</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=840" target="_blank">14:00</a> Failure Mode 5 — Interface delegation</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=930" target="_blank">15:30</a> Failure Mode 6 — Daily design investment</div>
+        <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=v4F1gFy-hqg&t=1020" target="_blank">17:00</a> Strategic vs. Tactical Programmer</div>
+      </div>
+    </div>
+
+    <footer>AgentNews · Deep Dive · Auto-generated summary — verify key claims against the original talk</footer>
+  </div>
 </body>
 </html>
