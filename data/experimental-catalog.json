@@ -44,7 +44,18 @@
       "thumbnailSource": "html",
       "sha256": "d3dde504f3f40359c89defc0c39700a1f4f785f55d8bd2951f8f3273bafbab41",
       "category": "deep-dive"
+    },
+    {
+      "slug": "how-to-instantly-run-any-skill-in-claude-codex-mark-kashef",
+      "title": "How to INSTANTLY Run ANY Skill in Claude + Codex — Mark Kashef",
+      "publishedAt": "2026-05-21T00:00:00.000Z",
+      "sourcePath": "/tmp/deep-dive-polyskill.html",
+      "articlePath": "experimental/how-to-instantly-run-any-skill-in-claude-codex-mark-kashef.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/tjjX43FoAUg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "570d7bda0494fa51ac08c9a6ed7dc2ae9c914d75edf218ef5a36897f43bf6a01",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T07:20:09.207Z"
+  "updatedAt": "2026-05-23T09:04:08.591Z"
 }
