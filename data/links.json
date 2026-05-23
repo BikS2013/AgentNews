@@ -19,7 +19,17 @@
       "publishedAt": "2026-05-17T22:46:00.000Z",
       "summary": "Το Neuromancer του Apple TV+ βασίζεται στο εμβληματικό cyberpunk μυθιστόρημα του William Gibson. Με dual-world setting (Sprawl + matrix cyberspace), fast-paced noir storytelling και cast με Callum Turner και Briana Middleton, η σειρά φιλοδοξεί να γίνει η κορυφαία sci-fi παραγωγή της πλατφόρμας.",
       "category": "article"
+    },
+    {
+      "id": "the-4-lines-every-claude-md-needs",
+      "title": "The 4 Lines Every CLAUDE.md Needs",
+      "url": "https://levelup.gitconnected.com/the-4-lines-every-claude-md-needs-2717a46866f6",
+      "imageUrl": "https://miro.medium.com/v2/da:true/resize:fit:1200/0*Pr54mj2p6BsDDb5e",
+      "summary": "Why a GitHub repo with just four behavioral guidelines for CLAUDE.md got 60,000 stars. Inspired by Andrej Karpathy, the article argues that behavioral constraints — not feature checklists — are the real bottleneck in AI-assisted coding.",
+      "sourceSite": "levelup.gitconnected.com",
+      "publishedAt": "2026-04-22T14:51:42.000Z",
+      "category": "article"
     }
   ],
-  "updatedAt": "2026-05-22T22:50:38.357Z"
+  "updatedAt": "2026-05-23T09:20:38.000Z"
 }
