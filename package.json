@@ -11,11 +11,13 @@
     "dev": "tsx src/server.ts",
     "start": "tsc && node dist/server.js",
     "publish-article": "tsx src/cli/publish-article.ts",
+    "publish-experimental-article": "tsx src/cli/publish-experimental-article.ts",
     "publish-link": "tsx src/cli/publish-link.ts",
     "verify": "tsx test_scripts/verify-byte-identity.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test_scripts/*.test.ts",
     "build:static": "tsx scripts/build-static.ts",
+    "build:experimental": "tsx scripts/build-experimental.ts",
     "refresh-youtube-dates": "tsx scripts/refresh-youtube-dates.ts"
   },
   "dependencies": {

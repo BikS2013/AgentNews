@@ -1,0 +1,174 @@
+name: Publish experimental site
+
+# Builds the experimental sibling site and pushes the resulting artifact to a
+# DIFFERENT GitHub repository (the "target repo") on a configured branch
+# (conventionally `gh-pages`). The target repo serves the artifact as its own
+# GitHub Pages site, segregated from this repo's public Pages site.
+#
+# The workflow:
+#   - Triggers manually (workflow_dispatch) AND on push to `main` filtered
+#     to paths under experimental/ + the experimental manifest + the build
+#     script + this workflow file itself.
+#   - Fails fast (BEFORE any network call) if any required variable/secret
+#     is missing or empty. No fallback substitution — matches the project's
+#     no-fallback configuration rule.
+#   - Emits a ::warning:: when the configured PAT is within GH_PAT_WARN_DAYS
+#     of its GH_PAT_EXPIRES_AT.
+#   - Force-pushes the built artifact into the target repo's TARGET_BRANCH,
+#     replacing prior content atomically.
+#
+# Required configuration (set in this repo's Settings → Secrets/Variables):
+#   Repository variables (Settings → Variables → Actions):
+#     TARGET_REPO_OWNER     — GitHub user or org that owns the target repo
+#     TARGET_REPO_NAME      — name of the target repo
+#     TARGET_BRANCH         — branch to push to (e.g. "gh-pages")
+#     GH_PAT_EXPIRES_AT     — ISO-8601 date of the PAT's expiration
+#     GH_PAT_WARN_DAYS      — integer; days-until-expiry to start warning
+#   Repository secret (Settings → Secrets → Actions):
+#     GH_PAT                — fine-grained PAT scoped to the target repo
+#                             with `contents:write`
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/**'
+      - 'data/experimental-catalog.json'
+      - 'data/experimental-links.json'
+      - 'scripts/build-experimental.ts'
+      - '.github/workflows/publish-experimental.yml'
+
+# Serialize runs so two pushes can't race the force-push.
+concurrency:
+  group: publish-experimental
+  cancel-in-progress: true
+
+# Minimal source-repo permissions. The cross-repo push uses GH_PAT, NOT the
+# default GITHUB_TOKEN, so we do not request any extra scopes here.
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_REPO_OWNER: ${{ vars.TARGET_REPO_OWNER }}
+      TARGET_REPO_NAME:  ${{ vars.TARGET_REPO_NAME }}
+      TARGET_BRANCH:     ${{ vars.TARGET_BRANCH }}
+      GH_PAT:            ${{ secrets.GH_PAT }}
+      GH_PAT_EXPIRES_AT: ${{ vars.GH_PAT_EXPIRES_AT }}
+      GH_PAT_WARN_DAYS:  ${{ vars.GH_PAT_WARN_DAYS }}
+    steps:
+      - name: Preflight — fail fast on missing config
+        # Runs BEFORE checkout, BEFORE any network call. No defaults; missing
+        # value = fatal error. Mirrors the project's no-fallback rule.
+        run: |
+          set -eu
+          missing=""
+          for var in TARGET_REPO_OWNER TARGET_REPO_NAME TARGET_BRANCH GH_PAT GH_PAT_EXPIRES_AT GH_PAT_WARN_DAYS; do
+            val="$(printenv "$var" || true)"
+            if [ -z "$val" ]; then
+              missing="$missing $var"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing required configuration:${missing}. Set repository variables/secrets and re-run."
+            exit 1
+          fi
+          # Defensive: TARGET_BRANCH should never equal `main` of the target
+          # repo (that is almost certainly not what the user wants).
+          if [ "$TARGET_BRANCH" = "main" ] || [ "$TARGET_BRANCH" = "master" ]; then
+            echo "::error::TARGET_BRANCH='$TARGET_BRANCH' looks like a default branch. Refusing to force-push there. Use gh-pages or another dedicated branch."
+            exit 1
+          fi
+          echo "Preflight OK — TARGET=${TARGET_REPO_OWNER}/${TARGET_REPO_NAME}@${TARGET_BRANCH}"
+
+      - name: PAT expiration warning
+        # Computes days-until-expiry from GH_PAT_EXPIRES_AT (ISO date). Emits
+        # a ::warning:: annotation if within GH_PAT_WARN_DAYS. Fatal if the
+        # PAT has already expired (date is in the past).
+        run: |
+          set -eu
+          # Convert to epoch seconds. `date -d` works on GNU coreutils (Ubuntu).
+          expiry_epoch="$(date -u -d "$GH_PAT_EXPIRES_AT" +%s)"
+          now_epoch="$(date -u +%s)"
+          delta_days=$(( (expiry_epoch - now_epoch) / 86400 ))
+          if [ "$delta_days" -lt 0 ]; then
+            echo "::error::GH_PAT_EXPIRES_AT=$GH_PAT_EXPIRES_AT is in the past ($((-delta_days)) days ago). Rotate the PAT and update the variable before re-running."
+            exit 1
+          fi
+          if [ "$delta_days" -le "$GH_PAT_WARN_DAYS" ]; then
+            echo "::warning::GH_PAT expires in $delta_days day(s) on $GH_PAT_EXPIRES_AT. Rotate the PAT and update GH_PAT_EXPIRES_AT soon."
+          else
+            echo "PAT expiry OK — $delta_days day(s) remaining (warn threshold: $GH_PAT_WARN_DAYS)."
+          fi
+
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build experimental site
+        env:
+          EXPERIMENTAL_DIR:          ./experimental
+          EXPERIMENTAL_CATALOG_PATH: ./data/experimental-catalog.json
+          EXPERIMENTAL_LINKS_PATH:   ./data/experimental-links.json
+          BASE_PATH: /${{ vars.TARGET_REPO_NAME }}
+          OUT_DIR:   ./dist-experimental
+        run: npm run build:experimental
+
+      - name: Push artifact to target repo
+        run: |
+          set -eu
+
+          ARTIFACT_DIR="$(pwd)/dist-experimental"
+          if [ ! -d "$ARTIFACT_DIR" ]; then
+            echo "::error::Artifact directory $ARTIFACT_DIR does not exist after build step."
+            exit 1
+          fi
+
+          WORK="$(mktemp -d)"
+          REMOTE="https://x-access-token:${GH_PAT}@github.com/${TARGET_REPO_OWNER}/${TARGET_REPO_NAME}.git"
+
+          echo "Cloning target repo (single-branch, depth=1) ..."
+          if git clone --depth 1 --branch "$TARGET_BRANCH" --single-branch "$REMOTE" "$WORK/target" 2>/dev/null; then
+            echo "Branch $TARGET_BRANCH exists; will replace its contents."
+            cd "$WORK/target"
+            # Wipe tracked files; preserve .git only.
+            git rm -rfq . || true
+          else
+            echo "Branch $TARGET_BRANCH does not exist yet; initialising as orphan."
+            git clone --depth 1 "$REMOTE" "$WORK/target"
+            cd "$WORK/target"
+            git checkout --orphan "$TARGET_BRANCH"
+            git rm -rfq . || true
+          fi
+
+          # Copy the built artifact in.
+          cp -R "$ARTIFACT_DIR"/. .
+          # Ensure GitHub Pages skips Jekyll on the target site (the build
+          # script already writes .nojekyll, but be defensive).
+          touch .nojekyll
+
+          git config user.email "actions@github.com"
+          git config user.name  "agent-news-publish-experimental"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish — target branch already matches the built artifact."
+          else
+            git commit -m "chore(experimental): publish from agent-news@${GITHUB_SHA}"
+            git push --force-with-lease "$REMOTE" "HEAD:${TARGET_BRANCH}"
+            COMMIT_SHA="$(git rev-parse HEAD)"
+            echo "::notice::Published experimental site to ${TARGET_REPO_OWNER}/${TARGET_REPO_NAME}@${TARGET_BRANCH} (commit ${COMMIT_SHA})"
+          fi

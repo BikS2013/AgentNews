@@ -217,6 +217,7 @@
 
 - **publish-article** — Publishes a self-contained HTML article (a video deep-dive snapshot) from a source file to the site's `articles/` directory byte-identically, while appending or updating an entry in `data/catalog.json` with extracted metadata (title, thumbnail, SHA-256, optional `category` placing the entry in either the "Deep Dives" or the "AI-News" homepage list). See `docs/tools/publish-article.md`.
 - **publish-link** — Curates a third-party article URL into the site's `data/links.json`, extracting Open Graph / Twitter-card metadata (title, image, summary, source site) and writing a `LinkEntry` with an optional `category` that targets either the "Articles" or the "AI-News" homepage list. See `docs/tools/publish-link.md`.
+- **publish-experimental-article** — Publishes a self-contained HTML article byte-identically into the `experimental/` folder and updates `data/experimental-catalog.json`. Mirrors `publish-article` but enforces a single-writer guarantee that prevents any write to `articles/` or `data/catalog.json`. Pairs with the `build:experimental` build script and the `publish-experimental.yml` GitHub Action, which together deploy the experimental sibling site to a separate, unlinked GitHub Pages repo (privacy is by unadvertised URL — no auth). See `docs/tools/publish-experimental-article.md`.
 
 ## Site lists
 
