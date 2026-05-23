@@ -630,3 +630,81 @@ WAVE 2 (parallel — depends on Wave 1):
 ```
 
 After Wave 2 is green, Phase 7 (sample publication run) and Phase 8 (documentation updates) proceed sequentially per the plan.
+
+---
+
+## Experimental Sibling Publish (added 2026-05-23)
+
+**Provenance**
+
+- Refined request: [`docs/reference/refined-request-experimental-sibling-publish.md`](../reference/refined-request-experimental-sibling-publish.md)
+- Codebase scan: [`docs/reference/codebase-scan-experimental-sibling-publish.md`](../reference/codebase-scan-experimental-sibling-publish.md)
+- Plan: [`./plan-002-experimental-sibling-publish.md`](./plan-002-experimental-sibling-publish.md)
+
+**Architectural goal.** Publish a curated subset of byte-identical HTML
+articles to a separate, unadvertised GitHub Pages site hosted in a different
+repository — without changing the public flow and without coupling the two
+trees.
+
+**Topology.** The experimental pipeline is a structural clone of the public
+pipeline, living beside it:
+
+| Aspect                | Public flow                              | Experimental flow                                   |
+|-----------------------|------------------------------------------|-----------------------------------------------------|
+| Content folder        | `articles/`                              | `experimental/`                                     |
+| Manifest              | `data/catalog.json`                      | `data/experimental-catalog.json`                    |
+| Links manifest        | `data/links.json`                        | `data/experimental-links.json` (kept empty)         |
+| Authoring CLI         | `src/cli/publish-article.ts`             | `src/cli/publish-experimental-article.ts`           |
+| Build script          | `scripts/build-static.ts`                | `scripts/build-experimental.ts`                     |
+| Deploy workflow       | `.github/workflows/deploy.yml`           | `.github/workflows/publish-experimental.yml`        |
+| Deploy target         | this repo's GitHub Pages                 | sibling repo (`TARGET_REPO_OWNER/TARGET_REPO_NAME`) |
+| Auth on deployed site | none (intended public)                   | none (intended private-by-obscurity)                |
+
+**Single-writer / single-reader guards.** The experimental CLI refuses to
+start unless `EXPERIMENTAL_DIR`'s basename is exactly `experimental` and
+`EXPERIMENTAL_CATALOG_PATH`'s basename starts with `experimental-`. The
+experimental build script applies the symmetric guard. These checks are the
+structural reason the experimental tree can never leak into the public tree
+even by misconfiguration.
+
+**Zero-leakage guarantee.** The public `build-static.ts` is left untouched.
+The exclusion guarantee is purely structural: the public build only reads
+`CATALOG_PATH` and iterates its entries; it never globs the filesystem. As
+long as `data/catalog.json` is the only manifest the public build sees, no
+experimental content can appear in the public output. A regression test
+locks this property: it runs the public build before and after introducing
+experimental content and asserts byte-identical output.
+
+**Cross-repo deploy.** The `publish-experimental.yml` workflow clones the
+target repo via a fine-grained PAT, replaces its working tree with the built
+artifact, and force-pushes to `TARGET_BRANCH` (recommended: `gh-pages`).
+Force-push is intentional: it gives a clean, deterministic state on every
+run and avoids any drift from prior content. The workflow fails fast before
+any network call if any required variable/secret is missing.
+
+The push uses plain `git push --force` rather than `--force-with-lease`. The
+lease guard's purpose is to catch overwrites from a second writer, but this
+branch has exactly one writer (the workflow itself) and the
+`concurrency: publish-experimental` group serialises runs so two pushes
+cannot race. The combination of `--force-with-lease` and the depth-1
+single-branch clone used in the workflow produces spurious
+`[rejected] HEAD -> <branch> (stale info)` errors — git cannot verify the
+lease against a remote-tracking ref that wasn't fully populated by the
+shallow clone. Plain `--force` matches the documented design semantic
+("replace prior content atomically on every run") without that failure mode.
+
+**Privacy trade-off (explicit, accepted).** "Private" here means
+"unadvertised" — not "authenticated". GitHub Pages on non-Enterprise plans
+cannot enforce auth at the edge; the design accepts this and pairs it with
+the structural isolation above so that even an accidental leak of a sibling
+URL does not expose the public site's structure or vice versa. See
+[`docs/design/project-functions.md`](./project-functions.md) (FR-EXP-1 through
+FR-EXP-6, NFR-EXP-1, NFR-EXP-2) for the formal requirements this design
+satisfies.
+
+**Configuration surface (no fallbacks).** The new env-var surface for the
+build and CLI is `EXPERIMENTAL_DIR`, `EXPERIMENTAL_CATALOG_PATH`,
+`EXPERIMENTAL_LINKS_PATH`, plus the workflow's `TARGET_REPO_OWNER`,
+`TARGET_REPO_NAME`, `TARGET_BRANCH`, `GH_PAT`, `GH_PAT_EXPIRES_AT`,
+`GH_PAT_WARN_DAYS`. Every variable is required; missing or empty values are
+fatal errors. See [`./configuration-guide.md`](./configuration-guide.md).

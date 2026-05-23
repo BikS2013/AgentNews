@@ -1,20 +1,29 @@
 #!/usr/bin/env node
 /**
- * publish-article CLI
+ * publish-experimental-article CLI
  *
- * Ingests a source HTML article file, extracts metadata (title + first <img>),
- * derives a stable kebab-case slug, copies the file byte-identically into
- * `<articlesDir>/<slug>.html`, computes its SHA-256, and appends (or updates,
- * with --update) a CatalogEntry in `<catalogPath>`.
+ * Mirrors `publish-article` but writes EXCLUSIVELY to the experimental sibling
+ * pipeline: source HTML is copied byte-identically into
+ * `<EXPERIMENTAL_DIR>/<slug>.html`, the SHA-256 is computed, and a
+ * CatalogEntry is appended (or updated, with --update) to
+ * `<EXPERIMENTAL_CATALOG_PATH>`.
+ *
+ * Single-writer guarantee:
+ *   This CLI refuses to run unless EXPERIMENTAL_DIR's basename is exactly
+ *   "experimental" AND EXPERIMENTAL_CATALOG_PATH's basename begins with
+ *   "experimental-". Any attempt to point it at `articles/` or
+ *   `data/catalog.json` is rejected with UsageError (exit 1) before any
+ *   file is touched. This is the structural guard that keeps experimental
+ *   content out of the public flow.
  *
  * Exit codes:
  *   0 — success
- *   1 — user/argument error (bad flag, missing required, no thumbnail, invalid date)
+ *   1 — user/argument error (bad flag, missing required, no thumbnail, invalid date, target-path guard)
  *   2 — IO error (source not found, write failed)
  *   3 — conflict (already published without --update; --update target not found)
  *
  * No fallback configuration values are ever substituted — missing env vars
- * cause loadConfig() to throw.
+ * cause the CLI to throw at startup.
  */
 
 import { createHash } from 'node:crypto';
@@ -30,11 +39,10 @@ import * as process from 'node:process';
 import { CatalogStore } from '../catalog/store.js';
 import { slugify } from '../catalog/slug.js';
 import {
-  CATALOG_CATEGORIES,
-  type CatalogCategory,
+  EXPERIMENTAL_CATALOG_CATEGORIES,
   type CatalogEntry,
+  type ExperimentalCatalogCategory,
 } from '../catalog/types.js';
-import { loadConfig } from '../config.js';
 import { extractArticleMetadata } from '../extractor/extract.js';
 import { ArticleMetadataError } from '../extractor/errors.js';
 import {
@@ -52,33 +60,37 @@ interface ParsedArgs {
   thumbnailUrl: string | null;
   update: boolean;
   date: string | null;
-  category: CatalogCategory | null;
+  category: ExperimentalCatalogCategory | null;
   help: boolean;
 }
 
-const USAGE = `Usage: publish-article --source <path> [options]
+const USAGE = `Usage: publish-experimental-article --source <path> [options]
 
 Required:
-  --source <path>           Path to the source HTML article to publish.
+  --source <path>           Path to the source HTML article to publish into
+                            the experimental sibling site.
 
 Options:
   --thumbnail-url <url>     Override thumbnail URL (used only when the article
                             has no <img>).
-  --update                  Replace an already-published article (preserves
-                            slug and publishedAt; updates file + sha256 +
-                            thumbnail + sourcePath).
-  --date <ISO-8601>         Publication timestamp on Agent News (defaults to
-                            now, ignored on --update). MUST be the YouTube
-                            upload date (or the original source-page
-                            publication date) and ONLY fall back to "now"
-                            when no upstream date can be determined. See
-                            docs/PUBLISHING.md for the date-priority rule.
+  --update                  Replace an already-published experimental article
+                            (preserves slug and publishedAt; updates file +
+                            sha256 + thumbnail + sourcePath).
+  --date <ISO-8601>         Publication timestamp (defaults to now, ignored
+                            on --update).
   --category <name>         Homepage list to place the entry in:
                               deep-dive (default) — technical AI videos.
-                              ai-news             — non-technical AI news
-                                                    videos shown in the
-                                                    mixed AI-News list.
+                              ai-news             — non-technical AI news.
+                              tools               — tools / utilities
+                                                    (EXPERIMENTAL-only category;
+                                                    rejected by publish-article).
   --help                    Show this help and exit 0.
+
+Required environment variables (no defaults — missing = fatal):
+  EXPERIMENTAL_DIR            Must resolve to a directory whose basename is
+                              exactly "experimental".
+  EXPERIMENTAL_CATALOG_PATH   Must resolve to a JSON file whose basename
+                              starts with "experimental-".
 
 Exit codes:
   0 success, 1 user error, 2 IO error, 3 conflict.
@@ -186,36 +198,70 @@ class UsageError extends Error {
   }
 }
 
-function parseCategory(raw: string): CatalogCategory {
-  if (!CATALOG_CATEGORIES.includes(raw as CatalogCategory)) {
+function parseCategory(raw: string): ExperimentalCatalogCategory {
+  if (!EXPERIMENTAL_CATALOG_CATEGORIES.includes(raw as ExperimentalCatalogCategory)) {
     throw new UsageError(
-      `Invalid --category: "${raw}". Allowed values: ${CATALOG_CATEGORIES.join(', ')}`,
+      `Invalid --category: "${raw}". Allowed values: ${EXPERIMENTAL_CATALOG_CATEGORIES.join(', ')}`,
     );
   }
-  return raw as CatalogCategory;
-}
-
-class IoError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'IoError';
-  }
-}
-
-class ConflictError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ConflictError';
-  }
+  return raw as ExperimentalCatalogCategory;
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+function requireEnv(name: string): string {
+  const raw = process.env[name];
+  if (raw === undefined || raw === null) {
+    throw new Error(`Missing required env var: ${name}`);
+  }
+  if (typeof raw !== 'string' || raw.trim().length === 0) {
+    throw new Error(`Required env var ${name} must not be empty`);
+  }
+  return raw.trim();
+}
+
+/**
+ * Load experimental-only configuration directly from env. Deliberately does
+ * NOT reuse `loadConfig()` from `src/config.ts` — that loader is scoped to
+ * the public server flow (PORT, ARTICLES_DIR, CATALOG_PATH, LINKS_PATH) and
+ * mixing the two would violate the single-writer guarantee.
+ */
+interface ExperimentalConfig {
+  experimentalDir: string;
+  experimentalCatalogPath: string;
+}
+
+function loadExperimentalConfig(): ExperimentalConfig {
+  return {
+    experimentalDir: requireEnv('EXPERIMENTAL_DIR'),
+    experimentalCatalogPath: requireEnv('EXPERIMENTAL_CATALOG_PATH'),
+  };
+}
+
+/**
+ * Single-writer guard. The CLI must NEVER touch the public articles tree or
+ * the public catalog manifest. This check runs BEFORE any filesystem write.
+ */
+function assertExperimentalTargets(cfg: ExperimentalConfig): void {
+  const dirBase = path.basename(path.resolve(process.cwd(), cfg.experimentalDir));
+  if (dirBase !== 'experimental') {
+    throw new UsageError(
+      `EXPERIMENTAL_DIR must resolve to a directory whose basename is exactly "experimental" (got "${dirBase}" from "${cfg.experimentalDir}"). Refusing to write into a non-experimental tree.`,
+    );
+  }
+  const catalogBase = path.basename(
+    path.resolve(process.cwd(), cfg.experimentalCatalogPath),
+  );
+  if (!catalogBase.startsWith('experimental-')) {
+    throw new UsageError(
+      `EXPERIMENTAL_CATALOG_PATH must resolve to a file whose basename starts with "experimental-" (got "${catalogBase}" from "${cfg.experimentalCatalogPath}"). Refusing to write into a non-experimental manifest.`,
+    );
+  }
+}
+
 function validateIsoDate(raw: string): string {
-  // Require strict ISO-8601 with timezone designator (Z or +/-HH:MM). This
-  // matches the catalog's `publishedAt` validator in src/catalog/types.ts.
   const isoRegex =
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
   if (!isoRegex.test(raw)) {
@@ -227,7 +273,6 @@ function validateIsoDate(raw: string): string {
   if (Number.isNaN(parsed.getTime())) {
     throw new UsageError(`Invalid --date: "${raw}" is not a parseable timestamp`);
   }
-  // Normalise to a canonical ISO string (with milliseconds, UTC).
   return parsed.toISOString();
 }
 
@@ -235,10 +280,6 @@ function sha256Hex(buffer: Buffer): string {
   return createHash('sha256').update(buffer).digest('hex');
 }
 
-/**
- * Atomic write: open `<dest>.tmp`, write the buffer, fsync, close, rename
- * over `<dest>`. Mirrors the protocol used by CatalogStore.atomicWrite.
- */
 async function atomicWriteFile(destPath: string, data: Buffer): Promise<void> {
   const tmpPath = `${destPath}.tmp`;
   const handle = await open(tmpPath, 'w');
@@ -251,7 +292,6 @@ async function atomicWriteFile(destPath: string, data: Buffer): Promise<void> {
   try {
     await rename(tmpPath, destPath);
   } catch (cause) {
-    // Best-effort cleanup of the tmp file before rethrowing.
     try {
       await unlink(tmpPath);
     } catch {
@@ -264,11 +304,9 @@ async function atomicWriteFile(destPath: string, data: Buffer): Promise<void> {
 function toProjectRelative(absPath: string, cwd: string): string {
   const rel = path.relative(cwd, absPath);
   if (rel.length === 0) return '.';
-  // If outside cwd, keep the absolute path.
   if (rel.startsWith('..') || path.isAbsolute(rel)) {
     return absPath;
   }
-  // Normalise to forward slashes for portability of catalog.json across OSes.
   return rel.split(path.sep).join('/');
 }
 
@@ -298,8 +336,6 @@ async function main(argv: readonly string[]): Promise<number> {
     return 1;
   }
 
-  // --date validation (do this BEFORE loading config so user errors are
-  // exit 1, distinct from IO and conflict).
   let cliPublishedAt: string | null = null;
   if (args.date !== null) {
     try {
@@ -313,10 +349,21 @@ async function main(argv: readonly string[]): Promise<number> {
     }
   }
 
-  // 1. Load config (throws if env vars missing — no fallbacks).
-  const config = loadConfig();
+  // 1. Load experimental-only config (throws on missing env vars).
+  const config = loadExperimentalConfig();
 
-  // 2. Resolve source path to absolute; assert existence.
+  // 2. Single-writer guard: refuse to point at the public tree/manifest.
+  try {
+    assertExperimentalTargets(config);
+  } catch (err) {
+    if (err instanceof UsageError) {
+      process.stderr.write(`${err.message}\n`);
+      return 1;
+    }
+    throw err;
+  }
+
+  // 3. Resolve source path.
   const absSource = path.resolve(process.cwd(), args.source);
   if (!existsSync(absSource)) {
     process.stderr.write(`IO_ERROR: source file not found: ${absSource}\n`);
@@ -328,7 +375,7 @@ async function main(argv: readonly string[]): Promise<number> {
     return 2;
   }
 
-  // 3. Single buffered read.
+  // 4. Single buffered read.
   let buffer: Buffer;
   try {
     buffer = readFileSync(absSource);
@@ -338,7 +385,7 @@ async function main(argv: readonly string[]): Promise<number> {
     return 2;
   }
 
-  // 4. Extract metadata.
+  // 5. Extract metadata.
   let title: string;
   let extractedThumbnail: string | null;
   try {
@@ -353,7 +400,7 @@ async function main(argv: readonly string[]): Promise<number> {
     throw err;
   }
 
-  // 5. Resolve final thumbnail URL + source.
+  // 6. Resolve final thumbnail URL + source.
   let thumbnailUrl: string;
   let thumbnailSource: 'html' | 'cli-override';
   if (extractedThumbnail !== null) {
@@ -369,31 +416,30 @@ async function main(argv: readonly string[]): Promise<number> {
     return 1;
   }
 
-  // 6. Catalog load.
-  const store = new CatalogStore(config.catalogPath);
+  // 7. Catalog load (experimental manifest).
+  //    Pass the wider allowed-category set so on-disk entries with
+  //    category='tools' pass schema validation.
+  const store = new CatalogStore(config.experimentalCatalogPath, {
+    allowedCategories: EXPERIMENTAL_CATALOG_CATEGORIES,
+  });
   try {
     await store.load();
   } catch (cause) {
     const msg = cause instanceof Error ? cause.message : String(cause);
-    process.stderr.write(`IO_ERROR: failed to load catalog: ${msg}\n`);
+    process.stderr.write(`IO_ERROR: failed to load experimental catalog: ${msg}\n`);
     return 2;
   }
 
-  // Compute the absolute articles dir, and the project-relative source path
-  // (we store sourcePath as project-relative when the file lies under cwd,
-  // otherwise we store its absolute path).
-  const absArticlesDir = path.resolve(process.cwd(), config.articlesDir);
+  const absExperimentalDir = path.resolve(process.cwd(), config.experimentalDir);
   const sourcePathForCatalog = toProjectRelative(absSource, process.cwd());
 
-  // 7. Slug resolution.
+  // 8. Slug resolution.
   let slug: string;
   let publishedAt: string;
   let existingEntry: CatalogEntry | null = null;
   const isUpdate = args.update;
 
   if (isUpdate) {
-    // Locate existing entry: first by candidate slug (slugify with empty
-    // taken-set so we get the bare base slug), then by sourcePath.
     let baseSlug: string;
     try {
       baseSlug = slugify(title, new Set<string>());
@@ -405,7 +451,6 @@ async function main(argv: readonly string[]): Promise<number> {
 
     existingEntry = store.getBySlug(baseSlug);
     if (existingEntry === null) {
-      // Try matching by sourcePath (both project-relative and absolute forms).
       const snapshot = store.snapshot();
       const match = snapshot.find(
         (e) =>
@@ -417,7 +462,7 @@ async function main(argv: readonly string[]): Promise<number> {
 
     if (existingEntry === null) {
       process.stderr.write(
-        `UPDATE_TARGET_NOT_FOUND: no catalog entry matches title "${title}" or sourcePath "${sourcePathForCatalog}"\n`,
+        `UPDATE_TARGET_NOT_FOUND: no experimental catalog entry matches title "${title}" or sourcePath "${sourcePathForCatalog}"\n`,
       );
       return 3;
     }
@@ -425,7 +470,6 @@ async function main(argv: readonly string[]): Promise<number> {
     slug = existingEntry.slug;
     publishedAt = existingEntry.publishedAt;
   } else {
-    // New publish.
     const taken = store.existingSlugs();
     let baseSlug: string;
     try {
@@ -436,9 +480,6 @@ async function main(argv: readonly string[]): Promise<number> {
       return 1;
     }
 
-    // Conflict check: if base slug is taken AND its existing entry has the
-    // same title → ALREADY_PUBLISHED. Otherwise allow slugify() to produce a
-    // suffixed slug.
     if (taken.has(baseSlug)) {
       const collidingEntry = store.getBySlug(baseSlug);
       if (collidingEntry !== null && collidingEntry.title === title) {
@@ -460,8 +501,8 @@ async function main(argv: readonly string[]): Promise<number> {
     publishedAt = cliPublishedAt !== null ? cliPublishedAt : new Date().toISOString();
   }
 
-  // 8. Atomic byte-identical write of the article file.
-  const targetPath = path.join(absArticlesDir, `${slug}.html`);
+  // 9. Atomic byte-identical write of the experimental article file.
+  const targetPath = path.join(absExperimentalDir, `${slug}.html`);
   try {
     await atomicWriteFile(targetPath, buffer);
   } catch (cause) {
@@ -470,21 +511,15 @@ async function main(argv: readonly string[]): Promise<number> {
     return 2;
   }
 
-  // 9. SHA-256.
+  // 10. SHA-256.
   const sha256 = sha256Hex(buffer);
 
-  // 9b. YouTube enrichment (soft-skip on any failure path).
-  // Policy: try to fetch `youtubePublishedAt` from the YouTube Data API when
-  // the thumbnail URL resolves to a video AND `YOUTUBE_API_KEY` is set. Any
-  // failure (no API key, non-YouTube URL, deleted video, network/HTTP error)
-  // results in a one-line stderr note and the entry is persisted without the
-  // optional field. This is feature gating, not a configuration fallback —
-  // the rest of the system never substitutes missing config values.
+  // 11. YouTube enrichment (soft-skip on any failure path; identical policy
+  //     to publish-article).
   let youtubePublishedAt: string | undefined;
   const videoId = extractYouTubeVideoId(thumbnailUrl);
   if (videoId === null) {
-    // Thumbnail is not a YouTube URL (e.g. --thumbnail-url pointing elsewhere).
-    // Silent skip — nothing to enrich.
+    // Thumbnail is not a YouTube URL.
   } else {
     const apiKey = process.env['YOUTUBE_API_KEY'];
     if (apiKey === undefined || apiKey.length === 0) {
@@ -504,17 +539,9 @@ async function main(argv: readonly string[]): Promise<number> {
     }
   }
 
-  // 10. Build catalog entry.
-  // Category resolution:
-  //   - new publish: CLI value if given, otherwise omit (renderer defaults to 'deep-dive').
-  //   - --update:    CLI value if given (overrides existing), otherwise keep existing.
-  const articlePath = `articles/${slug}.html`;
-  // Local type widened to CatalogEntry['category'] so that reading back
-  // `existingEntry.category` (now `ExperimentalCatalogCategory | undefined`
-  // because CatalogEntry's `category` field accommodates both flows)
-  // type-checks. At runtime the public CatalogStore's validator rejects
-  // any out-of-set value on load, so the narrow set is still enforced.
-  let categoryToPersist: CatalogEntry['category'];
+  // 12. Build catalog entry. articlePath uses the `experimental/` prefix.
+  const articlePath = `experimental/${slug}.html`;
+  let categoryToPersist: ExperimentalCatalogCategory | undefined;
   if (args.category !== null) {
     categoryToPersist = args.category;
   } else if (isUpdate && existingEntry !== null && existingEntry.category !== undefined) {
@@ -533,7 +560,7 @@ async function main(argv: readonly string[]): Promise<number> {
     ...(categoryToPersist !== undefined ? { category: categoryToPersist } : {}),
   };
 
-  // 11. Persist via store.
+  // 13. Persist via store.
   try {
     if (isUpdate) {
       await store.updateBySlug(slug, {
@@ -551,17 +578,15 @@ async function main(argv: readonly string[]): Promise<number> {
     }
   } catch (cause) {
     const msg = cause instanceof Error ? cause.message : String(cause);
-    // Could be a conflict (duplicate slug) or an IO write failure. The store
-    // throws "already exists" for duplicate slug.
     if (msg.includes('already exists')) {
       process.stderr.write(`CONFLICT: ${msg}\n`);
       return 3;
     }
-    process.stderr.write(`IO_ERROR: failed to persist catalog: ${msg}\n`);
+    process.stderr.write(`IO_ERROR: failed to persist experimental catalog: ${msg}\n`);
     return 2;
   }
 
-  // 12. One-line JSON summary.
+  // 14. One-line JSON summary.
   process.stdout.write(`${JSON.stringify(entry)}\n`);
   return 0;
 }

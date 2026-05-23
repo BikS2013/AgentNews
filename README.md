@@ -4,6 +4,15 @@ A small Node.js + TypeScript site that hosts self-contained HTML articles **byte
 
 The article HTML is the sacred bit: every byte you put in is every byte the browser receives. The catalog page around it is server-rendered HTML you can style freely.
 
+## Live sites
+
+| Site                       | URL                                                                                | Source repo                                                                                  | Deployed by                                  |
+|----------------------------|------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|----------------------------------------------|
+| **Agent News** (public)    | <https://biks2013.github.io/AgentNews/>                                            | this repo (`BikS2013/AgentNews`)                                                              | `.github/workflows/deploy.yml`               |
+| **Agent News Experimental**| <https://biks2013.github.io/AgentNews-Experimental/>                               | sibling repo (`BikS2013/AgentNews-Experimental`, branch `gh-pages`)                           | `.github/workflows/publish-experimental.yml` |
+
+The experimental site is structurally isolated from the public site (separate folder, separate manifest, separate CLI, separate build, separate deploy workflow, separate repository). It is publicly reachable to anyone who knows the URL — privacy is by unadvertised URL only, NOT by authentication. See [`docs/design/project-design.md`](docs/design/project-design.md) → "Experimental Sibling Publish" for the full design rationale.
+
 ## How it works
 
 ```
@@ -184,14 +193,88 @@ The architecture makes byte-identity a property of the system, not a hope:
 
 The test suite verifies all of this end-to-end against all bundled samples.
 
+## Experimental sibling site
+
+In addition to the public `articles/` flow, the repo carries a parallel
+**experimental** pipeline that publishes byte-identical HTML articles to a
+SEPARATE GitHub Pages site hosted in a different repository (the "target
+repo"). Use it for material you don't want to surface on the main Agent News
+site. The two flows share zero state and are guarded by separate single-writer
+checks.
+
+```
+┌──────────────────────────────────────┐    ┌─────────────────────────────────┐
+│  publish-experimental-article CLI    │───▶│  GitHub Action                  │
+│                                      │    │  publish-experimental.yml       │
+│  + writes to experimental/<slug>.html│    │                                 │
+│    byte-identically                  │    │  + builds dist-experimental/    │
+│  + appends/updates                   │    │  + force-pushes to              │
+│    data/experimental-catalog.json    │    │    <TARGET_REPO_OWNER>/         │
+│                                      │    │    <TARGET_REPO_NAME>           │
+│  REFUSES to touch articles/ or       │    │    on TARGET_BRANCH             │
+│  data/catalog.json                   │    │                                 │
+└──────────────────────────────────────┘    └─────────────────────────────────┘
+```
+
+### Authoring
+
+```bash
+EXPERIMENTAL_DIR=./experimental \
+EXPERIMENTAL_CATALOG_PATH=./data/experimental-catalog.json \
+  npm run publish-experimental-article -- --source "samples/some-deep-dive.html"
+```
+
+Same flags as `publish-article` (`--source`, `--thumbnail-url`, `--update`,
+`--date`, `--category`). The CLI refuses to start if `EXPERIMENTAL_DIR`'s
+basename is not exactly `experimental` or if `EXPERIMENTAL_CATALOG_PATH`'s
+basename does not start with `experimental-`.
+
+### Publishing
+
+Pushing to `main` with changes under `experimental/**` (or
+`data/experimental-catalog.json`, or the build script, or the workflow itself)
+triggers `.github/workflows/publish-experimental.yml`. You can also trigger
+it manually from the Actions tab.
+
+Before the first run, set in this repo's Settings → Variables / Secrets:
+
+| Name                | Kind     | Purpose                                                            |
+|---------------------|----------|--------------------------------------------------------------------|
+| `TARGET_REPO_OWNER` | variable | GitHub user/org that owns the target repo                          |
+| `TARGET_REPO_NAME`  | variable | Target repo name                                                   |
+| `TARGET_BRANCH`     | variable | Branch to force-push to (recommend `gh-pages`)                     |
+| `GH_PAT`            | secret   | Fine-grained PAT scoped to the target repo with `contents:write`   |
+| `GH_PAT_EXPIRES_AT` | variable | ISO-8601 expiration date of the PAT                                |
+| `GH_PAT_WARN_DAYS`  | variable | Days-until-expiry to start emitting `::warning::` annotations      |
+
+Missing values cause the workflow to fail fast in its preflight step — no
+fallback defaults. See `docs/design/configuration-guide.md` for the full
+reference.
+
+### Privacy posture
+
+**The experimental site is NOT authenticated.** Anyone who knows or guesses
+the target Pages URL can read its content. "Private" here means only that:
+
+- The main `agent-news` Pages site contains zero links, files, or catalog
+  entries that reference experimental content (verified by a regression test).
+- The target repo's Pages URL is not advertised anywhere by this project.
+
+If you need real access control, neither this repo nor GitHub Pages (on
+non-Enterprise plans) provides it — you'd need a different host.
+
 ## Documentation
 
 - Refined request: [`docs/reference/refined-request-html-article-publishing-site.md`](docs/reference/refined-request-html-article-publishing-site.md)
+- Refined request — experimental sibling-publish: [`docs/reference/refined-request-experimental-sibling-publish.md`](docs/reference/refined-request-experimental-sibling-publish.md)
 - Investigation (approach comparison): [`docs/reference/investigation-html-article-publishing.md`](docs/reference/investigation-html-article-publishing.md)
 - Plan: [`docs/design/plan-001-html-article-publishing-site.md`](docs/design/plan-001-html-article-publishing-site.md)
+- Plan — experimental sibling-publish: [`docs/design/plan-002-experimental-sibling-publish.md`](docs/design/plan-002-experimental-sibling-publish.md)
 - Design: [`docs/design/project-design.md`](docs/design/project-design.md)
 - Functional requirements: [`docs/design/project-functions.md`](docs/design/project-functions.md)
-- Tool documentation: [`docs/tools/publish-article.md`](docs/tools/publish-article.md)
+- Configuration guide: [`docs/design/configuration-guide.md`](docs/design/configuration-guide.md)
+- Tool documentation: [`docs/tools/publish-article.md`](docs/tools/publish-article.md), [`docs/tools/publish-experimental-article.md`](docs/tools/publish-experimental-article.md), [`docs/tools/publish-link.md`](docs/tools/publish-link.md)
+- Migrating items between Agent News and Agent News Experimental: [`docs/MIGRATING-CONTENT.md`](docs/MIGRATING-CONTENT.md)
 - Open items: [`Issues - Pending Items.md`](Issues%20-%20Pending%20Items.md)
 
 ## License

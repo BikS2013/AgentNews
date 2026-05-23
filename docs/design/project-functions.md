@@ -92,11 +92,24 @@ A test script `test_scripts/verify-byte-identity.ts` MUST exist. It MUST:
 
 ---
 
+## Experimental Sibling Site (added 2026-05-23)
+
+- **FR-Experimental-Folder (FR-EXP-1)**: A top-level `experimental/` folder collects byte-identical HTML articles intended for publication to a separate GitHub Pages site (the "target repo") rather than the main `agent-news` Pages site.
+- **FR-Experimental-Catalog (FR-EXP-2)**: A parallel manifest at `data/experimental-catalog.json` (same schema as `data/catalog.json`) tracks every experimental article with its slug, title, publication date, SHA-256, thumbnail, and optional category.
+- **FR-Experimental-CLI (FR-EXP-3)**: A separate CLI `publish-experimental-article` is the SOLE writer to `experimental/` and `data/experimental-catalog.json`. It refuses to run unless `EXPERIMENTAL_DIR`'s basename is exactly `experimental` and `EXPERIMENTAL_CATALOG_PATH`'s basename starts with `experimental-` — guaranteeing it can never touch the public flow.
+- **FR-Experimental-Build (FR-EXP-4)**: A separate build script `scripts/build-experimental.ts` reads ONLY the experimental manifest and folder, and produces a static site with the same shape as the public build (index catalog page, `a/<slug>.html` files, 404 page, `.nojekyll`). Byte-identity of each emitted article is verified against the manifest's SHA-256.
+- **FR-Experimental-Publish (FR-EXP-5)**: A GitHub Action `publish-experimental.yml` builds the experimental site and force-pushes it to a configured sibling repository on `TARGET_BRANCH` (conventionally `gh-pages`) using a fine-grained PAT. The workflow fails fast on missing configuration (no defaults, no fallback substitution) and emits a `::warning::` annotation when the PAT is within `GH_PAT_WARN_DAYS` of `GH_PAT_EXPIRES_AT`.
+- **FR-Experimental-Privacy (FR-EXP-6)**: "Privacy" is achieved purely by the sibling site living on an unadvertised URL, with NO link from the public site. There is NO authentication and NO access control. Anyone who knows or guesses the sibling site's URL can read the content. This trade-off is explicit and documented in the README and configuration guide.
+- **NFR-Experimental-Isolation (NFR-EXP-1)**: The public `build:static` output is byte-identical before and after this feature (verified by a regression test). The public site contains zero references to experimental content (no files, no catalog entries, no internal links).
+- **NFR-Experimental-NoNewDeps (NFR-EXP-2)**: The experimental feature introduces no new runtime dependencies. All needed primitives are reused from the existing toolchain.
+
+---
+
 ## Out of Scope (v1)
 
 - Editing/transforming/minifying article HTML.
 - Injection of analytics, ads, navigation chrome, or any other content into article HTML.
-- Authentication or user accounts.
+- Authentication or user accounts (including authentication on the experimental sibling site — explicitly accepted as a trade-off per FR-EXP-6).
 - Comments, reactions, social features.
 - Full-text search.
 - Rich CMS UI.

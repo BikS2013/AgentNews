@@ -526,21 +526,23 @@ const SUN_ICON = '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="
 
 const MOON_ICON = '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
 
-function renderHeader(bp: string): string {
+function renderHeader(bp: string, siteName: string, showToolsLink: boolean): string {
   const home = `${bp}/`;
   const aiNewsAnchor = `${home}#ai-news`;
   const deepDivesAnchor = `${home}#deep-dives`;
+  const toolsAnchor = `${home}#tools`;
   const articlesAnchor = `${home}#articles`;
+  const toolsNavLink = showToolsLink ? `\n      <a href="${toolsAnchor}">Tools</a>` : '';
   return `
 <header class="site-header">
   <div class="wrap site-header__inner">
     <a href="${home}" class="brand">
       <span class="brand__mark">A</span>
-      <span class="brand__name">Agent News</span>
+      <span class="brand__name">${escapeHtml(siteName)}</span>
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="${aiNewsAnchor}" class="active">AI-News</a>
-      <a href="${deepDivesAnchor}">Deep Dives</a>
+      <a href="${deepDivesAnchor}">Deep Dives</a>${toolsNavLink}
       <a href="${articlesAnchor}">Articles</a>
       <a href="${home}">About</a>
     </nav>
@@ -560,8 +562,11 @@ function renderHeader(bp: string): string {
 `.trim();
 }
 
-function renderFooter(bp: string): string {
+function renderFooter(bp: string, siteName: string, showToolsLink: boolean): string {
   const home = `${bp}/`;
+  const toolsFooterLink = showToolsLink
+    ? `\n          <li><a href="${home}#tools">Tools</a></li>`
+    : '';
   return `
 <footer class="site-footer">
   <div class="wrap">
@@ -569,7 +574,7 @@ function renderFooter(bp: string): string {
       <div>
         <a href="${home}" class="brand">
           <span class="brand__mark">A</span>
-          <span class="brand__name">Agent News</span>
+          <span class="brand__name">${escapeHtml(siteName)}</span>
         </a>
         <p>Deep dives on the agent stack — and a curated stream of the best writing on agents from around the web.</p>
       </div>
@@ -577,7 +582,7 @@ function renderFooter(bp: string): string {
         <h4>Read</h4>
         <ul>
           <li><a href="${home}#ai-news">AI-News</a></li>
-          <li><a href="${home}#deep-dives">Deep Dives</a></li>
+          <li><a href="${home}#deep-dives">Deep Dives</a></li>${toolsFooterLink}
           <li><a href="${home}#articles">Articles</a></li>
         </ul>
       </div>
@@ -599,7 +604,7 @@ function renderFooter(bp: string): string {
       </div>
     </div>
     <div class="site-footer__bottom">
-      <span>© 2026 AGENT NEWS</span>
+      <span>© 2026 ${escapeHtml(siteName.toUpperCase())}</span>
       <span>BUILT AS A BYTE-FIDELITY CONTENT PLATFORM</span>
     </div>
   </div>
@@ -629,10 +634,27 @@ export interface RenderCatalogOptions {
   links?: readonly LinkEntry[];
   /** URL prefix for internal links (project-page deploy). Default empty. */
   basePath?: string;
+  /**
+   * Site brand name shown in the header, footer, drawer, page <title>, and
+   * meta description. Defaults to 'Agent News' for the public flow; the
+   * experimental flow passes 'Agent Content'.
+   */
+  siteName?: string;
+  /**
+   * Render the EXPERIMENTAL-ONLY Tools section (between Deep Dives and
+   * Articles) and add the matching nav link in the header + footer. When
+   * false (default), entries with `category === 'tools'` are simply
+   * partitioned out and dropped — they will not appear in any section.
+   */
+  enableToolsSection?: boolean;
 }
 
-/** Internal: category resolver. Absent values fall back to the schema default. */
-function videoCategory(entry: CatalogEntry): 'deep-dive' | 'ai-news' {
+/**
+ * Internal: category resolver. Absent values fall back to the schema default.
+ * Return type widened to include 'tools' so the experimental flow's partition
+ * logic compiles; the public flow's filters never match 'tools'.
+ */
+function videoCategory(entry: CatalogEntry): 'deep-dive' | 'ai-news' | 'tools' {
   return entry.category ?? DEFAULT_CATALOG_CATEGORY;
 }
 
@@ -667,6 +689,8 @@ export function renderCatalogHtml(
 ): string {
   const bp = normalizeBasePath(options.basePath ?? '');
   const links = options.links ?? [];
+  const siteName = options.siteName ?? 'Agent News';
+  const enableTools = options.enableToolsSection === true;
 
   // --- Videos: sort newest-first by YouTube date, fallback to site date ---
   const sortedVideos = entries.slice().sort(compareVideos);
@@ -676,18 +700,28 @@ export function renderCatalogHtml(
   // --- Partition by category ---
   const aiNewsVideos = sortedVideos.filter((e) => videoCategory(e) === 'ai-news');
   const deepDiveVideos = sortedVideos.filter((e) => videoCategory(e) === 'deep-dive');
+  const toolsVideos = enableTools
+    ? sortedVideos.filter((e) => videoCategory(e) === 'tools')
+    : [];
   const aiNewsLinks = sortedLinks.filter((e) => linkCategory(e) === 'ai-news');
   const articleLinks = sortedLinks.filter((e) => linkCategory(e) === 'article');
 
   const aiNewsTotal = aiNewsVideos.length + aiNewsLinks.length;
   const deepDiveTotal = deepDiveVideos.length;
+  const toolsTotal = toolsVideos.length;
   const articleTotal = articleLinks.length;
 
   const heroDate = pickHeroDate(sortedVideos, sortedLinks);
 
   // --- Body assembly ---
+  // Order: AI-News → Deep Dives → Tools (experimental-only) → Articles
   let body: string;
-  if (aiNewsTotal === 0 && deepDiveTotal === 0 && articleTotal === 0) {
+  if (
+    aiNewsTotal === 0 &&
+    deepDiveTotal === 0 &&
+    toolsTotal === 0 &&
+    articleTotal === 0
+  ) {
     body = renderHero(heroDate) + renderEmptyAll();
   } else {
     body =
@@ -696,20 +730,26 @@ export function renderCatalogHtml(
         ? ''
         : renderAiNewsSection(aiNewsVideos, aiNewsLinks, bp)) +
       (deepDiveTotal === 0 ? '' : renderDeepDivesSection(deepDiveVideos, bp)) +
+      (toolsTotal === 0 ? '' : renderToolsSection(toolsVideos, bp)) +
       (articleTotal === 0 ? '' : renderArticlesSection(articleLinks));
   }
 
-  const description =
-    `Agent News — three streams: AI-News, Deep Dives, and Articles. ` +
-    `${aiNewsTotal} AI-News, ${deepDiveTotal} Deep Dive${deepDiveTotal === 1 ? '' : 's'}, ` +
-    `${articleTotal} Article${articleTotal === 1 ? '' : 's'}.`;
+  const streamCount = enableTools ? 'four' : 'three';
+  const streamList = enableTools
+    ? 'AI-News, Deep Dives, Tools, and Articles'
+    : 'AI-News, Deep Dives, and Articles';
+  const countsList =
+    `${aiNewsTotal} AI-News, ${deepDiveTotal} Deep Dive${deepDiveTotal === 1 ? '' : 's'}` +
+    (enableTools ? `, ${toolsTotal} Tool${toolsTotal === 1 ? '' : 's'}` : '') +
+    `, ${articleTotal} Article${articleTotal === 1 ? '' : 's'}.`;
+  const description = `${siteName} — ${streamCount} streams: ${streamList}. ${countsList}`;
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agent News</title>
+<title>${escapeHtml(siteName)}</title>
 <meta name="description" content="${escapeHtml(description)}">
 ${THEME_BOOTSTRAP_SCRIPT}
 ${FONT_LINKS}
@@ -718,11 +758,11 @@ ${STYLES}
 </style>
 </head>
 <body>
-${renderHeader(bp)}
+${renderHeader(bp, siteName, enableTools)}
 <main>
 ${body}
 </main>
-${renderFooter(bp)}
+${renderFooter(bp, siteName, enableTools)}
 ${THEME_TOGGLE_SCRIPT}
 </body>
 </html>
@@ -843,6 +883,31 @@ function renderDeepDivesSection(
   <div class="wrap">
     <div class="section__head">
       <h2>Deep Dives</h2>
+      <span class="count">${escapeHtml(label)}</span>
+    </div>
+    <div class="grid-3">
+${cards}
+    </div>
+  </div>
+</section>`.trim();
+}
+
+// ---------------------------------------------------------------------------
+// Section: Tools (experimental flow only — videos with category 'tools')
+// ---------------------------------------------------------------------------
+
+function renderToolsSection(
+  videos: readonly CatalogEntry[],
+  bp: string,
+): string {
+  const count = videos.length;
+  const label = `${count} video${count === 1 ? '' : 's'}`;
+  const cards = videos.map((e) => renderCard(e, bp)).join('\n');
+  return `
+<section class="section" id="tools">
+  <div class="wrap">
+    <div class="section__head">
+      <h2>Tools</h2>
       <span class="count">${escapeHtml(label)}</span>
     </div>
     <div class="grid-3">

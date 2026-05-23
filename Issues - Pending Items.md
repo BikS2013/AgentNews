@@ -4,6 +4,31 @@ This document tracks open issues, pending items, inconsistencies, and discrepanc
 
 ## Pending Items
 
+### Design decision — workflow uses plain `git push --force`, not `--force-with-lease` (2026-05-23)
+
+Symptom: second and subsequent runs of `publish-experimental.yml` failed with `[rejected] HEAD -> gh-pages (stale info)` even though no other writer touches the branch and the workflow's `concurrency` group serialises runs.
+
+Cause: `--force-with-lease` (without an explicit lease value) needs an up-to-date remote-tracking ref to compare against. The workflow's `git clone --depth 1 --single-branch` is a shallow clone — git cannot reliably populate the remote-tracking metadata `--force-with-lease` consults, so it errors as "stale info" rather than risk an unsafe push. The first run happened to succeed because the branch state had just been created.
+
+Resolution: switched the push to plain `git push --force`. The lease guard is unnecessary here because (a) the target branch has exactly one writer — this workflow, (b) the concurrency group already serialises runs, (c) the design intent is "replace prior content atomically on every run". Documented in `docs/design/project-design.md` and recorded here per the project's exception-recording rule.
+
+### Design decision — `GH_PAT_EXPIRES_AT=never` accepted as a sentinel (2026-05-23)
+
+Reason for the exception: GitHub classic PATs can be configured with no expiration date, and the user explicitly opted for that mode for this project's PAT. The workflow's PAT-expiration-warning step now accepts the literal string `never` as a valid value alongside ISO-8601 dates: it emits a `::notice::` and skips the date math. Documented in `docs/design/configuration-guide.md`; `Issues - Pending Items.md` carries this audit-trail entry per the project's CLAUDE.md rule about recording exceptions to the configuration policy. Note: GitHub fine-grained PATs always have an expiration, so the ISO-date path remains the recommended default; the `never` sentinel is for classic PATs only and gives up the proactive-renewal-warning property in exchange for matching the actual token state.
+
+### Missing: `publish-experimental-link` CLI (2026-05-23, blocks symmetrical link migrations)
+
+Symptom: there is no first-class CLI to add a `LinkEntry` to `data/experimental-links.json`. The public flow has `publish-link` for `data/links.json`, but the experimental side has only the empty manifest scaffolded as a structural placeholder. As a consequence, the migration guide `docs/MIGRATING-CONTENT.md` §§4d, 4e, 5d, 5e documents `jq`-based hand-edits for link migrations instead of a CLI invocation. Video migrations are unaffected (they use `publish-experimental-article`).
+
+Proposed fix: scaffold a `publish-experimental-link` CLI via `/tool-conventions scaffold publish-experimental-link`, then clone `src/cli/publish-link.ts` retargeted at `EXPERIMENTAL_LINKS_PATH` with the same single-writer guard pattern used by `publish-experimental-article` (basename of the configured path must start with `experimental-`). Once the CLI exists, update `docs/MIGRATING-CONTENT.md` §4d/§5d to prefer the CLI over `jq`.
+
+Priority: medium — link migrations work today via `jq`, just less ergonomically.
+
+### Experimental sibling-publish — deferred configuration (2026-05-23, blocks first publish run only)
+
+- **Target repo identity not yet provided (high, blocks publish)** — The cross-repo publish workflow (`.github/workflows/publish-experimental.yml`) reads `TARGET_REPO_OWNER` and `TARGET_REPO_NAME` from repository variables. Until those are set in the `agent-news` repo's Settings → Variables → Actions, the workflow's preflight step will fail fast with a named error and no network call is made. User must (a) create the target GitHub repository, (b) set the two variables. Until both are filled in, the build-and-push steps cannot run.
+- **PAT not yet minted / `GH_PAT_EXPIRES_AT` not captured (high, blocks publish)** — The workflow requires a fine-grained PAT scoped to the target repo with `contents:write`, stored as the `GH_PAT` repository secret, AND a `GH_PAT_EXPIRES_AT` repository variable holding the PAT's ISO-8601 expiration date for the proactive-warning mechanism. Both must be set before the first run. The warning threshold is controlled by `GH_PAT_WARN_DAYS` (also required; recommend `14`).
+
 ### Minor — design/spec divergences surfaced by Phase 7 code review (2026-05-22, non-blocking)
 
 - **CLI re-publish idempotency exits 3, not 0 (low)** — Design §5 step 5 specifies that re-publishing the same source file unchanged (same sha256) should be an idempotent no-op and exit 0. The current implementation in `src/cli/publish-article.ts` detects the collision by slug+title BEFORE computing sha256 and exits 3 with `ALREADY_PUBLISHED`. The catalog stays correct (no duplicate entry — AC10 satisfied in substance), but the exit code does not match the design contract. Recommended fix: compute sha256 first, then compare against any entry with the same `sourcePath`; if equal, exit 0; if different, require `--update`.
@@ -38,5 +63,6 @@ All entries are pinned to caret ranges against the verified clean version. Vetti
 - 2026-05-22 — `typescript@^6.0.3` — latest stable major (6). Dev-only. `npm audit` reports 0 advisories.
 - 2026-05-22 — `tsx@^4.22.3` — latest stable major (4). Dev-only. `npm audit` reports 0 advisories.
 - 2026-05-22 — `@types/node@^25.9.1` — latest stable major (25), matching engines.node `>=20`. Dev-only. Type definitions only — no runtime risk.
+- 2026-05-23 — experimental sibling-publish feature — **no new runtime dependencies introduced.** The new CLI (`publish-experimental-article`) and the new build script (`build-experimental.ts`) reuse the existing toolchain (`tsx`, `fastify`'s shared render module, `cheerio` via the existing extractor) and add only TypeScript source files plus one YAML workflow.
 
 **`npm audit` summary (2026-05-22):** 0 info / 0 low / 0 moderate / 0 high / 0 critical across 124 dependencies (93 prod, 32 dev, 27 optional). No overrides required.
