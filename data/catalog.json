@@ -176,7 +176,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "9bbcaf0c4eb70c1c423173b9e83c292ca859f8f7cc7555d03a7182552682e7a8",
       "category": "ai-news"
+    },
+    {
+      "slug": "no-vibes-allowed-solving-hard-problems-in-complex-codebases",
+      "title": "No Vibes Allowed — Solving Hard Problems in Complex Codebases",
+      "publishedAt": "2025-12-02T22:52:58.000Z",
+      "sourcePath": "/tmp/deep-dive-no-vibes-allowed.html",
+      "articlePath": "articles/no-vibes-allowed-solving-hard-problems-in-complex-codebases.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/rmvDxxNubIg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "880cc9f6074e940fabab506952e230574474694845e9bda1916991a3de853027",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-22T22:38:47.644Z"
+  "updatedAt": "2026-05-23T05:20:52.024Z"
 }
