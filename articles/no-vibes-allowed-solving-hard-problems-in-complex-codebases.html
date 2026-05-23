@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>No Vibes Allowed — Solving Hard Problems in Complex Codebases</title>
+</head>
+<body>
+  <img src="https://img.youtube.com/vi/rmvDxxNubIg/maxresdefault.jpg" alt="No Vibes Allowed — Solving Hard Problems in Complex Codebases — Dex Horthy, HumanLayer">
+
+  <h1>No Vibes Allowed: Solving Hard Problems in Complex Codebases — Dex Horthy, HumanLayer</h1>
+
+  <p><strong>Speaker:</strong> Dex Horthy — Founder at HumanLayer, author of the "12 Factor Agents" essay that coined the term "Context Engineering"<br>
+  <strong>Event:</strong> AI Engineer (December 2025)<br>
+  <strong>Video:</strong> <a href="https://www.youtube.com/watch?v=rmvDxxNubIg">YouTube</a></p>
+
+  <hr>
+
+  <h2>Introduction — The Problem With AI Coding Today</h2>
+
+  <p>Dex Horthy opens with a reference to one of the most important studies in AI-assisted software engineering: a survey of <strong>100,000 developers</strong> across companies of all sizes, presented at AI Engineer in June 2025. The findings were sobering:</p>
+
+  <ul>
+    <li>Developers using AI coding tools are <strong>shipping more code</strong>, but a large portion of that output is <strong>rework</strong> — fixing the "slop" that was shipped the week before.</li>
+    <li>AI works exceptionally well for <strong>greenfield projects</strong> — a new Vercel dashboard, a fresh React app, a weekend prototype.</li>
+    <li>In <strong>brownfield codebases</strong> — 10-year-old Java monoliths, mature production systems — AI coding tools can actually make developers <strong>less productive</strong>.</li>
+  </ul>
+
+  <p>This matches Dex's personal experience and conversations with founders and senior engineers across the industry. The common refrain: <em>"Too much slop. Tech debt factory. It's just not going to work for our codebase. Maybe someday when the models get better."</em></p>
+
+  <p>But Dex's thesis is that <strong>we don't need to wait for better models</strong>. The answer is <strong>context engineering</strong> — the discipline of managing what goes into an LLM's context window to get the best possible output from today's models.</p>
+
+  <hr>
+
+  <h2>The Breakthrough — From Skeptic to 2–3x Throughput</h2>
+
+  <p>Dex admits he was initially unimpressed by Claude Code. <em>"It was like, okay, this is a little bit better. I get it. I like the UX."</em> But then his team — just three people — figured something out. Over eight weeks of intense experimentation, they achieved <strong>2–3x more throughput</strong> and were shipping so much code that they had to fundamentally change how they collaborated.</p>
+
+  <p>The result went viral on Hacker News in September 2025. Thousands of developers grabbed their open-source <strong>Research → Plan → Implement</strong> prompt system from GitHub. The core goals they backed into:</p>
+
+  <ol>
+    <li><strong>AI that works in brownfield codebases</strong> — not just greenfield toys</li>
+    <li><strong>Complex problem solving</strong> — not just simple changes</li>
+    <li><strong>No slop</strong> — code quality that passes expert review</li>
+    <li><strong>Mental alignment</strong> — keeping the entire team on the same page about how and why the codebase is changing</li>
+    <li><strong>Maximum token spend</strong> — offloading as much meaningful work to AI as possible</li>
+  </ol>
+
+  <hr>
+
+  <h2>Advanced Context Engineering for Coding Agents</h2>
+
+  <h3>The Naive Approach (and Why It Fails)</h3>
+
+  <p>Dex frames the spectrum of approaches from naive to advanced:</p>
+
+  <p><strong>Level 0 — The Argue Loop:</strong> Ask the agent to do something. Tell it why it's wrong. Re-steer. Ask again. Repeat until you run out of context, give up, or cry. This is what most people start with.</p>
+
+  <p><strong>Level 1 — Fresh Context Windows:</strong> Most developers quickly discover that when a conversation goes off track, it's better to <strong>start a new context window</strong> entirely. Same prompt, same task, but with a fresh start and a note like "don't go down that path, it doesn't work." The signal to restart? When Claude starts apologizing profusely — <em>"that's probably time to start over."</em></p>
+
+  <p><strong>Level 2 — Intentional Compaction:</strong> This is the real breakthrough. Whether the conversation is on track or not, you periodically <strong>compress your existing context window</strong> into a markdown file. You review it, tag it, and when a new agent starts, it can get straight to work instead of re-doing all the file searching, code understanding, and codebase exploration.</p>
+
+  <h3>What Takes Up Space in Your Context Window</h3>
+
+  <p>Dex identifies the main context window consumers:</p>
+
+  <ul>
+    <li><strong>File search and discovery</strong> — the agent hunting through the codebase</li>
+    <li><strong>Code flow understanding</strong> — reading files to understand how things connect</li>
+    <li><strong>File editing</strong> — the actual changes</li>
+    <li><strong>Test and build output</strong> — often verbose and token-hungry</li>
+    <li><strong>MCP tool output</strong> — especially tools dumping JSON with UUIDs into context</li>
+  </ul>
+
+  <p>A good compaction captures: <em>"This is exactly what we're working on. These are the exact files and line numbers that matter to the problem we're solving."</em></p>
+
+  <hr>
+
+  <h2>Why Context Is Everything — LLMs as Stateless Functions</h2>
+
+  <p>Dex makes a fundamental point about LLM architecture (one that "got him roasted on YouTube"): <strong>LLMs are stateless</strong>. They're not pure functions because they're nondeterministic, but they have zero memory between calls. The only way to get better output is to put better tokens in.</p>
+
+  <p>Every turn of the loop — when Claude picks the next tool call, the next code edit, the next decision — there could be <strong>hundreds of right next steps and hundreds of wrong next steps</strong>. The <em>only</em> thing that influences which path the model takes is <strong>what's currently in the conversation</strong>.</p>
+
+  <p>This leads to four optimization axes for your context window:</p>
+
+  <ol>
+    <li><strong>Correctness</strong> — no incorrect information (the worst possible contaminant)</li>
+    <li><strong>Completeness</strong> — no missing information the agent needs</li>
+    <li><strong>Size</strong> — minimal noise and irrelevant content</li>
+    <li><strong>Trajectory</strong> — the conversational pattern matters</li>
+  </ol>
+
+  <h3>The Trajectory Trap</h3>
+
+  <p>The trajectory insight is particularly powerful. If your conversation history looks like: <em>agent makes mistake → human yells → agent makes mistake → human yells</em> — then the LLM is pattern-matching and the most likely next token continuation is… another mistake followed by more yelling. <strong>Your conversation history is training data for the current turn.</strong></p>
+
+  <p>Inverted priority of what hurts most:</p>
+  <ol>
+    <li><strong>Incorrect information</strong> (worst) — sends the model in actively wrong directions</li>
+    <li><strong>Missing information</strong> — the model fills gaps with hallucinations</li>
+    <li><strong>Too much noise</strong> — dilutes signal, wastes smart-zone tokens</li>
+  </ol>
+
+  <hr>
+
+  <h2>The Dumb Zone — A Framework for Context Window Management</h2>
+
+  <p>Dex introduces what he calls (tongue-in-cheek) a "very academic concept": <strong>The Dumb Zone</strong>.</p>
+
+  <p>Take Claude's ~168,000 token context window. Some tokens are reserved for output and compaction overhead. Around the <strong>40% mark</strong>, you start seeing diminishing returns in output quality — depending on task complexity.</p>
+
+  <p>The key insight: <strong>if you have too many MCP tools loaded in your coding agent, you're doing all your work in the dumb zone</strong> and you'll never get good results. The first 40% of context is the "smart zone" — that's where high-quality reasoning happens. Everything after that is increasingly degraded.</p>
+
+  <p>Jeff Huntley's research on coding agents puts it succinctly: <em>"The more you use of the context window, the worse outcomes you'll get."</em></p>
+
+  <p>This reframes the entire coding agent workflow: <strong>everything is about cleverly avoiding the dumb zone</strong>.</p>
+
+  <hr>
+
+  <h2>Sub-Agents — Not for Roles, for Context Control</h2>
+
+  <p>Dex has a strong opinion on sub-agents that goes against common practice:</p>
+
+  <blockquote>
+    <p><em>"If you have a front-end sub-agent and a backend sub-agent and a QA sub-agent and a data scientist sub-agent — please stop. Sub-agents are not for anthropomorphizing roles. They are for controlling context."</em></p>
+  </blockquote>
+
+  <p>The correct use of sub-agents: when you need to understand how something works in a large codebase, <strong>fork a new context window</strong>. That sub-agent does all the reading, searching, file exploration, and codebase understanding. It then returns a <strong>succinct summary</strong> to the parent agent: <em>"The file you want is here, this is how it works."</em></p>
+
+  <p>The parent agent reads that one file and gets straight to work — <strong>without having consumed any of its smart-zone tokens on exploration</strong>.</p>
+
+  <hr>
+
+  <h2>Frequent Intentional Compaction — The Research → Plan → Implement Workflow</h2>
+
+  <p>The core workflow Dex's team developed is built around constantly keeping the context window small. The entire development process is structured around context management through three phases:</p>
+
+  <h3>Phase 1: Research</h3>
+
+  <p>The goal is to <strong>understand how the system works</strong>: finding the right files, understanding code flow, staying objective. The research phase uses sub-agents to explore the codebase and produces a <strong>compressed markdown document</strong> that captures:</p>
+
+  <ul>
+    <li>The specific files that matter</li>
+    <li>How the relevant code flows work</li>
+    <li>Dependencies and constraints</li>
+    <li>Exact line numbers and function signatures</li>
+  </ul>
+
+  <p>This research document is a <strong>compression of truth</strong> — derived directly from the actual code, not from potentially stale documentation.</p>
+
+  <h3>Phase 2: Planning</h3>
+
+  <p>Planning takes the research output plus the bug ticket or feature requirement and creates a <strong>detailed implementation plan</strong>. The plan includes:</p>
+
+  <ul>
+    <li>Exact steps in order</li>
+    <li>File names and line numbers</li>
+    <li><strong>Actual code snippets</strong> of what will change</li>
+    <li>How to test after every change</li>
+  </ul>
+
+  <p>Dex emphasizes: <em>"If you read one of these plans, you can see very easily how the dumbest model in the world is probably not going to screw this up."</em> The plan is another compaction — <strong>compression of intent</strong>.</p>
+
+  <h3>Phase 3: Implementation</h3>
+
+  <p>With a good plan, implementation is "the least exciting part." The agent simply executes the plan step by step, and the context stays low because all the exploration and decision-making already happened in earlier phases.</p>
+
+  <hr>
+
+  <h2>Battle Testing — 300,000 Lines of Rust</h2>
+
+  <p>Dex put Research → Plan → Implement to the test on his podcast with Vibv (CEO of Boundary ML, makers of BAML):</p>
+
+  <h3>Test 1: One-Shot Fix to a 300K LOC Rust Codebase</h3>
+
+  <p>Dex attempted to one-shot a fix to BAML's 300,000-line Rust codebase for a programming language. In an hour-and-a-half podcast episode, they:</p>
+
+  <ul>
+    <li>Built research documents (threw some out because they were bad)</li>
+    <li>Made a plan without research and with research, comparing results</li>
+    <li>By Tuesday morning, the CTO had reviewed the PR and confirmed: <em>"Yeah, this looks good. We'll get it in the next release."</em></li>
+  </ul>
+
+  <p><strong>Confirmed: works in brownfield codebases. No slop.</strong></p>
+
+  <h3>Test 2: Complex Problems — 35,000 Lines in 7 Hours</h3>
+
+  <p>Still skeptical about complex problem solving, Dex and Vibv sat down for a 7-hour Saturday session and shipped <strong>35,000 lines of code</strong> to BAML. One of the PRs was merged a week later. (Some of this was codegen — golden file updates when behavior changes — but it was still a massive amount of real work.)</p>
+
+  <p>Vibv estimated this represented <strong>1–2 weeks of manual work done in 7 hours</strong>.</p>
+
+  <h3>Test 3: The Limits — Parquet Java and Hadoop</h3>
+
+  <p>Not everything works. Dex tried to remove Hadoop dependencies from Parquet Java with his friend Blake. It did not go well. At a certain point, they threw everything out and <strong>went back to the whiteboard</strong>. Once they understood where the footguns were, they had to manually figure out how the pieces fit together.</p>
+
+  <p>The critical lesson: <strong>"Do not outsource the thinking. AI cannot replace thinking. It can only amplify the thinking you have done — or the lack of thinking you have done."</strong></p>
+
+  <hr>
+
+  <h2>The Death of "Spec-Driven Development" — Semantic Diffusion</h2>
+
+  <p>Dex takes a firm stance on the "spec-driven development" hype wave: <strong>it's broken</strong>. Not the idea, but the phrase itself.</p>
+
+  <p>He invokes Martin Fowler's 2006 concept of <strong>semantic diffusion</strong>: <em>"We come up with a good term with a good definition, then everybody gets excited, everybody starts meaning it to mean a hundred things to a hundred different people, and it becomes useless."</em></p>
+
+  <p>This already happened with "agent" — first a person, then a microservice, then a chatbot, then a workflow, until Simon Willison brought it back to basics: <em>"An agent is just tools in a loop."</em></p>
+
+  <p>Now it's happening to "spec-driven development." Depending on who you ask, it means:</p>
+
+  <ul>
+    <li>Writing a better prompt</li>
+    <li>A product requirements document</li>
+    <li>Verifiable feedback loops with back pressure</li>
+    <li>Treating code like assembly (Sean's original vision)</li>
+    <li>Using a bunch of markdown files while coding</li>
+    <li>Documentation for an open source library (!)</li>
+  </ul>
+
+  <p><em>"Spec-driven dev is overhyped. It's useless now. It's semantically diffused."</em></p>
+
+  <hr>
+
+  <h2>Four Things That Actually Work Today</h2>
+
+  <p>Instead of buzzwords, Dex focuses on <strong>tactical, practical techniques</strong> validated internally and with users:</p>
+
+  <h3>1. Agent Onboarding — The Memento Problem</h3>
+
+  <p>Dex references the movie <em>Memento</em>: a man wakes up with no memory and reads his own tattoos to figure out who he is. <strong>Every new agent context is that man.</strong> If you don't onboard your agents, they will make things up.</p>
+
+  <p><strong>Naive approach:</strong> Put a massive onboarding document in the root of every repo. Problem: as codebases grow, the onboarding document either gets too long (consuming all your smart-zone tokens just to learn the codebase) or too incomplete (leaving critical information out).</p>
+
+  <p><strong>Better approach — Progressive disclosure:</strong> Shard the onboarding context down the stack. A file in the root of every repo provides high-level context. At every directory level, additional context files provide deeper information relevant to that specific area. The agent pulls in root context plus only the sub-context relevant to its current task — leaving plenty of room in the smart zone for actual work.</p>
+
+  <p><strong>The staleness problem:</strong> Internal documentation gets out of date. Every time you ship a new feature, you'd need to validate and rebuild this documentation. Dex draws a provocative chart: between actual code, function names, comments, and documentation, the axis is <strong>"the amount of lies you can find"</strong> — documentation has the most lies, code has the least.</p>
+
+  <h3>2. On-Demand Compressed Context (Preferred Over Documentation)</h3>
+
+  <p>Instead of maintaining documentation, Dex's team prefers <strong>on-demand compressed context</strong>. When building a feature, you give the research phase a little steering: <em>"We're working in this part of the codebase — SCM providers, Jira, and Linear integration."</em></p>
+
+  <p>The research prompt launches sub-agents that take <strong>vertical slices through the codebase</strong> and build a research document that is a snapshot of <strong>the actually-true, based-on-the-code-itself</strong> parts of the codebase that matter. <strong>You're compressing truth, not maintaining documentation.</strong></p>
+
+  <h3>3. Plans With Code Snippets — Compression of Intent</h3>
+
+  <p>Planning is about <strong>compression of intent</strong>. Over time, Dex's team iterated toward plans that include <strong>actual code snippets of what's going to change</strong>.</p>
+
+  <p>The goal is threefold:</p>
+  <ul>
+    <li><strong>High confidence</strong> that the model will do the right thing</li>
+    <li><strong>Compression of intent</strong> — a concise representation of what needs to happen</li>
+    <li><strong>Reliable execution</strong> — so reliable that even a weaker model could execute it</li>
+  </ul>
+
+  <p>There's a sweet spot: as plans get longer, <strong>reliability goes up but readability goes down</strong>. Every team needs to find their own balance point.</p>
+
+  <p><strong>Critical warning:</strong> This is NOT magic. There is no perfect prompt. The process <strong>will not work if you do not read the plan</strong>. The entire workflow is built around the human being in back-and-forth with the agent, reviewing plans as they're created. A bad line of code is one bad line. A bad part of a plan could be <strong>a hundred bad lines of code</strong>. A bad line of research — a misunderstanding of how the system works — could derail everything.</p>
+
+  <blockquote>
+    <p><em>"Watch out for tools that just spew out a bunch of markdown files to make you feel good."</em></p>
+  </blockquote>
+
+  <h3>4. Mental Alignment Through Plans and Reviews</h3>
+
+  <p>Dex asks: <em>"Does anyone know what code review is for?"</em> The answer is <strong>mental alignment</strong>. Yes, it's about correctness, but the most important function is <strong>keeping everyone on the team on the same page about how the codebase is changing and why</strong>.</p>
+
+  <p>As teams ship 2–3x more code with AI, this becomes critical. Dex can't (and doesn't want to) read thousands of lines of Go every week. But he can <strong>read the plans</strong>. That's enough to catch problems early and maintain understanding of how the system evolves.</p>
+
+  <p>Mitchell Hashimoto's approach: putting AMP threads directly on pull requests so reviewers can see not just a wall of green diffs, but the exact steps, the prompts, and evidence that the build passed. <em>"This takes the reviewer on a journey in a way that a GitHub PR just can't."</em></p>
+
+  <hr>
+
+  <h2>Scaling Context Engineering — When to Use What</h2>
+
+  <p>Dex provides a practical framework for how much context engineering to apply based on task complexity:</p>
+
+  <ul>
+    <li><strong>Trivial change</strong> (button color) → Just talk to the agent directly</li>
+    <li><strong>Small feature</strong> → Simple plan, maybe skip research</li>
+    <li><strong>Medium feature across multiple repos</strong> → One research phase, then build a plan</li>
+    <li><strong>Hard, complex problems</strong> → Full Research → Plan → Implement with multiple iterations</li>
+  </ul>
+
+  <p>The ceiling of what you can solve goes up the more context engineering compaction you're willing to do. But: <em>"It takes reps. You will get it wrong. You have to get it wrong over and over again. Sometimes you'll go too big, sometimes too small. Pick one tool and get some reps."</em></p>
+
+  <p>He explicitly recommends <strong>against minmaxing across Claude Code, Codex, Cursor, and other tools</strong> — pick one and develop proficiency.</p>
+
+  <hr>
+
+  <h2>Looking Forward — Cultural Change Is the Hard Part</h2>
+
+  <p>Dex believes the coding agent techniques themselves will be <strong>commoditized</strong>. The hard part is the organizational and cultural transformation:</p>
+
+  <blockquote>
+    <p><em>"How do you adapt your team and your workflow and the SDLC to work in a world where 99% of your code is shipped by AI?"</em></p>
+  </blockquote>
+
+  <p>He identifies a growing rift in engineering organizations:</p>
+
+  <ul>
+    <li><strong>Staff engineers</strong> don't adopt AI because it doesn't make them that much faster on their already-efficient workflows</li>
+    <li><strong>Junior/mid-level engineers</strong> use it heavily because it fills skill gaps — but also produce slop</li>
+    <li><strong>Senior engineers</strong> hate it more every week because they're cleaning up AI-generated slop from Cursor the week before</li>
+  </ul>
+
+  <p><em>"This is not AI's fault. This is not the mid-level engineer's fault. Cultural change is really hard and it needs to come from the top if it's going to work."</em></p>
+
+  <p>Dex's parting advice for technical leaders: <strong>pick one tool and get some reps</strong>. The transition to AI-assisted development is inevitable — the question is whether your team navigates it intentionally or gets dragged through it.</p>
+
+  <hr>
+
+  <h2>Key Takeaways</h2>
+
+  <ol>
+    <li><strong>Context engineering > waiting for better models.</strong> You can solve hard problems in complex codebases today by managing your context window carefully.</li>
+    <li><strong>The Dumb Zone is real.</strong> After ~40% of context window utilization, quality degrades. Build your entire workflow around staying in the smart zone.</li>
+    <li><strong>Sub-agents are for context control, not role play.</strong> Use them to explore and compress, not to anthropomorphize job titles.</li>
+    <li><strong>Frequent Intentional Compaction</strong> is the core technique: Research (compress truth) → Plan (compress intent) → Implement (execute with minimal context).</li>
+    <li><strong>Do not outsource the thinking.</strong> AI amplifies thinking — both good thinking and bad thinking. Read the plans. Review the research.</li>
+    <li><strong>On-demand context beats maintained documentation.</strong> Generate fresh, code-based research each time rather than maintaining docs that become lies.</li>
+    <li><strong>Plans should include code snippets.</strong> The more specific your plan, the more reliable execution becomes.</li>
+    <li><strong>Mental alignment is the point of code review.</strong> Use plans and AMP threads to keep your team on the same page as AI-shipped code accelerates.</li>
+    <li><strong>"Spec-driven dev" is semantically diffused.</strong> Focus on the actual techniques (compaction, context management) rather than buzzwords.</li>
+    <li><strong>Cultural change is the real challenge.</strong> The engineering tools will be commoditized; adapting your team and SDLC will not.</li>
+  </ol>
+
+</body>
+</html>
