@@ -4,6 +4,14 @@ This document tracks open issues, pending items, inconsistencies, and discrepanc
 
 ## Pending Items
 
+### Design decision — broadened path filter on publish-experimental.yml (2026-05-23)
+
+Symptom: a commit that changed only `src/server/render/catalog.ts` (the renderer shared between the public and experimental builds) deployed cleanly to the public site via `deploy.yml` but DID NOT trigger `publish-experimental.yml`. The experimental site stayed on the previous render. Confirmed by `gh run view` against the commit SHA — no run was triggered until a manual `workflow_dispatch` happened to catch it.
+
+Cause: `publish-experimental.yml`'s `paths:` filter watched only `experimental/**`, `data/experimental-*.json`, `scripts/build-experimental.ts`, and the workflow file itself. The shared renderer, catalog/link types, extractor, and experimental CLI all live under `src/**`, but `src/**` was not in the filter — so changes that materially affect the experimental output didn't re-trigger the experimental deploy.
+
+Resolution: broadened the filter to also include `src/**`, `tsconfig.json`, `package.json`, and `package-lock.json`. False-positive rate goes up slightly (e.g. a publish-article-only change now triggers an experimental rebuild), but the workflow's commit step is a no-op when the produced artifact matches the current target branch — false-positives cost ~30s of CI and never push to the target repo. The hand-curated alternative (whitelist of specific paths under `src/`) was rejected because future imports would silently re-open the gap.
+
 ### Design decision — workflow uses plain `git push --force`, not `--force-with-lease` (2026-05-23)
 
 Symptom: second and subsequent runs of `publish-experimental.yml` failed with `[rejected] HEAD -> gh-pages (stale info)` even though no other writer touches the branch and the workflow's `concurrency` group serialises runs.

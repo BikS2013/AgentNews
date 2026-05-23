@@ -38,6 +38,23 @@ on:
       - 'data/experimental-links.json'
       - 'scripts/build-experimental.ts'
       - '.github/workflows/publish-experimental.yml'
+      # The renderer, catalog/link types, extractor, and the experimental
+      # CLI all live under src/. The experimental build imports from
+      # `src/server/render/catalog.ts`, `src/catalog/types.ts`,
+      # `src/links/types.ts`, and the experimental CLI ingest path goes
+      # through `src/catalog/store.ts` + `src/extractor/**`. Any change to
+      # those files can alter what build-experimental emits, so they must
+      # re-trigger this workflow. Broad `src/**` catches future imports
+      # without need to maintain a hand-curated allowlist; the workflow's
+      # commit step is a no-op when the produced artifact matches the
+      # current target branch, so false-positives cost ~30s of CI and
+      # never push to the target repo.
+      - 'src/**'
+      # tsconfig + package.json shape can affect the build; include them
+      # so a dependency bump or compiler-option change triggers a rebuild.
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
 
 # Serialize runs so two pushes can't race the force-push.
 concurrency:

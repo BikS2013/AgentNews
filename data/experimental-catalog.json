@@ -77,7 +77,17 @@
       "thumbnailSource": "html",
       "sha256": "ebbcbf1b3d51b38ab2f164167166800cd9a8e9e1c1890d535c1f9c8ac564dc5e",
       "category": "ai-news"
+    },
+      "slug": "git-worktrees-clearly-explained-and-how-to-use-them-with-ai-agents",
+      "title": "Git Worktrees Clearly Explained — And How to Use Them With AI Agents",
+      "publishedAt": "2026-03-19T20:44:37.000Z",
+      "sourcePath": "/tmp/deep-dive-git-worktrees.html",
+      "articlePath": "experimental/git-worktrees-clearly-explained-and-how-to-use-them-with-ai-agents.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/JVM40liIElk/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "bf871e4724171f35c3ea119fe03f8600791848c1ebaf66c1559c5b0ae51dc02f",
+      "category": "tools"
     }
   ],
-  "updatedAt": "2026-05-23T16:42:49.683Z"
+  "updatedAt": "2026-05-23T12:49:32.308Z"
 }
