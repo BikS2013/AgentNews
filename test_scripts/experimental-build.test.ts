@@ -181,6 +181,9 @@ function runPublicBuild(env: {
   linksPath: string;
   outDir: string;
   basePath: string;
+  /** When provided, forces EXPERIMENTAL_URL in the subprocess env (empty
+   * string clears any inherited value, matching the "unset" code path). */
+  experimentalUrl?: string;
 }): { exitCode: number; stdout: string; stderr: string } {
   const result = spawnSync(
     'npx',
@@ -193,6 +196,9 @@ function runPublicBuild(env: {
         LINKS_PATH: env.linksPath,
         OUT_DIR: env.outDir,
         BASE_PATH: env.basePath,
+        ...(env.experimentalUrl !== undefined
+          ? { EXPERIMENTAL_URL: env.experimentalUrl }
+          : {}),
       },
       encoding: 'utf8',
       timeout: 30000,
@@ -731,14 +737,20 @@ describe('public build — zero-leakage from experimental content', () => {
   });
 
   it('public build output is byte-identical whether experimental content exists or not', () => {
-    // Run A: public build with NO experimental content.
-    const a = runPublicBuild({
+    // EXPERIMENTAL_URL is force-cleared so the assertions below are
+    // hermetic — they cannot be affected by whatever the parent process /
+    // CI workflow may have exported. The "with EXPERIMENTAL_URL set" code
+    // path has its own dedicated test below.
+    const baseEnv = {
       articlesDir: publicArticles,
       catalogPath: publicCatalog,
       linksPath: publicLinks,
-      outDir: outA,
       basePath: '',
-    });
+      experimentalUrl: '',
+    } as const;
+
+    // Run A: public build with NO experimental content.
+    const a = runPublicBuild({ ...baseEnv, outDir: outA });
     assert.equal(a.exitCode, 0, `Public build A failed: ${a.stderr}`);
     const hashA = hashTree(outA);
 
@@ -757,13 +769,7 @@ describe('public build — zero-leakage from experimental content', () => {
     // Run B: public build AGAIN, with experimental content now sitting
     // beside the public tree. The build env vars still point ONLY at the
     // public paths — so the output must be unchanged.
-    const b = runPublicBuild({
-      articlesDir: publicArticles,
-      catalogPath: publicCatalog,
-      linksPath: publicLinks,
-      outDir: outB,
-      basePath: '',
-    });
+    const b = runPublicBuild({ ...baseEnv, outDir: outB });
     assert.equal(b.exitCode, 0, `Public build B failed: ${b.stderr}`);
     const hashB = hashTree(outB);
 
