@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Rebuilt Hermes in Claude Code — It's Ridiculously Good</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+  .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+  .ts-row .timestamp{flex-shrink:0;}
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+  .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/wdc1OFWDxlU/maxresdefault.jpg" alt="I Rebuilt Hermes in Claude Code" style="display:none;">
+
+<h1>I Rebuilt Hermes in Claude Code — It's Ridiculously Good</h1>
+<div class="meta">
+  <span>Simon Scrapes</span>
+  <span class="badge">~15 min</span>
+  <a href="https://www.youtube.com/watch?v=wdc1OFWDxlU" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/wdc1OFWDxlU" title="I Rebuilt Hermes in Claude Code" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=wdc1OFWDxlU" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/wdc1OFWDxlU/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>Simon Scrapes examines the hidden costs of using off-the-shelf agentic systems like Hermes Agent (40,000 GitHub stars in 46 days) and OpenClaw, then shows how he rebuilt the best features inside his own n8n-based Claude Code setup. The result: a modular, multi-client "Agentic Operating System" where he understands every layer. The video is a practical comparison of build-vs-buy for agentic AI infrastructure — what Hermes nails, where it falls short, and how to architect your own alternative.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> Three Hidden Costs of Off-the-Shelf Systems <a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=60s" target="_blank">▶ 1:00</a></h2>
+  <p>Before building, Simon identifies three costs that only show up after you're committed:</p>
+  <ul>
+    <li><strong>Cost 1: Inherited assumptions.</strong> Hermes's self-learning loop has no external guardrails — the same model that writes a skill is also the sole judge of its correctness. It can quietly overwrite your improved skills with worse versions, with no version control or audit log.</li>
+    <li><strong>Cost 2: Can't fix what you don't understand.</strong> OpenClaw has 200+ vulnerabilities filed since February, including 386 malicious packages from a single threat actor on the skills marketplace. When something breaks at this scale, you're debugging someone else's code.</li>
+    <li><strong>Cost 3: Doesn't scale across your business.</strong> One user spent 100+ hours and $1,000+ testing OpenClaw over 2 months only to find bugs and security gaps disqualified it. He then replicated 30% of its features in Claude Code in weeks.</li>
+  </ul>
+  <div class="highlight">"Hermes may be faster to start, but your own setup is faster to scale. The hidden costs only show up once you're already committed."</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> The Identity Layer — What Hermes Nails <a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=240s" target="_blank">▶ 4:00</a></h2>
+  <p>Hermes uses <code>memory.md</code> and <code>user.md</code> files injected into every conversation — a simple, effective identity system. But it's <strong>designed for one individual</strong>. No concept of switching brand contexts, client contexts, or business contexts within a single install.</p>
+  <p>For multi-client work, you'd need separate Hermes installations per client, each with its own memory, skills, and learning loop — embedding a maintenance nightmare since skills aren't shared.</p>
+  <p><strong>Simon's alternative:</strong> Same injection pattern, but with shared brand context (voice, ICP, visual identity) per client. Each client has its own context files, but skills and procedures are shared across the folder structure. One install handles multiple clients.</p>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> The Memory System — Three Levels <a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=390s" target="_blank">▶ 6:30</a></h2>
+  <p>Hermes's memory system has three well-designed levels:</p>
+  <ol>
+    <li><strong>Storage:</strong> Auto-saves and summarizes every conversation turn</li>
+    <li><strong>Injection:</strong> Important memories injected into every conversation via memory.md, user.md, and folder .md files (capped at ~1,300 tokens)</li>
+    <li><strong>Recall:</strong> Long-term memory search for information not in the recent injection</li>
+  </ol>
+  <p>The limitation: recall searches by <strong>keyword, not meaning</strong>. If you can't remember the exact words you used with Claude 6 months ago, long-term recall becomes nearly useless.</p>
+  <div class="highlight">Simon's fix: keep Hermes's injection pattern (capped memory.md for recent context) but replace keyword-based recall with semantic search via MemSearch — search by meaning, not exact words.</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> The Self-Learning Loop — Where It Gets Controversial <a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=540s" target="_blank">▶ 9:00</a></h2>
+  <p>Hermes's biggest selling point: after finishing a task, the agent writes itself a new skill and uses it next time. Sounds brilliant — until the 10th or 20th skill.</p>
+  <p><strong>The problem:</strong></p>
+  <ul>
+    <li>Skills accumulate: "LinkedIn post V1", "LinkedIn post V2", "LinkedIn post for this client", "LinkedIn post writer 1 and 2" — all slightly different, similar descriptions</li>
+    <li>The agent doesn't know which skill to use — <strong>no visibility of existing skills</strong></li>
+    <li>Each skill captures the approach at that moment in time for that specific context</li>
+    <li>When brand voice or client positioning changes, you have 15 places to update</li>
+  </ul>
+  <div class="highlight">"Yes, it's absolutely faster to build this way initially, but it's a hell of a commitment to maintain properly and basically impossible to scale across multiple clients."</div>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> Skill Systems — The Modular Alternative <a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=660s" target="_blank">▶ 11:00</a></h2>
+  <p>Simon's solution: <strong>Skill Systems</strong> instead of one-off skills.</p>
+  <p>A skill isn't a single task — it's a modular component feeding into a system. Each component does one job, lives in one place, has a consistent naming format, and gets updated in one place with changes propagating everywhere.</p>
+  <p><strong>Example — "Write a LinkedIn post":</strong> Instead of baking voice + audience + format into one skill, you maintain them as separate skills. The LinkedIn post skill system chains them together in the right order, pulling the current version of each component.</p>
+  <ul>
+    <li><strong>Brand voice shifts?</strong> One file to update — every skill system that uses it gets the update.</li>
+    <li><strong>New client?</strong> Reuse the same skill systems, just point at different context files.</li>
+    <li><strong>Result:</strong> Infinitely maintainable and scalable.</li>
+  </ul>
+  <div class="highlight">"Hermes is faster to build the first skill. Building your own approach is faster to build the 10th, the 100th skill system — and infinitely easier to maintain."</div>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> Build vs. Buy — The Trade-Off <a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=780s" target="_blank">▶ 13:00</a></h2>
+  <p>The core trade-off:</p>
+  <ul>
+    <li><strong>Off-the-shelf (Hermes/OpenClaw):</strong> Faster to start. You inherit their architecture, their assumptions, and their problems. When something breaks, you're debugging code you didn't write.</li>
+    <li><strong>Custom build:</strong> Slower to start. You'll get some things wrong. But every layer is visible, editable, and reusable. When something breaks, you know where to look.</li>
+  </ul>
+  <p>Neither is universally right. The question is whether you need speed-to-start or speed-to-scale.</p>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Off-the-shelf agentic systems are fast to start but inherit hidden costs</strong> — assumptions you didn't know existed, security vulnerabilities, and scaling limitations.</li>
+    <li><strong>Hermes's self-learning loop lacks external guardrails.</strong> The model grades its own homework — no version control, no audit log, and it can overwrite your improvements.</li>
+    <li><strong>Identity is single-tenant by design.</strong> Multi-client work requires separate Hermes installs with unshared skills — a maintenance nightmare.</li>
+    <li><strong>Memory injection is well-designed;</strong> long-term recall is not. Keyword search fails when you can't remember exact words from months ago — semantic search is the fix.</li>
+    <li><strong>Skills accumulate into maintenance debt.</strong> By the 20th auto-generated skill, you have 15 variants doing roughly the same thing with slightly different context.</li>
+    <li><strong>Skill Systems beat one-off skills.</strong> Modular components (voice, ICP, format) maintained in one place, chained together by skill system prompts — one update propagates everywhere.</li>
+    <li><strong>Faster to start ≠ faster to scale.</strong> Custom builds move slower initially but are infinitely more maintainable for multi-client, multi-brand operations.</li>
+    <li><strong>Understanding the architecture gives you more leverage</strong> than installing something blindly — you can fix what you understand.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=0s" target="_blank">▶ 0:00</a> Hermes's explosive adoption (40K stars in 46 days)</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=60s" target="_blank">▶ 1:00</a> Three hidden costs of off-the-shelf systems</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=240s" target="_blank">▶ 4:00</a> The identity layer — what Hermes nails</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=330s" target="_blank">▶ 5:30</a> Multi-client context: Hermes vs. custom</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=390s" target="_blank">▶ 6:30</a> Memory system — three levels (storage, injection, recall)</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=480s" target="_blank">▶ 8:00</a> Keyword recall vs. semantic search</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=540s" target="_blank">▶ 9:00</a> The self-learning loop — and why it's controversial</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=660s" target="_blank">▶ 11:00</a> Skill Systems — the modular alternative</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=wdc1OFWDxlU&t=780s" target="_blank">▶ 13:00</a> Build vs. buy — the trade-off</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video wdc1OFWDxlU · Simon Scrapes</footer>
+
+</div>
+</body>
+</html>
