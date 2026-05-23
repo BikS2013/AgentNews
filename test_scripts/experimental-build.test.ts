@@ -426,6 +426,21 @@ describe('experimental publish + build — byte-identity end-to-end', () => {
       'experimental 404.html must reference "Agent Content"',
     );
 
+    // Footer: GitHub points at the public repo on BOTH sites.
+    assert.ok(
+      indexHtml.includes('href="https://github.com/BikS2013/AgentNews"'),
+      'experimental footer must link GitHub at https://github.com/BikS2013/AgentNews',
+    );
+    // Footer: Authors / Subscribe / RSS / Contact are non-clickable
+    // placeholders (rendered as <span class="footer-link--disabled">).
+    for (const label of ['Authors', 'Subscribe', 'RSS', 'Contact']) {
+      const disabledMarker = `<span class="footer-link--disabled" aria-disabled="true">${label}</span>`;
+      assert.ok(
+        indexHtml.includes(disabledMarker),
+        `experimental footer must render "${label}" as disabled span (got: not found)`,
+      );
+    }
+
     // Hero text: experimental site uses the experiments-focused H1 and
     // four-stream lede that mentions Tools.
     assert.ok(
@@ -829,6 +844,20 @@ describe('public build — zero-leakage from experimental content', () => {
       false,
       'Public hero must NOT render the experiments link when EXPERIMENTAL_URL is unset',
     );
+    // Footer: public site GitHub link points at the BikS2013/AgentNews repo.
+    assert.ok(
+      publicIndexHtml.includes('href="https://github.com/BikS2013/AgentNews"'),
+      'Public footer must link GitHub at https://github.com/BikS2013/AgentNews',
+    );
+    // Footer: Authors / Subscribe / RSS / Contact rendered as disabled
+    // spans on the public site too.
+    for (const label of ['Authors', 'Subscribe', 'RSS', 'Contact']) {
+      const disabledMarker = `<span class="footer-link--disabled" aria-disabled="true">${label}</span>`;
+      assert.ok(
+        publicIndexHtml.includes(disabledMarker),
+        `Public footer must render "${label}" as disabled span`,
+      );
+    }
   });
 
   it('renders the experiments link in the public hero when EXPERIMENTAL_URL is set', () => {

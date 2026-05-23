@@ -428,6 +428,13 @@ const STYLES = `
   .footer-grid ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
   .footer-grid a { font-size: 14px; color: var(--ink-2); }
   .footer-grid a:hover { color: var(--accent); }
+  /* Disabled footer items — placeholder labels for areas that exist in the
+     layout but aren't wired up yet. Visually muted, non-clickable, no
+     hover affordance. */
+  .footer-grid .footer-link--disabled {
+    font-size: 14px; color: var(--muted); opacity: .55;
+    cursor: not-allowed; user-select: none;
+  }
   .footer-grid p {
     font-size: 14px; color: var(--muted); line-height: 1.55;
     max-width: 280px; margin: 12px 0 0;
@@ -596,16 +603,16 @@ function renderFooter(bp: string, siteName: string, showToolsLink: boolean): str
         <h4>Publication</h4>
         <ul>
           <li><a href="${home}">About</a></li>
-          <li><a href="${home}">Authors</a></li>
-          <li><a href="${home}">Subscribe</a></li>
+          <li><span class="footer-link--disabled" aria-disabled="true">Authors</span></li>
+          <li><span class="footer-link--disabled" aria-disabled="true">Subscribe</span></li>
         </ul>
       </div>
       <div>
         <h4>Connect</h4>
         <ul>
-          <li><a href="${home}">RSS</a></li>
-          <li><a href="${home}">GitHub</a></li>
-          <li><a href="${home}">Contact</a></li>
+          <li><span class="footer-link--disabled" aria-disabled="true">RSS</span></li>
+          <li><a href="https://github.com/BikS2013/AgentNews" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><span class="footer-link--disabled" aria-disabled="true">Contact</span></li>
         </ul>
       </div>
     </div>
