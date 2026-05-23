@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Worktrees Clearly Explained — And How to Use Them With AI Agents</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+  .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+  .ts-row .timestamp{flex-shrink:0;}
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+  .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/JVM40liIElk/maxresdefault.jpg" alt="Git Worktrees Clearly Explained" style="display:none;">
+
+<h1>Git Worktrees Clearly Explained — And How to Use Them With AI Agents</h1>
+<div class="meta">
+  <span>David Ondrej</span>
+  <span class="badge">~18 min</span>
+  <a href="https://www.youtube.com/watch?v=JVM40liIElk" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/JVM40liIElk" title="Git Worktrees Clearly Explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=JVM40liIElk" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/JVM40liIElk/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>David Ondrej delivers what he calls "the clearest explanation of Git worktrees on the internet" — and why they're essential in 2026 for running multiple AI agents in parallel. The video covers the core concept, why worktrees have exploded 15x in popularity since AI agents went mainstream, and includes a full live demo of running two Claude Code agents in separate worktrees building different parts of the same app simultaneously, then merging with a third reviewer agent.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> The Problem Without Worktrees <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>The classic scenario: you're working on a feature, a critical bug report comes in. Without worktrees, you need to <strong>stash your progress</strong>, switch to main, fix the bug, switch back, pop the stash — losing time and context with every switch.</p>
+  <div class="highlight">A worktree is basically a copy of your project folder but with the same Git history. Think of it as opening the same Google Doc in two tabs, each at a different version — same history, but now they're separate and you can edit independently.</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> Why Worktrees Are Exploding Now <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=120s" target="_blank">▶ 2:00</a></h2>
+  <p>Git worktrees were created <strong>11 years ago</strong> (2015), but Google Trends shows they're 15x more popular now than even in late 2025. The reason: <strong>AI agents</strong>.</p>
+  <p>With worktrees, multiple things happen simultaneously:</p>
+  <ul>
+    <li><strong>Worktree 1:</strong> New authentication feature</li>
+    <li><strong>Worktree 2:</strong> Hot-fixing a bug</li>
+    <li><strong>Worktree 3:</strong> Reviewing a PR</li>
+  </ul>
+  <p>This is especially critical for AI agents. If you're not running multiple agents in parallel, you're missing out on significant productivity.</p>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> Why AI Agents Love Worktrees <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=180s" target="_blank">▶ 3:00</a></h2>
+  <p>Three key problems that worktrees solve for AI agents:</p>
+  <ul>
+    <li><strong>True parallel execution</strong> — No more cross-fighting. Without worktrees, Agent A and Agent B might modify the same file, causing confusion: "Why is this file different from when I read it last time?"</li>
+    <li><strong>No context pollution</strong> — Switching branches while an agent is working pollutes its context with state that doesn't exist. Worktrees eliminate this entirely.</li>
+    <li><strong>Become an agentic conductor</strong> — Each agent gets their own isolated world. Agent A adds a feature, Agent B fixes a bug, both run simultaneously. When done, you review and merge.</li>
+  </ul>
+  <div class="highlight">This is the same sequential vs. parallel problem solved in computer science in the 1950s. Worktrees bring parallel computing to your Git workflow.</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> Worktrees in Claude Desktop (Easy Mode) <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=360s" target="_blank">▶ 6:00</a></h2>
+  <p>The easiest way to use worktrees: <strong>Claude Desktop app</strong> handles them automatically. Just open two Code sessions pointing to the same project folder — each session gets its own worktree.</p>
+  <p>David demos creating two sessions: one building a PowerPoint presentation and another designing a Supabase backend architecture, both in the same folder without conflicts.</p>
+  <p>Downside: the desktop app asks for permissions on every action, which slows you down significantly.</p>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> Worktrees in Claude Code Terminal (Power Mode) <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=480s" target="_blank">▶ 8:00</a></h2>
+  <p>The terminal approach unlocks full power. David's recommended setup:</p>
+  <ol>
+    <li><strong><code>claude --dangerously-skip-permissions</code></strong> — bypasses confirmation prompts for maximum speed</li>
+    <li><strong><code>/model</code> → Opus with 1M context</strong> — Opus 4.6 has by far the best long-context retrieval. While GPT-5.4 and Gemini 3.1 Pro have massive drop-offs, Opus maintains capability across the full context window.</li>
+    <li><strong><code>/fast</code> mode</strong> — requires API pricing (not subscription), but is a "complete game changer" for speed</li>
+  </ol>
+  <div class="highlight">"If you are a serious builder and you love Claude, this is what you need: 1 million context and fast mode. It's not even close. It is completely revolutionary."</div>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> Full Live Demo — Multi-Agent Worktree Workflow <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=660s" target="_blank">▶ 11:00</a></h2>
+  <p>David walks through a complete workflow with <strong>three terminal Claude Code agents</strong>:</p>
+  <p><strong>Setup:</strong></p>
+  <ol>
+    <li>Agent 1 initializes a Git repo, creates an Express app with a <code>/users</code> endpoint, installs dependencies, commits — all in seconds with Opus fast mode</li>
+    <li>Agent 2 creates two worktrees: <code>feature/authentication</code> and <code>feature/front-end-design</code></li>
+    <li>Each agent CDs into its worktree: <code>cd ../front-end-design</code> / <code>cd ../authentication</code></li>
+  </ol>
+  <p><strong>Parallel execution:</strong></p>
+  <ul>
+    <li><strong>Agent 1 (front-end):</strong> "Build beautiful front end for Git learning app — interactive single page site with hero section and visual cheat sheet of core Git commands"</li>
+    <li><strong>Agent 2 (auth):</strong> "Build back end for interactive Git learning app — Express with /login endpoint using JWT, protect all API routes with auth middleware"</li>
+    <li>Both finish independently — Agent 2 in under 58 seconds</li>
+  </ul>
+  <p><strong>Review & merge:</strong></p>
+  <ul>
+    <li><strong>Agent 3 (reviewer):</strong> Launches in root project, checks all worktrees, reviews both agents' work with sub-agents running in parallel</li>
+    <li><code>git merge feature/authentication</code> — merges cleanly</li>
+    <li><code>git merge feature/front-end-design</code> — has conflicts, but Claude Code resolves them automatically</li>
+    <li>Result: a fully working "Git Master" learning app with interactive flip cards for all Git commands</li>
+  </ul>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card">
+  <h2><span class="section-num">7</span> Key Git Worktree Commands <a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=900s" target="_blank">▶ 15:00</a></h2>
+  <p>Quick reference for the essential commands demonstrated:</p>
+  <ul>
+    <li><strong><code>git worktree add ../feature-name feature-branch</code></strong> — create a new worktree</li>
+    <li><strong><code>git worktree list</code></strong> — show all worktrees and their branches</li>
+    <li><strong><code>git merge feature/branch-name</code></strong> — merge a worktree's branch back into main</li>
+    <li><strong><code>git worktree remove ../feature-name</code></strong> — clean up a worktree</li>
+    <li><strong><code>git worktree prune</code></strong> — remove stale worktree references</li>
+  </ul>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Git worktrees give each AI agent its own isolated workspace</strong> — no cross-fighting, no context pollution, true parallel execution.</li>
+    <li><strong>Worktrees are 15x more popular than a year ago</strong> — driven entirely by the AI agent revolution.</li>
+    <li><strong>Claude Desktop handles worktrees automatically</strong> — just open two Code sessions on the same folder. Great for beginners.</li>
+    <li><strong>Terminal + <code>--dangerously-skip-permissions</code> is the power setup.</strong> Combine with Opus 1M context and <code>/fast</code> mode for maximum productivity.</li>
+    <li><strong>Opus 4.6 has the best long-context retrieval.</strong> GPT-5.4 and Gemini 3.1 Pro have significant drop-offs; Opus maintains quality across the full window.</li>
+    <li><strong>The three-agent pattern works:</strong> two builders in separate worktrees + one reviewer in root to merge and resolve conflicts.</li>
+    <li><strong>Claude Code resolves merge conflicts automatically</strong> — you don't even need to intervene.</li>
+    <li><strong>Worktrees become exponentially more powerful on larger projects</strong> — simple projects can be one-shot, but complex projects with parallel features and bugs benefit enormously.</li>
+    <li><strong>Only 18% of developers use worktrees.</strong> Adopting them now gives you a significant productivity advantage.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=0s" target="_blank">▶ 0:00</a> The problem without worktrees</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=60s" target="_blank">▶ 1:00</a> Core concept — what is a worktree?</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=120s" target="_blank">▶ 2:00</a> Why worktrees are exploding (Google Trends)</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=180s" target="_blank">▶ 3:00</a> Why AI agents love worktrees</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=360s" target="_blank">▶ 6:00</a> Worktrees in Claude Desktop (easy mode)</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=480s" target="_blank">▶ 8:00</a> Terminal setup — Opus + fast mode</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=660s" target="_blank">▶ 11:00</a> Live demo — multi-agent worktree workflow</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=900s" target="_blank">▶ 15:00</a> Key Git worktree commands</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=JVM40liIElk&t=1020s" target="_blank">▶ 17:00</a> When worktrees shine (complex projects)</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video JVM40liIElk · David Ondrej</footer>
+
+</div>
+</body>
+</html>
