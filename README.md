@@ -4,6 +4,15 @@ A small Node.js + TypeScript site that hosts self-contained HTML articles **byte
 
 The article HTML is the sacred bit: every byte you put in is every byte the browser receives. The catalog page around it is server-rendered HTML you can style freely.
 
+## Live sites
+
+| Site                       | URL                                                                                | Source repo                                                                                  | Deployed by                                  |
+|----------------------------|------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|----------------------------------------------|
+| **Agent News** (public)    | <https://biks2013.github.io/AgentNews/>                                            | this repo (`BikS2013/AgentNews`)                                                              | `.github/workflows/deploy.yml`               |
+| **Agent News Experimental**| <https://biks2013.github.io/AgentNews-Experimental/>                               | sibling repo (`BikS2013/AgentNews-Experimental`, branch `gh-pages`)                           | `.github/workflows/publish-experimental.yml` |
+
+The experimental site is structurally isolated from the public site (separate folder, separate manifest, separate CLI, separate build, separate deploy workflow, separate repository). It is publicly reachable to anyone who knows the URL — privacy is by unadvertised URL only, NOT by authentication. See [`docs/design/project-design.md`](docs/design/project-design.md) → "Experimental Sibling Publish" for the full design rationale.
+
 ## How it works
 
 ```
