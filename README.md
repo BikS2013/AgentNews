@@ -265,6 +265,7 @@ non-Enterprise plans) provides it — you'd need a different host.
 - Functional requirements: [`docs/design/project-functions.md`](docs/design/project-functions.md)
 - Configuration guide: [`docs/design/configuration-guide.md`](docs/design/configuration-guide.md)
 - Tool documentation: [`docs/tools/publish-article.md`](docs/tools/publish-article.md), [`docs/tools/publish-experimental-article.md`](docs/tools/publish-experimental-article.md), [`docs/tools/publish-link.md`](docs/tools/publish-link.md)
+- Migrating items between Agent News and Agent News Experimental: [`docs/MIGRATING-CONTENT.md`](docs/MIGRATING-CONTENT.md)
 - Open items: [`Issues - Pending Items.md`](Issues%20-%20Pending%20Items.md)
 
 ## License

@@ -228,3 +228,5 @@ The home page renders three independent lists, in this fixed order:
 3. **Articles** — curated technical/general AI articles. Link entries with the default category (`article`).
 
 See `docs/PUBLISHING.md` for the agent-facing publishing contract (which CLI to use, the date-priority rule, title formatting, image referencing, and the `--category` flag).
+
+See `docs/MIGRATING-CONTENT.md` for the agent-facing contract on moving an item between Agent News (public) and Agent News Experimental in either direction — covers videos and links across all areas (AI-News, Deep Dives, Tools, Articles), the category-compatibility rules, the universal "destination-write + source-remove + verify + push" recipe, and the common pitfalls (half-migrations, `tools` being experimental-only, `publishedAt` drift, missing `publish-experimental-link` CLI).

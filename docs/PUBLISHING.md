@@ -241,6 +241,12 @@ load.
 
 ---
 
+> **Moving an item between Agent News and Agent News Experimental?** Do
+> NOT use the unpublish steps below in isolation — see
+> [`./MIGRATING-CONTENT.md`](./MIGRATING-CONTENT.md) for the paired
+> destination-write + source-remove recipe that keeps both manifests
+> consistent.
+
 ## 8. Unpublishing — remove an item from any of the three lists
 
 There is currently **no `unpublish-*` CLI**. Unpublishing is a manual
