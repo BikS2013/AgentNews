@@ -66,7 +66,18 @@
       "thumbnailSource": "html",
       "sha256": "3617ef0d5c57147e64796a24bfb772459d35a5dcf6ed980b5b66bd32ee6d3a54",
       "category": "deep-dive"
+    },
+    {
+      "slug": "claude-s-ai-town-voted-yes-on-everything-that-s-not-a-good-sign",
+      "title": "Claude's AI Town Voted Yes On Everything — That's Not A Good Sign",
+      "publishedAt": "2026-05-23T14:00:33.000Z",
+      "sourcePath": "/tmp/deep-dive-ai-town.html",
+      "articlePath": "experimental/claude-s-ai-town-voted-yes-on-everything-that-s-not-a-good-sign.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/RHV8DWAmjAs/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "ebbcbf1b3d51b38ab2f164167166800cd9a8e9e1c1890d535c1f9c8ac564dc5e",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-23T12:23:48.074Z"
+  "updatedAt": "2026-05-23T16:42:49.683Z"
 }
