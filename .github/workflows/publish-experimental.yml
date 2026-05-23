@@ -85,12 +85,19 @@ jobs:
           echo "Preflight OK — TARGET=${TARGET_REPO_OWNER}/${TARGET_REPO_NAME}@${TARGET_BRANCH}"
 
       - name: PAT expiration warning
-        # Computes days-until-expiry from GH_PAT_EXPIRES_AT (ISO date). Emits
-        # a ::warning:: annotation if within GH_PAT_WARN_DAYS. Fatal if the
-        # PAT has already expired (date is in the past).
+        # GH_PAT_EXPIRES_AT must be either an ISO-8601 date (e.g. 2027-05-23)
+        # OR the literal sentinel "never" (for classic PATs configured with no
+        # expiration). On a real date: compute days-until-expiry, fail if it
+        # has already passed, emit ::warning:: if within GH_PAT_WARN_DAYS.
+        # On "never": skip the date math and emit a ::notice:: so the
+        # non-expiring state is still visible in the run log.
         run: |
           set -eu
-          # Convert to epoch seconds. `date -d` works on GNU coreutils (Ubuntu).
+          if [ "$GH_PAT_EXPIRES_AT" = "never" ]; then
+            echo "::notice::GH_PAT_EXPIRES_AT=never — PAT is configured as non-expiring (classic PAT). Schedule a manual rotation reminder externally; the workflow has no expiry to track."
+            exit 0
+          fi
+          # Otherwise treat as an ISO-8601 date. `date -d` is GNU coreutils.
           expiry_epoch="$(date -u -d "$GH_PAT_EXPIRES_AT" +%s)"
           now_epoch="$(date -u +%s)"
           delta_days=$(( (expiry_epoch - now_epoch) / 86400 ))

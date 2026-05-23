@@ -4,6 +4,10 @@ This document tracks open issues, pending items, inconsistencies, and discrepanc
 
 ## Pending Items
 
+### Design decision — `GH_PAT_EXPIRES_AT=never` accepted as a sentinel (2026-05-23)
+
+Reason for the exception: GitHub classic PATs can be configured with no expiration date, and the user explicitly opted for that mode for this project's PAT. The workflow's PAT-expiration-warning step now accepts the literal string `never` as a valid value alongside ISO-8601 dates: it emits a `::notice::` and skips the date math. Documented in `docs/design/configuration-guide.md`; `Issues - Pending Items.md` carries this audit-trail entry per the project's CLAUDE.md rule about recording exceptions to the configuration policy. Note: GitHub fine-grained PATs always have an expiration, so the ISO-date path remains the recommended default; the `never` sentinel is for classic PATs only and gives up the proactive-renewal-warning property in exchange for matching the actual token state.
+
 ### Experimental sibling-publish — deferred configuration (2026-05-23, blocks first publish run only)
 
 - **Target repo identity not yet provided (high, blocks publish)** — The cross-repo publish workflow (`.github/workflows/publish-experimental.yml`) reads `TARGET_REPO_OWNER` and `TARGET_REPO_NAME` from repository variables. Until those are set in the `agent-news` repo's Settings → Variables → Actions, the workflow's preflight step will fail fast with a named error and no network call is made. User must (a) create the target GitHub repository, (b) set the two variables. Until both are filled in, the build-and-push steps cannot run.

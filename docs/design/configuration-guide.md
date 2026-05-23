@@ -96,7 +96,7 @@ Required **repository variables** (Settings → Variables → Actions):
 | `TARGET_REPO_OWNER`  | string        | GitHub user or organisation that owns the target (sibling) repo where the experimental site is published.                | Your GitHub username or org login.                                                                     | repo variable       |
 | `TARGET_REPO_NAME`   | string        | Name of the target repo.                                                                                                 | The repo you create manually beforehand (e.g. `agent-news-experimental`).                              | repo variable       |
 | `TARGET_BRANCH`      | string        | Branch the workflow force-pushes the built artifact to. **Refuses `main` or `master`** as a safety check.                | Recommended literal: `gh-pages`. (Must still be set; absence is fatal.)                                | repo variable       |
-| `GH_PAT_EXPIRES_AT`  | ISO-8601 date | Expiration date of the PAT, used by the workflow to emit a proactive `::warning::` annotation when close to expiry, and to fail the run hard once expired. | When you mint the PAT below, copy its expiration date verbatim.                                        | repo variable       |
+| `GH_PAT_EXPIRES_AT`  | ISO-8601 date **or** the literal sentinel `never` | Expiration date of the PAT, used by the workflow to emit a proactive `::warning::` annotation when close to expiry, and to fail the run hard once expired. Set to `never` ONLY for classic PATs that have no expiration set; the workflow will skip the date math and emit a `::notice::` in the run log. Fine-grained PATs always have an expiry — copy the date GitHub showed you when you minted it. | When you mint the PAT below, copy its expiration date verbatim (or use `never` for a non-expiring classic PAT). | repo variable       |
 | `GH_PAT_WARN_DAYS`   | integer       | Days-until-expiry threshold below which the workflow starts emitting warnings.                                           | Recommended: `14`.                                                                                     | repo variable       |
 
 Required **repository secret** (Settings → Secrets → Actions):
@@ -123,8 +123,8 @@ Required **repository secret** (Settings → Secrets → Actions):
 1. Every required variable/secret above is set AND non-empty.
 2. `TARGET_BRANCH` is NOT `main` or `master` (safety guard against
    force-pushing into a default branch).
-3. `GH_PAT_EXPIRES_AT` parses as a valid date AND is in the future.
-4. Days-until-expiry vs `GH_PAT_WARN_DAYS` (only emits warning, not fatal).
+3. `GH_PAT_EXPIRES_AT` is either an ISO-8601 date that parses AND is in the future, OR the literal sentinel `never` (non-expiring classic PAT — skips date math and emits `::notice::` instead).
+4. Days-until-expiry vs `GH_PAT_WARN_DAYS` (only emits warning, not fatal). Skipped when `GH_PAT_EXPIRES_AT=never`.
 
 If any of 1–3 fail, the workflow exits 1 immediately and nothing else runs.
 
