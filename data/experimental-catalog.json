@@ -88,7 +88,18 @@
       "thumbnailSource": "html",
       "sha256": "bf871e4724171f35c3ea119fe03f8600791848c1ebaf66c1559c5b0ae51dc02f",
       "category": "tools"
+    },
+    {
+      "slug": "i-rebuilt-hermes-in-claude-code-it-s-ridiculously-good",
+      "title": "I Rebuilt Hermes in Claude Code — It's Ridiculously Good",
+      "publishedAt": "2026-05-23T16:54:38.000Z",
+      "sourcePath": "/tmp/deep-dive-rebuilt-hermes.html",
+      "articlePath": "experimental/i-rebuilt-hermes-in-claude-code-it-s-ridiculously-good.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/wdc1OFWDxlU/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "2bdddd1818001def515215552fa77606b601f8395f4b2b5bcbc7d47dd58af6ec",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T12:49:32.308Z"
+  "updatedAt": "2026-05-23T20:15:54.305Z"
 }
