@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Claude Code Skills I Use Every Single Day — Matt Pocock</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+  .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+  .ts-row .timestamp{flex-shrink:0;}
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+  .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/EJyuu6zlQCg/maxresdefault.jpg" alt="5 Claude Code Skills I Use Every Single Day" style="display:none;">
+
+<h1>5 Claude Code Skills I Use Every Single Day — Matt Pocock</h1>
+<div class="meta">
+  <span>Matt Pocock</span>
+  <span class="badge">~15 min</span>
+  <a href="https://www.youtube.com/watch?v=EJyuu6zlQCg" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/EJyuu6zlQCg" title="5 Claude Code Skills I Use Every Single Day" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=EJyuu6zlQCg" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/EJyuu6zlQCg/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>Matt Pocock walks through the 5 Claude Code skills he uses every single day to steer AI agents and dramatically improve code quality. The skills form a complete development pipeline: from grilling an idea into shared understanding, to writing a PRD, breaking it into vertical slices, enforcing TDD, and continuously improving codebase architecture. Each skill encodes a strict process so the AI has a well-defined path to follow — because agents have no memory, and process has never been more important.</p>
+</div>
+
+<!-- Section 1 — Introduction -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> Why Process Matters More Than Ever <a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>Matt frames the core problem: developers now have access to a fleet of middling-to-good engineers deployable at any time. But these AI engineers have a critical flaw — <strong>they have no memory</strong>. They don't remember what they've done before. This means you need extremely strict, well-defined processes to get agents to produce useful work.</p>
+  <p>The solution: <strong>skills</strong> — small markdown files that encode your process so the AI has a strict path to walk down every time. Matt's skills repo contains everything he uses, and as a result of using them, the code quality AI produces has "shot up."</p>
+  <div class="highlight">Key insight: Skills don't have to be long to be impactful. You just have to choose the right words for the LLM at the right time.</div>
+</div>
+
+<!-- Section 2 — Grill Me -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> Skill 1: /grill-me <a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=78s" target="_blank">▶ 1:18</a></h2>
+  <p>Matt's favorite skill — and it's only <strong>three sentences long</strong>:</p>
+  <div class="highlight">"Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one. If a question can be answered by exploring the codebase, explore the codebase instead."</div>
+  <p>The concept of the <strong>design tree</strong> comes from Frederick P. Brooks' <em>The Design of Design</em>. When approaching a design, you walk down all branches of a tree of decisions. For example: designing a search page → advanced search or text box? → if advanced, what filters? What sorting? You keep walking until the design is fully fleshed out before committing to code.</p>
+  <p>Matt invokes /grill-me when he wants to reach a shared understanding with the LLM. His complaint with Claude Code's default plan mode: <strong>it tends to spit out a plan too early</strong>, creating a document before he feels alignment has been reached. Grill Me forces the conversation.</p>
+  <p><strong>Real example:</strong> Adding a feature to his course video editor codebase. After providing a research markdown file, he invoked Grill Me. The AI asked <strong>16 questions</strong> — and that was a relatively short session. He's had sessions of 30–45 minutes with 30–50 questions on complex features.</p>
+</div>
+
+<!-- Section 3 — Write a PRD -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> Skill 2: /write-a-prd <a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=235s" target="_blank">▶ 3:55</a></h2>
+  <p>Once Matt has reached shared understanding through grilling, he invokes the <strong>Write a PRD</strong> skill to convert that understanding into a durable document. The skill's process:</p>
+  <ol>
+    <li><strong>Ask for a long, detailed description</strong> of what the user wants</li>
+    <li><strong>Explore the repo</strong> to verify the user's assertions</li>
+    <li><strong>Interview relentlessly</strong> — a copy of the grill-me process (can be skipped if grilling already happened)</li>
+    <li><strong>Sketch out major modules</strong> that need to be built or modified</li>
+    <li><strong>Write the PRD</strong> using a template, submitted as a GitHub issue</li>
+  </ol>
+  <p><strong>Real example:</strong> A PRD for adding a split-pane document editing experience to an AI chat feature. The PRD included a problem statement, detailed solution description, and — critically — <strong>many user stories</strong> drawn from Agile methodology, describing desired behavior in language. The implementation decisions are kept deliberately non-prescriptive so the PRD stays durable even as code evolves.</p>
+  <div class="highlight">The PRD describes the <strong>destination</strong> — but not the journey. It says where you're going, not how you'll get there. The next skill bridges that gap.</div>
+</div>
+
+<!-- Section 4 — PRD to Issues -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> Skill 3: /prd-to-issues <a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=360s" target="_blank">▶ 6:00</a></h2>
+  <p>This skill takes the PRD (the destination) and turns it into a <strong>Kanban board of independent, grabbable issues</strong>. The process:</p>
+  <ol>
+    <li><strong>Locate the PRD</strong> — fetch it if not already in context</li>
+    <li><strong>Explore the codebase</strong> if needed</li>
+    <li><strong>Draft vertical slices</strong> — the critical step</li>
+  </ol>
+  <p>Breaking a PRD into tasks is something developers have done for years and developed intuition for. Matt's principle: <strong>break it into tasks that flush out unknown unknowns quickly</strong>. If you're integrating with a new service or connecting two things that haven't been connected before, do that work first — it gives you feedback on whether your approach is even valid.</p>
+  <div class="highlight">The tracer bullet analogy: each issue is a <strong>thin vertical slice that cuts through all integration layers</strong>, not a horizontal slice of one layer.</div>
+  <p><strong>Real example:</strong> The complex document-editing PRD got broken into just <strong>4 vertical slices</strong>:</p>
+  <ul>
+    <li><strong>Slice 1:</strong> The editing engine with tests — the foundation that powers everything else. If this doesn't work, everything fails, so flush it out first.</li>
+    <li><strong>Slice 2:</strong> Not blocked by anything — can be picked up independently (great for parallel agents)</li>
+    <li><strong>Slice 3:</strong> Blocked by Slice 1</li>
+    <li><strong>Slice 4:</strong> Blocked by Slice 2</li>
+  </ul>
+  <p>The skill also establishes <strong>blocking relationships</strong> between tasks — essential for parallel agent setups and for adding future QA issues. Each issue references the parent PRD so agents can fetch and read it. Matt's Ralph Loop then picks up each issue, implements it, comments on it, closes it, and unblocks the next one.</p>
+</div>
+
+<!-- Section 5 — TDD -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> Skill 4: /tdd <a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=509s" target="_blank">▶ 8:29</a></h2>
+  <p>With a plan and issues in place, the question becomes: how do you make the implementation rock-solid? The answer is <strong>Test-Driven Development</strong>.</p>
+  <p>Unlike Matt's other skills, the TDD skill is <strong>unusually long</strong> — it includes philosophy on refactoring, mocking, and deep modules. The workflow:</p>
+  <ol>
+    <li><strong>Confirm with the user what interface changes are needed</strong> — the most important step. When an AI looks at a bad codebase (many tiny undifferentiated modules), it struggles to understand responsibilities, dependencies, and structure. Restructuring into larger modules with thin interfaces makes the codebase easier for AI to navigate and test.</li>
+    <li><strong>Confirm which behaviors to test</strong></li>
+    <li><strong>Design interfaces for testability</strong></li>
+    <li><strong>Red-Green-Refactor loop:</strong> Write one failing test → write code to make it pass → look for refactor candidates → repeat until complete</li>
+  </ol>
+  <div class="highlight">Red-green-refactor with agents is incredible. Write a failing test, write code to pass it, then refactor. This has been the <strong>most consistent way</strong> Matt has improved agent output quality.</div>
+  <p><strong>Caveat on refactoring:</strong> LLMs are quite reluctant to refactor their own code while it sits in their context window. They become "precious" about code they just wrote. Clearing the context would help, but within a session, don't expect aggressive refactoring.</p>
+  <p>Matt uses the TDD skill to prompt his <strong>Ralph Loops</strong> (autonomous agent loops that iterate through issues).</p>
+</div>
+
+<!-- Section 6 — Improve Codebase Architecture -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> Skill 5: /improve-codebase-architecture <a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=724s" target="_blank">▶ 12:04</a></h2>
+  <p>TDD demands a well-structured codebase — test boundaries need to be clear. This skill continuously improves the codebase to make it more amenable to AI-driven development. The process:</p>
+  <ol>
+    <li><strong>Explore the codebase naturally</strong> — surface what the AI finds confusing:
+      <ul>
+        <li>Where does understanding one concept require bouncing between many small files?</li>
+        <li>Where have pure functions been extracted just for testability, but the real bugs hide in how they're called?</li>
+        <li>Where do tightly coupled modules create integration risk in the seams between them?</li>
+      </ul>
+    </li>
+    <li><strong>Present candidates</strong> — a numbered list of "deepening opportunities" (chances to consolidate shallow modules into deeper ones)</li>
+    <li><strong>User picks a candidate</strong></li>
+    <li><strong>Design multiple interfaces</strong> — spawn 3+ sub-agents in parallel, each producing a radically different interface for the deepened module. This generates diverse design options to compare.</li>
+    <li><strong>Recommend and optionally hybridize</strong> — suggest the strongest design and propose a hybrid if elements from different designs combine well</li>
+    <li><strong>Create a GitHub issue</strong> — a refactor RFC issue, which Matt then feeds back into /prd-to-issues for implementation planning</li>
+  </ol>
+  <div class="highlight">You don't need to know a lot about interface design to use this skill. It's language-agnostic and codebase-agnostic — just run it anywhere and get a decent answer for how things could be improved.</div>
+  <p><strong>Recommended cadence:</strong> Run it once a week to identify opportunities, or after a surge of development when you've added a whole new wing of features. Over time, as you keep refining your codebase, <strong>the quality of agent output goes up</strong> — because a garbage codebase produces garbage AI output.</p>
+</div>
+
+<!-- Section 7 — The Complete Pipeline -->
+<div class="section-card">
+  <h2><span class="section-num">7</span> The Complete Pipeline</h2>
+  <p>Together, the 5 skills form a coherent development workflow:</p>
+  <ol>
+    <li><strong>/grill-me</strong> → Flesh out an idea through relentless questioning (shared understanding)</li>
+    <li><strong>/write-a-prd</strong> → Turn that understanding into a durable destination document</li>
+    <li><strong>/prd-to-issues</strong> → Break the destination into a journey of vertical slices</li>
+    <li><strong>/tdd</strong> → Execute each slice with red-green-refactor discipline</li>
+    <li><strong>/improve-codebase-architecture</strong> → Continuously improve the codebase so all of the above works better</li>
+  </ol>
+  <div class="highlight">"If you took all of these skills and said 'this is a little mini markdown book of processes for humans,' it wouldn't look out of place. The most successful way to get code quality up from agents is to treat them like humans — humans with weird constraints, sure. Humans that have no memory and are cloned, come out of the birthing pod and go right to work."</div>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Process has never been more important.</strong> AI agents have no memory — strict, well-defined processes are the only way to get consistent quality.</li>
+    <li><strong>Skills don't have to be long.</strong> /grill-me is 3 sentences but forces 16–50 question deep-dive sessions that dramatically improve alignment.</li>
+    <li><strong>Claude Code's plan mode is too eager.</strong> It wants to produce a document before shared understanding is reached — /grill-me forces the conversation first.</li>
+    <li><strong>PRDs describe the destination, not the journey.</strong> Keep implementation details non-prescriptive so the PRD stays durable as code evolves.</li>
+    <li><strong>Break PRDs into vertical slices, not horizontal layers.</strong> Each issue should be a thin tracer bullet through all integration layers, flushing out unknown unknowns first.</li>
+    <li><strong>Blocking relationships enable parallel agents.</strong> Independent slices can be picked up by multiple agents simultaneously.</li>
+    <li><strong>TDD is the most consistent way to improve agent output.</strong> Red-green-refactor forces small steps and catches problems early.</li>
+    <li><strong>LLMs are reluctant to refactor their own code</strong> while it's in context — they become "precious" about what they just wrote.</li>
+    <li><strong>Deep modules beat shallow modules</strong> — both for human understanding and AI navigation. Restructure into larger modules with thin interfaces.</li>
+    <li><strong>Continuously improve your codebase architecture.</strong> A garbage codebase produces garbage AI output. Run /improve-codebase-architecture regularly.</li>
+    <li><strong>Treat agents like humans with weird constraints.</strong> The best processes for AI agents are the same engineering processes that work for human teams.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=0s" target="_blank">▶ 0:00</a> Intro — why process matters</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=78s" target="_blank">▶ 1:18</a> Skill 1: /grill-me</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=235s" target="_blank">▶ 3:55</a> Skill 2: /write-a-prd</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=360s" target="_blank">▶ 6:00</a> Skill 3: /prd-to-issues</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=509s" target="_blank">▶ 8:29</a> Skill 4: /tdd</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=EJyuu6zlQCg&t=724s" target="_blank">▶ 12:04</a> Skill 5: /improve-codebase-architecture</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video EJyuu6zlQCg · Matt Pocock</footer>
+
+</div>
+</body>
+</html>
