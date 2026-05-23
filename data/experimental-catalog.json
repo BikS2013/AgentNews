@@ -11,7 +11,18 @@
       "thumbnailSource": "html",
       "sha256": "26e48974b002003d373232a0b8280cf0c636c8cfa10011c9b4cf1904d617e5aa",
       "category": "tools"
+    },
+    {
+      "slug": "stop-using-tailscale-use-open-source-instead",
+      "title": "Stop Using Tailscale. Use Open Source Instead",
+      "publishedAt": "2026-05-22T11:30:04.000Z",
+      "sourcePath": "articles/stop-using-tailscale-use-open-source-instead-deep-dive.html",
+      "articlePath": "experimental/stop-using-tailscale-use-open-source-instead.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/7Jja20nWcqo/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "75cfd62176b41ada834e3bf6b5f037167c49b10afc2ff76298a23362d520b576",
+      "category": "tools"
     }
   ],
-  "updatedAt": "2026-05-23T07:03:34.437Z"
+  "updatedAt": "2026-05-23T07:07:35.432Z"
 }

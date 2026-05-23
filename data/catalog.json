@@ -145,17 +145,6 @@
       "category": "deep-dive"
     },
     {
-      "slug": "stop-using-tailscale-use-open-source-instead-deep-dive",
-      "title": "Stop Using Tailscale. Use Open Source Instead",
-      "publishedAt": "2026-05-22T11:30:04.000Z",
-      "sourcePath": "/tmp/deep_dive_7Jja20nWcqo.html",
-      "articlePath": "articles/stop-using-tailscale-use-open-source-instead-deep-dive.html",
-      "thumbnailUrl": "https://img.youtube.com/vi/7Jja20nWcqo/maxresdefault.jpg",
-      "thumbnailSource": "cli-override",
-      "sha256": "75cfd62176b41ada834e3bf6b5f037167c49b10afc2ff76298a23362d520b576",
-      "category": "deep-dive"
-    },
-    {
       "slug": "this-karpathy-file-will-10x-your-claude-output-deep-dive",
       "title": "This 'Karpathy File' Will 10x Your Claude Output",
       "publishedAt": "2026-05-18T19:00:22.000Z",
