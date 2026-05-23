@@ -33,7 +33,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "50d3219ad8aa9dc310c22f2a9068160e4f28e8f22c5726296487154047971bdc",
       "category": "deep-dive"
+    },
+    {
+      "slug": "scaling-agents-on-kubernetes-with-acpx-and-acp",
+      "title": "Scaling Agents on Kubernetes with ACPX and ACP",
+      "publishedAt": "2026-05-22T17:27:33.790Z",
+      "sourcePath": "articles/deep-dive-scaling-agents-on-kubernetes-with-acpx-and-acp.html",
+      "articlePath": "experimental/scaling-agents-on-kubernetes-with-acpx-and-acp.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/VaS2h-dY1-4/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "d3dde504f3f40359c89defc0c39700a1f4f785f55d8bd2951f8f3273bafbab41",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T07:15:17.000Z"
+  "updatedAt": "2026-05-23T07:20:09.207Z"
 }
