@@ -55,7 +55,18 @@
       "thumbnailSource": "html",
       "sha256": "570d7bda0494fa51ac08c9a6ed7dc2ae9c914d75edf218ef5a36897f43bf6a01",
       "category": "deep-dive"
+    },
+    {
+      "slug": "this-ai-tool-maps-any-codebase-before-you-touch-it-understand-anything",
+      "title": "This AI Tool Maps Any Codebase Before You Touch It — Understand-Anything",
+      "publishedAt": "2026-05-20T17:00:32.000Z",
+      "sourcePath": "/tmp/deep-dive-understand-anything.html",
+      "articlePath": "experimental/this-ai-tool-maps-any-codebase-before-you-touch-it-understand-anything.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/VmIUXVlt7_I/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "3617ef0d5c57147e64796a24bfb772459d35a5dcf6ed980b5b66bd32ee6d3a54",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T09:04:08.591Z"
+  "updatedAt": "2026-05-23T12:23:48.074Z"
 }

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This AI Tool Maps Any Codebase Before You Touch It — Understand-Anything</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+  .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+  .ts-row .timestamp{flex-shrink:0;}
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+  .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/VmIUXVlt7_I/maxresdefault.jpg" alt="This AI Tool Maps Any Codebase Before You Touch It — Understand-Anything" style="display:none;">
+
+<h1>This AI Tool Maps Any Codebase Before You Touch It — Understand-Anything</h1>
+<div class="meta">
+  <span>Better Stack</span>
+  <span class="badge">~7 min</span>
+  <a href="https://www.youtube.com/watch?v=VmIUXVlt7_I" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/VmIUXVlt7_I" title="This AI Tool Maps Any Codebase Before You Touch It — Understand-Anything" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=VmIUXVlt7_I" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/VmIUXVlt7_I/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p><strong>Understand-Anything</strong> is an open-source Claude Code plugin (14,000+ GitHub stars in weeks) that turns any codebase into a queryable, interactive knowledge graph. Better Stack tests it on a real Google Microservices repo to see if it actually helps developers understand large codebases — or if it's just another overhyped AI dev tool. The verdict: genuinely useful for onboarding, AI agent context, and pre-refactoring impact analysis, but burns tokens fast and requires Claude Max.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> The Problem With Understanding Large Codebases <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>You join a new team, clone the repo, and open a 200,000-line codebase staring back at you. What every dev does: <strong>grep, jump between files, maybe ask Claude to explain the repo</strong>. But what if you got a real interactive map that teaches you the codebase — flows, architecture, layers, change impact?</p>
+  <div class="highlight">Every developer has had this problem: you're new to a legacy codebase, the docs are outdated, the engineer who knew everything left six months ago, and your AI coding agent just keeps guessing.</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> What Is Understand-Anything? <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=43s" target="_blank">▶ 0:43</a></h2>
+  <p>Understand-Anything is an <strong>open-source Claude Code plugin</strong> that also fits into workflows with Cursor, Copilot, and Gemini CLI. You point it at a repo (or even a knowledge base) and it turns the project into a <strong>queryable interactive knowledge graph</strong> using static analysis plus multi-agent LLM processing.</p>
+  <p>The key differentiator: it doesn't just show file structure — it tries to explain <strong>meaning</strong>. From files to meaning, from imports to system behavior, from "here are the pieces" to "here is how the machine works."</p>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> Live Demo — Running on a Real Repo <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=94s" target="_blank">▶ 1:34</a></h2>
+  <p>Demo on a medium-sized Google Microservices repo — big enough to be annoying, small enough to show clearly. The workflow:</p>
+  <ol>
+    <li><strong>Install:</strong> <code>/plugin install understand-anything</code> in Claude Code</li>
+    <li><strong>Run:</strong> <code>/understand</code> — scans the entire repo, extracting structure, relationships, key modules, and business concepts</li>
+    <li><strong>Dashboard:</strong> <code>/dashboard</code> — launches the interactive visualization</li>
+  </ol>
+  <p>The dashboard allows:</p>
+  <ul>
+    <li><strong>Zoom out</strong> to see high-level architecture</li>
+    <li><strong>Zoom in</strong> to access internal parts and code breakdowns</li>
+    <li><strong>Click through</strong> to view actual code and how it's connected</li>
+    <li><strong>Search</strong> for concepts (e.g., "payments") — pulls together routes, services, models, handlers</li>
+    <li><strong>Guided tour</strong> — walks through a flow in order: entry point → validation → logic → database → external APIs → error handling</li>
+  </ul>
+  <div class="highlight">⚠️ Token cost warning: this took ~30 minutes to run and used 25% of a Claude Max rate limit. "Make sure you have a good plan if you're going to use this."</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> Why Developers Are Excited <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=205s" target="_blank">▶ 3:25</a></h2>
+  <p>Three major use cases driving adoption:</p>
+  <ul>
+    <li><strong>Onboarding</strong> — Instead of "read these 12 pages and ask around," new devs can open the graph, take the guided tour, then ask better questions. <em>"This would have saved me my first two weeks on the job."</em></li>
+    <li><strong>AI Agent Context</strong> — Most AI coding tools are only as good as the context you give them. If the agent sees 3 files, it guesses. With a structured map of domains, flows, dependencies, and explanations, <strong>the agent makes the right change on the first try</strong>.</li>
+    <li><strong>Refactoring Safety</strong> — Before touching code: What does this depend on? What flow does it belong to? What might break? <em>"That is how you avoid turning a one-line change into a major event."</em></li>
+  </ul>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> How It Compares to Existing Tools <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=300s" target="_blank">▶ 5:00</a></h2>
+  <p>Developers have seen code visualization tools before: IDE graphs, Sourcegraph navigation, NX graphs, tree-sitter visualizers. They all have the same problem:</p>
+  <div class="highlight">They show structure, but they don't explain meaning. They tell you "this file imports that file" — but not <em>why</em>, what flow it's part of, where the request starts, or what breaks if you change it. That's the missing layer Understand-Anything tries to add.</div>
+  <p>Compared to LLM/RAG code tools (which are basically search boxes — ask a question, get an answer), Understand-Anything gives a <strong>full visual breakdown</strong> showing where everything goes, what's intertwined, and how it's connected — while still letting you access the actual code.</p>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> What Developers Like — and Don't <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=363s" target="_blank">▶ 6:03</a></h2>
+  <p><strong>What works well:</strong></p>
+  <ul>
+    <li><strong>Onboarding</strong> — the standout use case</li>
+    <li><strong>Architecture layers</strong> — drill from system level down to implementation details</li>
+    <li><strong>Diff impact analysis</strong> — understand change blast radius before touching production</li>
+    <li><strong>Better AI context</strong> — structured architecture knowledge instead of dumping random files into prompts</li>
+    <li><strong>Free, MIT licensed, incremental</strong>, works across multiple dev environments</li>
+  </ul>
+  <p><strong>Skeptical points:</strong></p>
+  <ul>
+    <li><strong>Hype vs. substance</strong> — 14K stars in weeks: genuinely useful, or did it just win the GitHub algorithm?</li>
+    <li><strong>Token cost</strong> — significant LLM dependency means real dollar cost per scan</li>
+    <li><strong>Not a replacement for reading code</strong> — gives overview, but you still need judgment</li>
+  </ul>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card">
+  <h2><span class="section-num">7</span> Final Thoughts <a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=405s" target="_blank">▶ 6:45</a></h2>
+  <p>The real reason devs are excited isn't because they care about diagrams — it's because <strong>they hate being lost</strong>. Understand-Anything addresses the biggest time sink in software development: <strong>getting context</strong>. It doesn't replace reading code, but it gives you the map before you start the journey.</p>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Understand-Anything turns codebases into interactive knowledge graphs</strong> — not just file trees, but flows, domains, and meaning.</li>
+    <li><strong>It's an open-source Claude Code plugin</strong> (MIT licensed) that also works with Cursor, Copilot, and Gemini CLI.</li>
+    <li><strong>The guided tour feature is the killer use case</strong> — walks you through flows in order (entry point → validation → logic → DB → APIs → error handling).</li>
+    <li><strong>Onboarding is the biggest win.</strong> "Open the graph, take the tour, then ask better questions" beats "read these 12 pages."</li>
+    <li><strong>AI agents perform better with structured context.</strong> A knowledge graph beats dumping random files into prompts.</li>
+    <li><strong>Refactoring safety:</strong> understand change blast radius before touching production code.</li>
+    <li><strong>Existing tools show structure; this explains meaning.</strong> From "file A imports file B" to "here's how the payment flow works."</li>
+    <li><strong>Token cost is significant.</strong> ~30 minutes to scan, 25% of Claude Max rate — have a good plan.</li>
+    <li><strong>It doesn't replace reading code.</strong> It gives you the map; you still need judgment for the journey.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=0s" target="_blank">▶ 0:00</a> The problem with understanding large codebases</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=43s" target="_blank">▶ 0:43</a> What is Understand-Anything?</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=94s" target="_blank">▶ 1:34</a> Live demo: running on a real repo</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=205s" target="_blank">▶ 3:25</a> Why developers are excited</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=300s" target="_blank">▶ 5:00</a> Comparison with existing tools</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=363s" target="_blank">▶ 6:03</a> What developers like and don't</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=VmIUXVlt7_I&t=405s" target="_blank">▶ 6:45</a> Final thoughts</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video VmIUXVlt7_I · Better Stack</footer>
+
+</div>
+</body>
+</html>
