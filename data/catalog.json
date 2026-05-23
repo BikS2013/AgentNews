@@ -35,17 +35,6 @@
       "youtubePublishedAt": "2026-05-21T17:00:06.000Z"
     },
     {
-      "slug": "deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy",
-      "title": "I gave my Hermes Agent a phone number (it's crazy)",
-      "publishedAt": "2026-05-22T17:27:25.227Z",
-      "sourcePath": "samples/Deep Dive — Hermes Agent Phone Number (David Ondrej).html",
-      "articlePath": "articles/deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy.html",
-      "thumbnailUrl": "https://img.youtube.com/vi/zHE434sBw2U/maxresdefault.jpg",
-      "thumbnailSource": "cli-override",
-      "sha256": "50d3219ad8aa9dc310c22f2a9068160e4f28e8f22c5726296487154047971bdc",
-      "youtubePublishedAt": "2026-05-20T17:32:45.000Z"
-    },
-    {
       "slug": "deep-dive-opus-4-7-and-openai-5-5-made-your-prompting-style-obsolete-nate-b-jones",
       "title": "Opus 4.7 and OpenAI 5.5 Made Your Prompting Style Obsolete — Nate B Jones",
       "publishedAt": "2026-05-22T17:27:29.503Z",
@@ -189,5 +178,5 @@
       "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T05:55:05.111Z"
+  "updatedAt": "2026-05-23T07:11:05.000Z"
 }

@@ -22,7 +22,18 @@
       "thumbnailSource": "cli-override",
       "sha256": "75cfd62176b41ada834e3bf6b5f037167c49b10afc2ff76298a23362d520b576",
       "category": "tools"
+    },
+    {
+      "slug": "i-gave-my-hermes-agent-a-phone-number-it-s-crazy",
+      "title": "I gave my Hermes Agent a phone number (it's crazy)",
+      "publishedAt": "2026-05-22T17:27:25.227Z",
+      "sourcePath": "articles/deep-dive-i-gave-my-hermes-agent-a-phone-number-it-s-crazy.html",
+      "articlePath": "experimental/i-gave-my-hermes-agent-a-phone-number-it-s-crazy.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/zHE434sBw2U/maxresdefault.jpg",
+      "thumbnailSource": "cli-override",
+      "sha256": "50d3219ad8aa9dc310c22f2a9068160e4f28e8f22c5726296487154047971bdc",
+      "category": "tools"
     }
   ],
-  "updatedAt": "2026-05-23T07:07:35.432Z"
+  "updatedAt": "2026-05-23T07:10:59.464Z"
 }
