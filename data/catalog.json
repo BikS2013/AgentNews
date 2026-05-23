@@ -90,17 +90,6 @@
       "youtubePublishedAt": "2026-05-18T13:00:15.000Z"
     },
     {
-      "slug": "deep-dive-the-perfect-zsh-setup-for-2026-dreams-of-code",
-      "title": "The Perfect Zsh Setup For 2026 — Dreams of Code",
-      "publishedAt": "2026-05-22T19:02:52.342Z",
-      "sourcePath": "samples/Deep Dive — The Perfect Zsh Setup For 2026 (Dreams of Code).html",
-      "articlePath": "articles/deep-dive-the-perfect-zsh-setup-for-2026-dreams-of-code.html",
-      "thumbnailUrl": "https://img.youtube.com/vi/1jE7rCvByHg/maxresdefault.jpg",
-      "thumbnailSource": "html",
-      "sha256": "26e48974b002003d373232a0b8280cf0c636c8cfa10011c9b4cf1904d617e5aa",
-      "youtubePublishedAt": "2026-05-16T05:30:01.000Z"
-    },
-    {
       "slug": "i-stopped-using-grill-me-for-coding-deep-dive",
       "title": "I Stopped Using /grill-me for Coding",
       "publishedAt": "2026-05-22T20:08:04.596Z",
@@ -200,5 +189,5 @@
       "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T05:24:21.459Z"
+  "updatedAt": "2026-05-23T07:03:40.000Z"
 }
