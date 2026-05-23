@@ -420,6 +420,26 @@ describe('experimental publish + build — byte-identity end-to-end', () => {
       'experimental 404.html must reference "Agent Content"',
     );
 
+    // Hero text: experimental site uses the experiments-focused H1 and
+    // four-stream lede that mentions Tools.
+    assert.ok(
+      indexHtml.includes('news from') && indexHtml.includes('agent experiments.'),
+      'experimental index.html must render the "news from agent experiments." hero title',
+    );
+    assert.equal(
+      indexHtml.includes('News from the'),
+      false,
+      'experimental index.html must NOT contain the public hero title "News from the …"',
+    );
+    assert.ok(
+      indexHtml.includes('Four streams:'),
+      'experimental lede must announce "Four streams:"',
+    );
+    assert.ok(
+      indexHtml.includes('<strong>Tools</strong>'),
+      'experimental lede must call out Tools in <strong>',
+    );
+
     // Read manifest to find the slug.
     const manifest = JSON.parse(readFileSync(catalogPath, 'utf8')) as {
       entries: Array<{ slug: string; sha256: string }>;
@@ -770,6 +790,31 @@ describe('public build — zero-leakage from experimental content', () => {
       publicIndexHtml.includes('id="tools"'),
       false,
       'Public index.html must NOT render the Tools section',
+    );
+    // Public hero copy must remain unchanged: "News from the agent stack."
+    // and the three-stream lede with no Tools mention.
+    assert.ok(
+      publicIndexHtml.includes('News from the') && publicIndexHtml.includes('agent stack.'),
+      'Public index.html must still render the public hero title',
+    );
+    assert.ok(
+      publicIndexHtml.includes('Three streams:'),
+      'Public lede must still announce "Three streams:" (not "Four streams:")',
+    );
+    assert.equal(
+      publicIndexHtml.includes('Four streams:'),
+      false,
+      'Public lede must NOT mention Four streams (that copy is experimental-only)',
+    );
+    assert.equal(
+      publicIndexHtml.includes('<strong>Tools</strong>'),
+      false,
+      'Public lede must NOT mention Tools as a stream',
+    );
+    assert.equal(
+      publicIndexHtml.includes('news from'),
+      false,
+      'Public hero must NOT contain the lowercase experimental "news from" phrasing',
     );
   });
 

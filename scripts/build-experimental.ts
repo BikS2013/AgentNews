@@ -214,14 +214,21 @@ function main(): number {
   mkdirSync(path.join(absOut, 'a'), { recursive: true });
 
   // 1. Catalog page → <OUT_DIR>/index.html
-  //    Experimental flow overrides the brand name and enables the Tools
+  //    Experimental flow overrides the brand name, enables the Tools
   //    section (rendered between Deep Dives and Articles when entries with
-  //    category='tools' exist).
+  //    category='tools' exist), and replaces the hero copy with the
+  //    experiments-focused variant.
   const catalogHtml = renderCatalogHtml(entries, {
     links,
     basePath,
     siteName: 'Agent Content',
     enableToolsSection: true,
+    heroTitle: { prefix: 'news from', accent: 'agent experiments.' },
+    heroLedeHtml:
+      'Four streams: <strong>AI-News</strong> for the broader picture, ' +
+      '<strong>Deep Dives</strong> for technical video walkthroughs, ' +
+      '<strong>Tools</strong> for hands-on utilities, and ' +
+      '<strong>Articles</strong> curated from around the web.',
   });
   writeFileSync(path.join(absOut, 'index.html'), catalogHtml, 'utf8');
 

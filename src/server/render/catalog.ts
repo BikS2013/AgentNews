@@ -647,6 +647,20 @@ export interface RenderCatalogOptions {
    * partitioned out and dropped — they will not appear in any section.
    */
   enableToolsSection?: boolean;
+  /**
+   * Override the H1 hero title shown above the lede. Two parts: a plain
+   * `prefix` followed by an italic, accent-coloured `accent`. Defaults to
+   * { prefix: 'News from the', accent: 'agent stack.' } for the public
+   * flow. Both fields are HTML-escaped before render.
+   */
+  heroTitle?: { prefix: string; accent: string };
+  /**
+   * Override the lede sentence directly under H1. Allows HTML so callers
+   * can keep the `<strong>` emphases on stream names. Defaults to the
+   * three-stream sentence for the public flow. Passed through unescaped
+   * — never feed user input here.
+   */
+  heroLedeHtml?: string;
 }
 
 /**
@@ -691,6 +705,8 @@ export function renderCatalogHtml(
   const links = options.links ?? [];
   const siteName = options.siteName ?? 'Agent News';
   const enableTools = options.enableToolsSection === true;
+  const heroTitle = options.heroTitle ?? DEFAULT_HERO_TITLE;
+  const heroLedeHtml = options.heroLedeHtml ?? DEFAULT_HERO_LEDE_HTML;
 
   // --- Videos: sort newest-first by YouTube date, fallback to site date ---
   const sortedVideos = entries.slice().sort(compareVideos);
@@ -722,10 +738,10 @@ export function renderCatalogHtml(
     toolsTotal === 0 &&
     articleTotal === 0
   ) {
-    body = renderHero(heroDate) + renderEmptyAll();
+    body = renderHero(heroDate, heroTitle, heroLedeHtml) + renderEmptyAll();
   } else {
     body =
-      renderHero(heroDate) +
+      renderHero(heroDate, heroTitle, heroLedeHtml) +
       (aiNewsTotal === 0
         ? ''
         : renderAiNewsSection(aiNewsVideos, aiNewsLinks, bp)) +
@@ -805,15 +821,23 @@ function pickHeroDate(
 // Hero (generic site intro, no longer tied to a specific lead story)
 // ---------------------------------------------------------------------------
 
-function renderHero(latestIso: string): string {
+const DEFAULT_HERO_TITLE = { prefix: 'News from the', accent: 'agent stack.' };
+const DEFAULT_HERO_LEDE_HTML =
+  'Three streams: <strong>AI-News</strong> for the broader picture, <strong>Deep Dives</strong> for technical video walkthroughs, and <strong>Articles</strong> curated from around the web.';
+
+function renderHero(
+  latestIso: string,
+  title: { prefix: string; accent: string },
+  ledeHtml: string,
+): string {
   const date = escapeHtml(formatPublishedAt(latestIso));
   return `
 <section class="hero">
   <div class="wrap">
     <div class="hero__intro">
-      <h1 class="hero__title">News from the <em>agent stack.</em></h1>
+      <h1 class="hero__title">${escapeHtml(title.prefix)} <em>${escapeHtml(title.accent)}</em></h1>
       <p class="hero__lede">
-        Three streams: <strong>AI-News</strong> for the broader picture, <strong>Deep Dives</strong> for technical video walkthroughs, and <strong>Articles</strong> curated from around the web.
+        ${ledeHtml}
         <small>Updated ${date}</small>
       </p>
     </div>
