@@ -187,7 +187,18 @@
       "thumbnailSource": "html",
       "sha256": "880cc9f6074e940fabab506952e230574474694845e9bda1916991a3de853027",
       "category": "deep-dive"
+    },
+    {
+      "slug": "software-fundamentals-matter-more-than-ever",
+      "title": "Software Fundamentals Matter More Than Ever",
+      "publishedAt": "2026-04-23T15:15:06.000Z",
+      "sourcePath": "/tmp/deep-dive-software-fundamentals.html",
+      "articlePath": "articles/software-fundamentals-matter-more-than-ever.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/v4F1gFy-hqg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "6a090e9fb27bbd57077224e845c885762708aab9f94da9e7020712faa74bf478",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T05:20:52.024Z"
+  "updatedAt": "2026-05-23T05:24:21.459Z"
 }
