@@ -509,7 +509,12 @@ async function main(argv: readonly string[]): Promise<number> {
   //   - new publish: CLI value if given, otherwise omit (renderer defaults to 'deep-dive').
   //   - --update:    CLI value if given (overrides existing), otherwise keep existing.
   const articlePath = `articles/${slug}.html`;
-  let categoryToPersist: CatalogCategory | undefined;
+  // Local type widened to CatalogEntry['category'] so that reading back
+  // `existingEntry.category` (now `ExperimentalCatalogCategory | undefined`
+  // because CatalogEntry's `category` field accommodates both flows)
+  // type-checks. At runtime the public CatalogStore's validator rejects
+  // any out-of-set value on load, so the narrow set is still enforced.
+  let categoryToPersist: CatalogEntry['category'];
   if (args.category !== null) {
     categoryToPersist = args.category;
   } else if (isUpdate && existingEntry !== null && existingEntry.category !== undefined) {

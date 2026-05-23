@@ -47,7 +47,10 @@ import {
 import * as path from 'node:path';
 import * as process from 'node:process';
 
-import { isCatalogFile } from '../src/catalog/types.js';
+import {
+  EXPERIMENTAL_CATALOG_CATEGORIES,
+  isCatalogFile,
+} from '../src/catalog/types.js';
 import type { CatalogEntry } from '../src/catalog/types.js';
 import { isLinksFile } from '../src/links/types.js';
 import type { LinkEntry } from '../src/links/types.js';
@@ -115,7 +118,7 @@ const NOT_FOUND_HTML = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Not found — Agent News (experimental)</title>
+<title>Not found — Agent Content</title>
 <script>
 (function(){try{var s=localStorage.getItem('agent-news-theme');if(s==='light'||s==='dark'){document.documentElement.setAttribute('data-theme',s);}}catch(e){}})();
 </script>
@@ -187,7 +190,7 @@ function main(): number {
     const msg = cause instanceof Error ? cause.message : String(cause);
     throw new Error(`Failed to parse ${absCatalog} as JSON: ${msg}`);
   }
-  if (!isCatalogFile(parsed)) {
+  if (!isCatalogFile(parsed, EXPERIMENTAL_CATALOG_CATEGORIES)) {
     throw new Error(`${absCatalog} does not match the expected catalog schema`);
   }
   const entries: CatalogEntry[] = parsed.entries;
@@ -211,7 +214,15 @@ function main(): number {
   mkdirSync(path.join(absOut, 'a'), { recursive: true });
 
   // 1. Catalog page → <OUT_DIR>/index.html
-  const catalogHtml = renderCatalogHtml(entries, { links, basePath });
+  //    Experimental flow overrides the brand name and enables the Tools
+  //    section (rendered between Deep Dives and Articles when entries with
+  //    category='tools' exist).
+  const catalogHtml = renderCatalogHtml(entries, {
+    links,
+    basePath,
+    siteName: 'Agent Content',
+    enableToolsSection: true,
+  });
   writeFileSync(path.join(absOut, 'index.html'), catalogHtml, 'utf8');
 
   // 2. Articles → <OUT_DIR>/a/<slug>.html (byte-identical, verified)

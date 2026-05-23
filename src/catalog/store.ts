@@ -15,7 +15,7 @@ import type { FSWatcher } from 'node:fs';
 import { open, readFile, rename } from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { isCatalogFile } from './types.js';
+import { CATALOG_CATEGORIES, isCatalogFile } from './types.js';
 import type { CatalogEntry, CatalogFile } from './types.js';
 
 /** Callback invoked after a successful hot-reload. */
@@ -40,7 +40,17 @@ export class CatalogStore {
     console.error(`[CatalogStore] hot-reload failed: ${err.message}`);
   };
 
-  constructor(private readonly catalogPath: string) {}
+  /** Allowed `category` values for on-disk validation. Defaults to the
+   * public flow's CATALOG_CATEGORIES; the experimental flow constructs the
+   * store with EXPERIMENTAL_CATALOG_CATEGORIES so 'tools' is accepted. */
+  private readonly allowedCategories: readonly string[];
+
+  constructor(
+    private readonly catalogPath: string,
+    options: { allowedCategories?: readonly string[] } = {},
+  ) {
+    this.allowedCategories = options.allowedCategories ?? CATALOG_CATEGORIES;
+  }
 
   /**
    * Read the catalog file from disk, validate its shape, and cache it
@@ -70,7 +80,7 @@ export class CatalogStore {
       );
     }
 
-    if (!isCatalogFile(parsed)) {
+    if (!isCatalogFile(parsed, this.allowedCategories)) {
       throw new Error(
         `Catalog file at ${this.catalogPath} does not match the expected schema (schemaVersion=1, entries[], updatedAt)`,
       );

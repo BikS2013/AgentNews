@@ -39,9 +39,9 @@ import * as process from 'node:process';
 import { CatalogStore } from '../catalog/store.js';
 import { slugify } from '../catalog/slug.js';
 import {
-  CATALOG_CATEGORIES,
-  type CatalogCategory,
+  EXPERIMENTAL_CATALOG_CATEGORIES,
   type CatalogEntry,
+  type ExperimentalCatalogCategory,
 } from '../catalog/types.js';
 import { extractArticleMetadata } from '../extractor/extract.js';
 import { ArticleMetadataError } from '../extractor/errors.js';
@@ -60,7 +60,7 @@ interface ParsedArgs {
   thumbnailUrl: string | null;
   update: boolean;
   date: string | null;
-  category: CatalogCategory | null;
+  category: ExperimentalCatalogCategory | null;
   help: boolean;
 }
 
@@ -81,6 +81,9 @@ Options:
   --category <name>         Homepage list to place the entry in:
                               deep-dive (default) — technical AI videos.
                               ai-news             — non-technical AI news.
+                              tools               — tools / utilities
+                                                    (EXPERIMENTAL-only category;
+                                                    rejected by publish-article).
   --help                    Show this help and exit 0.
 
 Required environment variables (no defaults — missing = fatal):
@@ -195,13 +198,13 @@ class UsageError extends Error {
   }
 }
 
-function parseCategory(raw: string): CatalogCategory {
-  if (!CATALOG_CATEGORIES.includes(raw as CatalogCategory)) {
+function parseCategory(raw: string): ExperimentalCatalogCategory {
+  if (!EXPERIMENTAL_CATALOG_CATEGORIES.includes(raw as ExperimentalCatalogCategory)) {
     throw new UsageError(
-      `Invalid --category: "${raw}". Allowed values: ${CATALOG_CATEGORIES.join(', ')}`,
+      `Invalid --category: "${raw}". Allowed values: ${EXPERIMENTAL_CATALOG_CATEGORIES.join(', ')}`,
     );
   }
-  return raw as CatalogCategory;
+  return raw as ExperimentalCatalogCategory;
 }
 
 // ---------------------------------------------------------------------------
@@ -414,7 +417,11 @@ async function main(argv: readonly string[]): Promise<number> {
   }
 
   // 7. Catalog load (experimental manifest).
-  const store = new CatalogStore(config.experimentalCatalogPath);
+  //    Pass the wider allowed-category set so on-disk entries with
+  //    category='tools' pass schema validation.
+  const store = new CatalogStore(config.experimentalCatalogPath, {
+    allowedCategories: EXPERIMENTAL_CATALOG_CATEGORIES,
+  });
   try {
     await store.load();
   } catch (cause) {
@@ -534,7 +541,7 @@ async function main(argv: readonly string[]): Promise<number> {
 
   // 12. Build catalog entry. articlePath uses the `experimental/` prefix.
   const articlePath = `experimental/${slug}.html`;
-  let categoryToPersist: CatalogCategory | undefined;
+  let categoryToPersist: ExperimentalCatalogCategory | undefined;
   if (args.category !== null) {
     categoryToPersist = args.category;
   } else if (isUpdate && existingEntry !== null && existingEntry.category !== undefined) {

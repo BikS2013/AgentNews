@@ -397,6 +397,29 @@ describe('experimental publish + build — byte-identity end-to-end', () => {
     });
     assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
 
+    // Brand check: the experimental catalog page must say "Agent Content",
+    // not "Agent News".
+    const indexHtml = readFileSync(path.join(outDir, 'index.html'), 'utf8');
+    assert.ok(
+      indexHtml.includes('<title>Agent Content</title>'),
+      'experimental index.html must use <title>Agent Content</title>',
+    );
+    assert.ok(
+      indexHtml.includes('>Agent Content<'),
+      'experimental index.html must contain the "Agent Content" brand name in the body',
+    );
+    assert.equal(
+      indexHtml.includes('Agent News'),
+      false,
+      'experimental index.html must NOT contain "Agent News" anywhere',
+    );
+    // The 404 page mirrors the brand.
+    const notFoundHtml = readFileSync(path.join(outDir, '404.html'), 'utf8');
+    assert.ok(
+      notFoundHtml.includes('Agent Content'),
+      'experimental 404.html must reference "Agent Content"',
+    );
+
     // Read manifest to find the slug.
     const manifest = JSON.parse(readFileSync(catalogPath, 'utf8')) as {
       entries: Array<{ slug: string; sha256: string }>;
@@ -420,6 +443,154 @@ describe('experimental publish + build — byte-identity end-to-end', () => {
     assert.ok(existsSync(path.join(outDir, 'index.html')), 'Build must emit index.html');
     assert.ok(existsSync(path.join(outDir, '.nojekyll')), 'Build must emit .nojekyll');
     assert.ok(existsSync(path.join(outDir, '404.html')), 'Build must emit 404.html');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 2b — Tools category (experimental-only)
+// ---------------------------------------------------------------------------
+
+describe('experimental Tools category', () => {
+  let tempDir: string;
+  let experimentalDir: string;
+  let catalogPath: string;
+  let linksPath: string;
+  let outDir: string;
+
+  before(() => {
+    tempDir = path.join(os.tmpdir(), randomUUID());
+    experimentalDir = path.join(tempDir, 'experimental');
+    catalogPath = path.join(tempDir, 'experimental-catalog.json');
+    linksPath = path.join(tempDir, 'experimental-links.json');
+    outDir = path.join(tempDir, 'dist-experimental');
+    mkdirSync(experimentalDir, { recursive: true });
+    initEmptyCatalog(catalogPath);
+    initEmptyLinks(linksPath);
+  });
+
+  after(() => {
+    rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('publish-experimental-article accepts --category tools', () => {
+    const { exitCode, stdout, stderr } = runExperimentalCli(
+      ['--source', SAMPLE_WITH_IMG, '--category', 'tools'],
+      { experimentalDir, experimentalCatalogPath: catalogPath },
+    );
+    assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
+    const entry = JSON.parse(stdout.trim()) as { category: string };
+    assert.equal(entry.category, 'tools', 'Persisted entry must have category="tools"');
+  });
+
+  it('publish-experimental-article rejects an unknown category', () => {
+    const { exitCode, stderr } = runExperimentalCli(
+      ['--source', SAMPLE_WITH_IMG_2, '--category', 'bogus'],
+      { experimentalDir, experimentalCatalogPath: catalogPath },
+    );
+    assert.notEqual(exitCode, 0, `Unknown category must exit non-zero`);
+    assert.ok(
+      stderr.includes('Invalid --category'),
+      `stderr must explain the rejection. Got: ${stderr}`,
+    );
+  });
+
+  it('build-experimental renders a Tools section when entries with category=tools exist', () => {
+    // Manifest already contains one tools entry from the first test in this
+    // suite. Build and inspect index.html.
+    const { exitCode, stderr } = runExperimentalBuild({
+      experimentalDir,
+      experimentalCatalogPath: catalogPath,
+      experimentalLinksPath: linksPath,
+      outDir,
+      basePath: '/test',
+    });
+    assert.equal(exitCode, 0, `Build failed: ${stderr}`);
+
+    const indexHtml = readFileSync(path.join(outDir, 'index.html'), 'utf8');
+    assert.ok(
+      indexHtml.includes('id="tools"'),
+      'experimental index.html must contain a section with id="tools" when a tools entry exists',
+    );
+    assert.ok(
+      indexHtml.includes('<h2>Tools</h2>'),
+      'experimental index.html must contain the "Tools" section heading',
+    );
+    // Tools must appear AFTER Deep Dives and BEFORE Articles in the document.
+    const idxDeepDives = indexHtml.indexOf('id="deep-dives"');
+    const idxTools = indexHtml.indexOf('id="tools"');
+    const idxArticles = indexHtml.indexOf('id="articles"');
+    if (idxDeepDives !== -1) {
+      assert.ok(idxTools > idxDeepDives, 'Tools section must come AFTER Deep Dives');
+    }
+    if (idxArticles !== -1) {
+      assert.ok(idxTools < idxArticles, 'Tools section must come BEFORE Articles');
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 2c — Public flow still rejects 'tools' (regression guard)
+// ---------------------------------------------------------------------------
+
+describe('public publish-article — still rejects experimental-only categories', () => {
+  let tempDir: string;
+  let articlesDir: string;
+  let catalogPath: string;
+  let linksPath: string;
+  const PUBLIC_CLI = path.join(PROJECT_ROOT, 'src', 'cli', 'publish-article.ts');
+
+  before(() => {
+    tempDir = path.join(os.tmpdir(), randomUUID());
+    articlesDir = path.join(tempDir, 'articles');
+    catalogPath = path.join(tempDir, 'catalog.json');
+    linksPath = path.join(tempDir, 'links.json');
+    mkdirSync(articlesDir, { recursive: true });
+    writeFileSync(
+      catalogPath,
+      `${JSON.stringify(
+        { schemaVersion: 1, entries: [], updatedAt: new Date(0).toISOString() },
+        null,
+        2,
+      )}\n`,
+      'utf8',
+    );
+    writeFileSync(
+      linksPath,
+      `${JSON.stringify(
+        { schemaVersion: 1, entries: [], updatedAt: new Date(0).toISOString() },
+        null,
+        2,
+      )}\n`,
+      'utf8',
+    );
+  });
+
+  after(() => {
+    rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  it('public publish-article rejects --category tools', () => {
+    const result = spawnSync(
+      'npx',
+      ['tsx', PUBLIC_CLI, '--source', SAMPLE_WITH_IMG, '--category', 'tools'],
+      {
+        env: {
+          ...process.env,
+          PORT: '9999',
+          ARTICLES_DIR: articlesDir,
+          CATALOG_PATH: catalogPath,
+          LINKS_PATH: linksPath,
+        },
+        encoding: 'utf8',
+        timeout: 30000,
+      },
+    );
+    assert.notEqual(result.status, 0, 'Public CLI must reject --category tools');
+    const stderr = result.stderr ?? '';
+    assert.ok(
+      stderr.includes('Invalid --category'),
+      `Public CLI stderr must reject tools. Got: ${stderr}`,
+    );
   });
 });
 
@@ -580,6 +751,25 @@ describe('public build — zero-leakage from experimental content', () => {
       hashA,
       hashB,
       'Public build output MUST be byte-identical before and after experimental content is added',
+    );
+
+    // Brand regression: the PUBLIC catalog page must still say "Agent News"
+    // (not "Agent Content") regardless of any experimental rebrand.
+    const publicIndexHtml = readFileSync(path.join(outB, 'index.html'), 'utf8');
+    assert.ok(
+      publicIndexHtml.includes('<title>Agent News</title>'),
+      'Public index.html must still use <title>Agent News</title>',
+    );
+    assert.equal(
+      publicIndexHtml.includes('Agent Content'),
+      false,
+      'Public index.html must NOT contain "Agent Content" (that brand is experimental-only)',
+    );
+    // And the public page must not render a Tools section.
+    assert.equal(
+      publicIndexHtml.includes('id="tools"'),
+      false,
+      'Public index.html must NOT render the Tools section',
     );
   });
 

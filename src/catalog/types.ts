@@ -38,19 +38,33 @@ export interface CatalogEntry {
    *                                       homepage list alongside non-video
    *                                       AI-News links.
    */
-  category?: CatalogCategory;
+  category?: ExperimentalCatalogCategory;
 }
 
-/** Discriminator for the homepage list a CatalogEntry belongs to. */
+/** Discriminator for the homepage list a CatalogEntry belongs to (PUBLIC flow). */
 export type CatalogCategory = 'deep-dive' | 'ai-news';
+
+/**
+ * Category union for the EXPERIMENTAL flow only. Includes every public
+ * category plus 'tools'. The runtime store validates against either set
+ * depending on which flow constructed it.
+ */
+export type ExperimentalCatalogCategory = CatalogCategory | 'tools';
 
 /** Default category used when an entry omits the field on disk. */
 export const DEFAULT_CATALOG_CATEGORY: CatalogCategory = 'deep-dive';
 
-/** Allowed `category` values for runtime validation + CLI parsing. */
+/** Allowed `category` values in the PUBLIC flow (CLI parsing + on-disk validation). */
 export const CATALOG_CATEGORIES: readonly CatalogCategory[] = [
   'deep-dive',
   'ai-news',
+];
+
+/** Allowed `category` values in the EXPERIMENTAL flow (CLI parsing + on-disk validation). */
+export const EXPERIMENTAL_CATALOG_CATEGORIES: readonly ExperimentalCatalogCategory[] = [
+  'deep-dive',
+  'ai-news',
+  'tools',
 ];
 
 export interface CatalogFile {
@@ -76,7 +90,10 @@ function isIsoTimestamp(value: unknown): value is string {
   return typeof value === 'string' && ISO_8601_REGEX.test(value);
 }
 
-export function isCatalogEntry(value: unknown): value is CatalogEntry {
+export function isCatalogEntry(
+  value: unknown,
+  allowedCategories: readonly string[] = CATALOG_CATEGORIES,
+): value is CatalogEntry {
   if (!isObject(value)) return false;
 
   if (!isNonEmptyString(value['slug'])) return false;
@@ -101,23 +118,28 @@ export function isCatalogEntry(value: unknown): value is CatalogEntry {
   const yt = value['youtubePublishedAt'];
   if (yt !== undefined && !isIsoTimestamp(yt)) return false;
 
-  // Optional field: category. If present, must be one of the allowed values.
+  // Optional field: category. If present, must be one of the allowed values
+  // for the calling flow (public: CATALOG_CATEGORIES; experimental:
+  // EXPERIMENTAL_CATALOG_CATEGORIES).
   const cat = value['category'];
-  if (cat !== undefined && !CATALOG_CATEGORIES.includes(cat as CatalogCategory)) {
+  if (cat !== undefined && !allowedCategories.includes(cat as string)) {
     return false;
   }
 
   return true;
 }
 
-export function isCatalogFile(value: unknown): value is CatalogFile {
+export function isCatalogFile(
+  value: unknown,
+  allowedCategories: readonly string[] = CATALOG_CATEGORIES,
+): value is CatalogFile {
   if (!isObject(value)) return false;
   if (value['schemaVersion'] !== 1) return false;
   if (!isIsoTimestamp(value['updatedAt'])) return false;
   const entries = value['entries'];
   if (!Array.isArray(entries)) return false;
   for (const entry of entries) {
-    if (!isCatalogEntry(entry)) return false;
+    if (!isCatalogEntry(entry, allowedCategories)) return false;
   }
   return true;
 }
