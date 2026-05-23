@@ -176,7 +176,18 @@
       "thumbnailSource": "html",
       "sha256": "033f8b0442214d3a4f286106f38261b5ef3b3a6bd73801d691f8e3c63a81f8da",
       "category": "deep-dive"
+    },
+    {
+      "slug": "5-claude-code-skills-i-use-every-single-day-matt-pocock",
+      "title": "5 Claude Code Skills I Use Every Single Day — Matt Pocock",
+      "publishedAt": "2026-03-16T16:01:49.000Z",
+      "sourcePath": "/tmp/deep-dive-5-claude-code-skills.html",
+      "articlePath": "articles/5-claude-code-skills-i-use-every-single-day-matt-pocock.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/EJyuu6zlQCg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "e5cc60067c534a4423b1dce12422128862651415cc68c9979a8ef8262882c50e",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T07:07:43.000Z"
+  "updatedAt": "2026-05-23T05:55:05.111Z"
 }
