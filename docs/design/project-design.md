@@ -682,6 +682,17 @@ Force-push is intentional: it gives a clean, deterministic state on every
 run and avoids any drift from prior content. The workflow fails fast before
 any network call if any required variable/secret is missing.
 
+The push uses plain `git push --force` rather than `--force-with-lease`. The
+lease guard's purpose is to catch overwrites from a second writer, but this
+branch has exactly one writer (the workflow itself) and the
+`concurrency: publish-experimental` group serialises runs so two pushes
+cannot race. The combination of `--force-with-lease` and the depth-1
+single-branch clone used in the workflow produces spurious
+`[rejected] HEAD -> <branch> (stale info)` errors — git cannot verify the
+lease against a remote-tracking ref that wasn't fully populated by the
+shallow clone. Plain `--force` matches the documented design semantic
+("replace prior content atomically on every run") without that failure mode.
+
 **Privacy trade-off (explicit, accepted).** "Private" here means
 "unadvertised" — not "authenticated". GitHub Pages on non-Enterprise plans
 cannot enforce auth at the edge; the design accepts this and pairs it with

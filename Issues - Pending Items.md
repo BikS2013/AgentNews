@@ -4,6 +4,14 @@ This document tracks open issues, pending items, inconsistencies, and discrepanc
 
 ## Pending Items
 
+### Design decision — workflow uses plain `git push --force`, not `--force-with-lease` (2026-05-23)
+
+Symptom: second and subsequent runs of `publish-experimental.yml` failed with `[rejected] HEAD -> gh-pages (stale info)` even though no other writer touches the branch and the workflow's `concurrency` group serialises runs.
+
+Cause: `--force-with-lease` (without an explicit lease value) needs an up-to-date remote-tracking ref to compare against. The workflow's `git clone --depth 1 --single-branch` is a shallow clone — git cannot reliably populate the remote-tracking metadata `--force-with-lease` consults, so it errors as "stale info" rather than risk an unsafe push. The first run happened to succeed because the branch state had just been created.
+
+Resolution: switched the push to plain `git push --force`. The lease guard is unnecessary here because (a) the target branch has exactly one writer — this workflow, (b) the concurrency group already serialises runs, (c) the design intent is "replace prior content atomically on every run". Documented in `docs/design/project-design.md` and recorded here per the project's exception-recording rule.
+
 ### Design decision — `GH_PAT_EXPIRES_AT=never` accepted as a sentinel (2026-05-23)
 
 Reason for the exception: GitHub classic PATs can be configured with no expiration date, and the user explicitly opted for that mode for this project's PAT. The workflow's PAT-expiration-warning step now accepts the literal string `never` as a valid value alongside ISO-8601 dates: it emits a `::notice::` and skips the date math. Documented in `docs/design/configuration-guide.md`; `Issues - Pending Items.md` carries this audit-trail entry per the project's CLAUDE.md rule about recording exceptions to the configuration policy. Note: GitHub fine-grained PATs always have an expiration, so the ISO-date path remains the recommended default; the `never` sentinel is for classic PATs only and gives up the proactive-renewal-warning property in exchange for matching the actual token state.

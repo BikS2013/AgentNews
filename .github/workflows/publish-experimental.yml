@@ -175,7 +175,13 @@ jobs:
             echo "No changes to publish — target branch already matches the built artifact."
           else
             git commit -m "chore(experimental): publish from agent-news@${GITHUB_SHA}"
-            git push --force-with-lease "$REMOTE" "HEAD:${TARGET_BRANCH}"
+            # Plain --force (not --force-with-lease) is the correct semantic
+            # here: the target branch has exactly one writer (this workflow),
+            # the concurrency group above serialises runs, and the design
+            # intent is "replace prior content atomically on every run".
+            # --force-with-lease + the depth-1 / single-branch shallow clone
+            # used above produces spurious "stale info" rejections.
+            git push --force "$REMOTE" "HEAD:${TARGET_BRANCH}"
             COMMIT_SHA="$(git rev-parse HEAD)"
             echo "::notice::Published experimental site to ${TARGET_REPO_OWNER}/${TARGET_REPO_NAME}@${TARGET_BRANCH} (commit ${COMMIT_SHA})"
           fi
