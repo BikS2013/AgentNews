@@ -34,7 +34,9 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  readdirSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs';
 import * as path from 'node:path';
@@ -232,7 +234,22 @@ function main(): number {
     copied += 1;
   }
 
-  // 3. 404 page → dist/404.html (with the home link resolved to the basePath)
+  // 3. Thumbnails → dist/articles/thumbnails/ (local thumbnail files)
+  const thumbsDir = path.join(absArticles, 'thumbnails');
+  const outThumbsDir = path.join(absOut, 'articles', 'thumbnails');
+  let thumbsCopied = 0;
+  if (existsSync(thumbsDir)) {
+    mkdirSync(outThumbsDir, { recursive: true });
+    for (const file of readdirSync(thumbsDir)) {
+      const src = path.join(thumbsDir, file);
+      if (statSync(src).isFile()) {
+        writeFileSync(path.join(outThumbsDir, file), readFileSync(src));
+        thumbsCopied += 1;
+      }
+    }
+  }
+
+  // 4. 404 page → dist/404.html (with the home link resolved to the basePath)
   const home = basePath === '' || basePath === '/' ? '/' : `${basePath}/`;
   writeFileSync(
     path.join(absOut, '404.html'),
@@ -240,12 +257,12 @@ function main(): number {
     'utf8',
   );
 
-  // 4. Bypass GitHub Pages' Jekyll processing so files ship byte-for-byte.
+  // 5. Bypass GitHub Pages' Jekyll processing so files ship byte-for-byte.
   writeFileSync(path.join(absOut, '.nojekyll'), '');
 
   // Summary to stdout.
   process.stdout.write(
-    `static export OK — catalog + ${copied} article${copied === 1 ? '' : 's'} + ${links.length} link${links.length === 1 ? '' : 's'} written to ${absOut} (basePath="${basePath}")\n`,
+    `static export OK — catalog + ${copied} article${copied === 1 ? '' : 's'} + ${links.length} link${links.length === 1 ? '' : 's'} + ${thumbsCopied} thumbnail${thumbsCopied === 1 ? '' : 's'} written to ${absOut} (basePath="${basePath}")\n`,
   );
   return 0;
 }

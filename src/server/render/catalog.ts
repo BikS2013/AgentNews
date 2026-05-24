@@ -689,6 +689,16 @@ export interface RenderCatalogOptions {
  * Return type widened to include 'tools' so the experimental flow's partition
  * logic compiles; the public flow's filters never match 'tools'.
  */
+/**
+ * Resolve a thumbnail URL. Absolute URLs (http/https) pass through
+ * unchanged. Relative paths (e.g. "articles/thumbnails/foo.png")
+ * get the basePath prepended so they resolve correctly on GitHub Pages.
+ */
+function resolveThumbUrl(url: string, bp: string): string {
+  if (/^https?:\/\//i.test(url)) return url;
+  return bp ? `${bp}/${url}` : `/${url}`;
+}
+
 function videoCategory(entry: CatalogEntry): 'deep-dive' | 'ai-news' | 'tools' | 'article' {
   return entry.category ?? DEFAULT_CATALOG_CATEGORY;
 }
@@ -1001,7 +1011,7 @@ ${cards}
 function renderArticleCard(entry: CatalogEntry, bp: string): string {
   const slug = escapeHtml(entry.slug);
   const title = escapeHtml(entry.title);
-  const thumb = escapeHtml(entry.thumbnailUrl);
+  const thumb = escapeHtml(resolveThumbUrl(entry.thumbnailUrl, bp));
   const href = `${bp}/a/${slug}`;
   return `      <article class="card">
         <a href="${href}" class="card__art" aria-label="${title}">
@@ -1035,7 +1045,7 @@ function renderDates(entry: CatalogEntry): string {
 function renderCard(entry: CatalogEntry, bp: string): string {
   const slug = escapeHtml(entry.slug);
   const title = escapeHtml(entry.title);
-  const thumb = escapeHtml(entry.thumbnailUrl);
+  const thumb = escapeHtml(resolveThumbUrl(entry.thumbnailUrl, bp));
   const href = `${bp}/a/${slug}`;
   const tagLabel = videoCategory(entry) === 'ai-news' ? 'AI-News · Video' : 'Deep dive';
   return `      <article class="card">
