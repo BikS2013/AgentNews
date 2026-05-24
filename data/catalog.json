@@ -176,7 +176,17 @@
       "thumbnailSource": "html",
       "sha256": "828995cf3500df23fc61333109bf535e53e067d8fb33db59d0ac7a6aa4a870fa",
       "category": "article"
+    },
+    {
+      "slug": "voice-loop-a-local-voice-agent-in-500-lines-of-python-trelis-research",
+      "title": "Voice Loop — A Local Voice Agent in ~500 Lines of Python — Trelis Research",
+      "publishedAt": "2026-04-13T10:31:29.000Z",
+      "sourcePath": "/tmp/deep_dive_T6O9U185UFU.html",
+      "articlePath": "articles/voice-loop-a-local-voice-agent-in-500-lines-of-python-trelis-research.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/T6O9U185UFU/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "ccc3f27826bc24427166789a35ed0abaa297ce2b6e0f9975e66488d0deba6a8d"
     }
   ],
-  "updatedAt": "2026-05-24T05:56:11.645Z"
+  "updatedAt": "2026-05-24T21:08:53.173Z"
 }

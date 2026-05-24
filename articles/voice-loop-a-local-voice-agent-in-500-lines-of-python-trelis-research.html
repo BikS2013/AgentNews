@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Loop — A Local Voice Agent in ~500 Lines of Python — Trelis Research</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+  .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+  .ts-row .timestamp{flex-shrink:0;}
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+  .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/T6O9U185UFU/maxresdefault.jpg" alt="Voice Loop — A Local Voice Agent" style="display:none;">
+
+<h1>Voice Loop — A Local Voice Agent in ~500 Lines of Python</h1>
+<div class="meta">
+  <span>Ronan — Trelis Research</span>
+  <span class="badge">~14 min</span>
+  <a href="https://www.youtube.com/watch?v=T6O9U185UFU" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/T6O9U185UFU" title="Voice Loop — A Local Voice Agent in ~500 Lines of Python" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=T6O9U185UFU" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/T6O9U185UFU/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>Ronan from Trelis Research demonstrates <strong>Voice Loop</strong>, an open-source local voice agent defined in under 500 lines of Python. It runs entirely on a Mac using a cascade of small, efficient models — <strong>Moonshine Base</strong> for speech-to-text, <strong>Gemma 4B</strong> (via MLX) for reasoning, and <strong>Kokoro</strong> for text-to-speech. The video opens with a live conversation demo, then dives deep into the technical architecture: the STT → LLM → TTS pipeline, turn detection via PipeCat's Smart Turn V3, echo cancellation for interruption handling, memory persistence, audio input mode, and the future direction toward end-to-end models.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> Live Demo: Conversing with Voice Loop <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>The video opens with an unscripted live conversation between Ronan and Voice Loop. The agent introduces itself, asks for the user's name, and remembers it throughout the session. The demo showcases several capabilities in rapid succession:</p>
+  <ul>
+    <li><strong>Name memory</strong> — "What should I call you?" → remembers "Ronan" for the rest of the conversation.</li>
+    <li><strong>Instruction following</strong> — counts to ten, counts backwards, skips every second number — all correctly.</li>
+    <li><strong>Hesitation handling</strong> — when Ronan hesitates ("I'm wondering if maybe…"), the agent waits patiently instead of jumping in.</li>
+    <li><strong>Interruption detection</strong> — when Ronan interrupts mid-response, the agent stops speaking and listens.</li>
+    <li><strong>Task execution</strong> — provides a pancake recipe, asks clarifying follow-up questions ("How many people?").</li>
+  </ul>
+  <div class="highlight">Key insight: The demo is deliberately conversational and imperfect — it showcases the real behavior of turn detection, hesitation handling, and interruption detection, not a polished scripted demo.</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> What Is Voice Loop? <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=79s" target="_blank">▶ 1:19</a></h2>
+  <p>Voice Loop is a local voice agent that runs on a Mac, defined by fewer than 500 lines of Python code. It includes advanced functionalities that are only possible with recently released models:</p>
+  <ul>
+    <li><strong>Turn detection</strong> — knowing when the user has finished speaking, powered by models like PipeCat's Smart Turn V3.</li>
+    <li><strong>Interruption handling</strong> — allowing users to cut in mid-response.</li>
+    <li><strong>Modular design</strong> — plug in different models for STT, LLM, and TTS while keeping the codebase compact.</li>
+    <li><strong>Developer-focused</strong> — designed as a starting point for building custom voice agents, not a finished product.</li>
+  </ul>
+  <p>The entire project is available on GitHub under the Trelis Research organization.</p>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> The Core Pipeline: STT → LLM → TTS <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=122s" target="_blank">▶ 2:02</a></h2>
+  <p>The fundamental architecture is a three-stage cascade pipeline:</p>
+  <ol>
+    <li><strong>Voice In → Moonshine Base (STT)</strong> — microphone audio is transcribed to text using Moonshine Base, a small and fast transcription model. The transcription is "very fast because Moonshine Base is a very small model."</li>
+    <li><strong>Text → Gemma 4B (LLM)</strong> — the transcribed text is passed to Gemma 4B (running locally via MLX), which generates a text response. Gemma is "also fairly fast" for reasoning.</li>
+    <li><strong>Text → Kokoro (TTS)</strong> — the LLM's text output is converted back to speech using Kokoro. This step can introduce latency: "if there's a lot of words in the response, there can be more of a delay."</li>
+  </ol>
+  <div class="highlight">Key insight: Each model in the pipeline is deliberately small and efficient — Moonshine Base for near-instant transcription, Gemma 4B (not a frontier model) for solid local reasoning, and Kokoro for natural-sounding speech. The trade-off is latency vs. running entirely locally on consumer hardware.</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> Turn Detection: Knowing When the User Is Done Speaking <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=200s" target="_blank">▶ 3:20</a></h2>
+  <p>Simply piping the three models together isn't enough. The first major challenge is <strong>turn detection</strong> — determining when the user has actually finished speaking. Without it, the agent would respond to every pause, including hesitations.</p>
+  <p>Voice Loop solves this with a two-stage pre-processing pipeline before the audio reaches the LLM:</p>
+  <ol>
+    <li><strong>Voice Activity Detection (VAD)</strong> — determines whether the incoming audio is speech or background noise.</li>
+    <li><strong>Smart Turn V3 (PipeCat)</strong> — an open-source model that predicts the probability that the user has finished speaking. It outputs a percentage (e.g., "the probability of Ronan being finished is only 4%").</li>
+  </ol>
+  <p>While the probability of the user being finished is low, the agent holds back. When the user completes a phrase that sounds final, or when silence extends long enough, the turn probability increases and the agent responds.</p>
+  <p>Ronan acknowledges the system isn't perfect: in one case during the demo, he said "I'm wondering if…" and the model briefly thought he was finished. But for most conversational scenarios, it handles turn detection well.</p>
+  <div class="highlight">Key insight: "The smart turn model is basically saying the probability of Ronan being finished is only 4%, 1%, 6%, 4%. So while the probabilities of me being finished are low, it's not going to respond."</div>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> Echo Cancellation and Interruption Detection <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=323s" target="_blank">▶ 5:23</a></h2>
+  <p>The second major challenge is <strong>interruption detection</strong>. When the agent is speaking (playing TTS audio through the speaker), the microphone picks up that audio. A naive approach ("if you hear a noise, that's an interruption") would fail because the agent would constantly interrupt itself.</p>
+  <p>The solution is a combination of two techniques working together:</p>
+  <ul>
+    <li><strong>Echo cancellation</strong> — while TTS audio is playing, the system cancels the echo of its own voice from the microphone input. What remains should only be the user's actual voice.</li>
+    <li><strong>VAD on the residual signal</strong> — after echo cancellation, Voice Activity Detection runs on whatever audio remains. If human speech is detected, it counts as a genuine interruption.</li>
+  </ul>
+  <p>When an interruption is detected, the agent immediately stops playing TTS, starts listening to the user, and routes the new input back through Gemma for a fresh response.</p>
+  <div class="highlight">Key insight: Echo cancellation + VAD is the key combination that makes interruption detection work. Without echo cancellation, the agent would think its own voice playing through the speaker is the user interrupting.</div>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> The Back-Channeling Problem (Unsolved) <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=429s" target="_blank">▶ 7:09</a></h2>
+  <p>Ronan highlights one layer of nuance that Voice Loop does <em>not</em> yet handle: <strong>back-channeling</strong>. This is the distinction between a genuine interruption ("Wait, stop, I want to say something different") and a conversational affirmation ("Oh yeah, yeah, that's right") where the user is agreeing without actually wanting the agent to stop.</p>
+  <p>Currently, any detected voice during TTS playback is treated as an interruption. Models that can distinguish back-channeling from interruption exist, and Ronan plans to cover this in a future video and integrate it into Voice Loop.</p>
+  <p>In practice, even without back-channeling detection, the current interruption system captures most real interruptions. The worst case is occasionally stopping when the user was just agreeing — after which the conversation continues naturally.</p>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card">
+  <h2><span class="section-num">7</span> Additional Features: Chime, Memory, No-TTS Mode <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=476s" target="_blank">▶ 7:56</a></h2>
+  <p>Beyond the core pipeline, Voice Loop includes several configurable features:</p>
+  <ul>
+    <li><strong>Chime notification</strong> — an audio chime plays while waiting for the agent's response, so the user knows something is happening. Especially helpful when latency is longer.</li>
+    <li><strong>Persistent memory</strong> — enabled with a <code>--memory</code> flag. After every turn, Gemma reviews the conversation and writes notable facts to a memory file (e.g., "the user's name is Ronan"). Every 5-10 turns, the memory is consolidated. On the next conversation, the agent remembers previous context.</li>
+    <li><strong>No-TTS mode</strong> — run without text-to-speech for faster, text-only responses. Useful for scenarios where voice output isn't needed or for testing the reasoning pipeline in isolation.</li>
+    <li><strong>Recording</strong> — record full conversations for playback and review.</li>
+  </ul>
+</div>
+
+<!-- Section 8 -->
+<div class="section-card">
+  <h2><span class="section-num">8</span> Configuration Options and Model Choices <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=601s" target="_blank">▶ 10:01</a></h2>
+  <p>Voice Loop is designed to be highly configurable. Ronan walks through the available flags and options:</p>
+  <ul>
+    <li><strong>Echo cancellation toggle</strong> — can be turned off, but interruption detection will stop working (the agent will keep getting interrupted by its own voice).</li>
+    <li><strong>Kokoro voice selection</strong> — choose from multiple available voices for TTS output.</li>
+    <li><strong>Model size</strong> — the default is Gemma E4B (4 billion parameters). A 2B model is available and works, but "the logic is not quite as strong." The 4B model handles reasonably advanced reasoning (counting backwards, skipping numbers, etc.).</li>
+    <li><strong>Silence timeout</strong> — configurable duration of silence before the agent assumes the user is done and responds.</li>
+    <li><strong>Recording mode</strong> — save full conversation recordings for later playback.</li>
+  </ul>
+</div>
+
+<!-- Section 9 -->
+<div class="section-card">
+  <h2><span class="section-num">9</span> Audio Input Mode: Direct Audio to LLM <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=658s" target="_blank">▶ 10:58</a></h2>
+  <p>Gemma 4B supports audio input as well as text input. Voice Loop has an experimental <strong>audio mode</strong> that passes the raw audio directly to the LLM instead of first transcribing it with Moonshine. Ronan demonstrates this mode live — it works, with the agent correctly handling counting tasks and recipe requests.</p>
+  <p>However, there are significant limitations:</p>
+  <ul>
+    <li><strong>Reliability</strong> — audio input "can be not as reliable as first transcribing it." The text-first pipeline is more consistent.</li>
+    <li><strong>Model size dependency</strong> — the 2B model is "not quite strong enough to handle the audio input directly." The 4B model handles it better but not perfectly.</li>
+    <li><strong>Conversational drift</strong> — in audio mode, the model "sometimes starts to lose track" of the conversation, possibly because it's not trained on enough conversational audio data.</li>
+    <li><strong>MLX library limitation</strong> — currently only allows injecting audio for the most recent turn. Conversation history still relies on Moonshine transcriptions as text. So the system runs both in parallel: Moonshine always transcribes to maintain history, while audio mode passes raw audio only for the latest turn.</li>
+  </ul>
+  <div class="highlight">Key insight: Audio mode runs Moonshine transcription in parallel with direct audio input — Moonshine keeps the text history, while the latest turn can optionally use raw audio. This dual-path approach hedges against the reliability gap of direct audio input.</div>
+</div>
+
+<!-- Section 10 -->
+<div class="section-card">
+  <h2><span class="section-num">10</span> The Future: From Cascade to End-to-End Models <a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=817s" target="_blank">▶ 13:37</a></h2>
+  <p>Ronan reflects on the current state and future direction of voice agents. Today's systems, including Voice Loop, are fundamentally <strong>cascade models</strong>: speech-to-text → LLM → text-to-speech, with separate neural networks for each stage.</p>
+  <p>The direction of travel is toward <strong>more integrated, end-to-end models</strong> — fewer neural networks that handle the full audio-in-to-audio-out pipeline. In principle, direct audio input could eventually subsume turn detection and interruption detection (the model would understand from the audio alone when to respond and when to stop).</p>
+  <p>But there's a fundamental trade-off today: to get good reasoning, you need a strong LLM with extensive pre-training data. Integrated audio models don't yet match frontier-level intelligence, which is why the cascade approach persists — "you end up cobbling together these models so that you have a first transcription part, then a strong reasoning model, and then a model that will go back to speech."</p>
+  <div class="highlight">Key insight: "These end-to-end models are still cascade models. But over time, the direction of travel probably is to have a more integrated flow where we have a fewer number of neural nets." The bottleneck: integrated models can't yet match the reasoning quality of dedicated LLMs.</div>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Under 500 lines of Python</strong> — Voice Loop is deliberately compact and modular, serving as a developer starting point rather than a monolithic framework.</li>
+    <li><strong>Three-model cascade</strong> — Moonshine Base (STT) → Gemma 4B via MLX (reasoning) → Kokoro (TTS), all running locally on a Mac.</li>
+    <li><strong>Turn detection is critical</strong> — PipeCat's Smart Turn V3 predicts the probability that the user has finished speaking, preventing premature responses during hesitations.</li>
+    <li><strong>Echo cancellation enables interruption</strong> — without cancelling the agent's own TTS output from the microphone input, interruption detection is impossible.</li>
+    <li><strong>VAD + Smart Turn = two-stage gate</strong> — Voice Activity Detection filters noise first, then Smart Turn evaluates whether detected speech represents a completed turn.</li>
+    <li><strong>Back-channeling is the next frontier</strong> — distinguishing "yeah, go on" from "stop, I want to say something" remains unsolved in Voice Loop.</li>
+    <li><strong>Memory is simple but effective</strong> — Gemma extracts notable facts after each turn and writes them to a file, with periodic consolidation.</li>
+    <li><strong>Audio input mode works but is unreliable</strong> — direct audio to Gemma 4B is possible but less consistent than the text-first pipeline, especially with smaller models.</li>
+    <li><strong>Dual-path architecture for audio mode</strong> — Moonshine always runs in parallel to maintain text history, even when audio mode passes raw audio for the latest turn.</li>
+    <li><strong>Cascade models persist because reasoning matters</strong> — end-to-end audio models can't yet match dedicated LLMs in reasoning quality, forcing the three-stage pipeline approach.</li>
+    <li><strong>Model size trade-offs are real</strong> — 4B handles counting, reasoning, and audio input; 2B works but struggles with logic and direct audio.</li>
+    <li><strong>Highly configurable</strong> — echo cancellation, voice selection, model size, silence timeout, chime, recording, and TTS can all be toggled via CLI flags.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=0s" target="_blank">▶ 0:00</a> Live demo — conversing with Voice Loop</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=79s" target="_blank">▶ 1:19</a> What is Voice Loop? Overview and goals</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=122s" target="_blank">▶ 2:02</a> Core pipeline: voice in → Moonshine → Gemma → Kokoro</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=155s" target="_blank">▶ 2:35</a> Gemma 4B reasoning and Kokoro TTS latency</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=200s" target="_blank">▶ 3:20</a> Turn detection problem explained</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=227s" target="_blank">▶ 3:47</a> Hesitation handling in the transcript</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=257s" target="_blank">▶ 4:17</a> Silence-based turn probability increase</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=271s" target="_blank">▶ 4:31</a> VAD + Smart Turn V3 two-stage detection</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=299s" target="_blank">▶ 4:59</a> Turn detection accuracy and edge cases</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=323s" target="_blank">▶ 5:23</a> Interruption detection challenge</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=357s" target="_blank">▶ 5:57</a> Echo cancellation explained</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=395s" target="_blank">▶ 6:35</a> VAD on residual signal after echo cancellation</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=429s" target="_blank">▶ 7:09</a> Back-channeling problem (unsolved)</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=476s" target="_blank">▶ 7:56</a> Chime notification for UX</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=497s" target="_blank">▶ 8:17</a> Persistent memory with Gemma</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=532s" target="_blank">▶ 8:52</a> No-TTS mode for text-only responses</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=601s" target="_blank">▶ 10:01</a> Echo cancellation toggle and config options</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=622s" target="_blank">▶ 10:22</a> Kokoro voice selection and model size (4B vs 2B)</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=658s" target="_blank">▶ 10:58</a> Audio input mode — direct audio to Gemma</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=733s" target="_blank">▶ 12:13</a> Audio mode limitations and reliability</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=769s" target="_blank">▶ 12:49</a> MLX library limitation — audio only for last turn</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=T6O9U185UFU&t=817s" target="_blank">▶ 13:37</a> Future: cascade to end-to-end models</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video T6O9U185UFU · Ronan — Trelis Research</footer>
+
+</div>
+</body>
+</html>
