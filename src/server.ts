@@ -102,6 +102,22 @@ export default async function start(): Promise<FastifyInstance> {
     await articleRoute(scope, { store, articlesDir: articlesRoot });
   });
 
+  // Serve local article thumbnails at /articles/thumbnails/<file>
+  fastify.get<{ Params: { file: string } }>(
+    '/articles/thumbnails/:file',
+    async (request, reply) => {
+      const { file } = request.params;
+      // Allow only safe filenames (alphanumeric, hyphens, dots)
+      if (!/^[a-z0-9][a-z0-9._-]*\.(png|jpg|jpeg|webp|svg)$/i.test(file)) {
+        return reply.code(404).send('Not found');
+      }
+      return reply.sendFile(
+        path.join('thumbnails', file),
+        articlesRoot,
+      );
+    },
+  );
+
   await fastify.register(async (scope) => {
     await catalogRoute(scope, { store, linksStore });
   });
