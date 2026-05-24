@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Apps Are Changing the Internet. Here's How to Build One! (Skybridge) — Better Stack</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  .ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+  .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+  .ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+  .ts-row .timestamp{flex-shrink:0;}
+  .timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+  .timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/9X8GRGcl5oA/maxresdefault.jpg" alt="MCP Apps Are Changing the Internet" style="display:none;">
+
+<h1>MCP Apps Are Changing the Internet. Here's How to Build One! (Skybridge)</h1>
+<div class="meta">
+  <span>Andres — Better Stack</span>
+  <span class="badge">~9 min</span>
+  <a href="https://www.youtube.com/watch?v=9X8GRGcl5oA" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/9X8GRGcl5oA" title="MCP Apps Are Changing the Internet" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=9X8GRGcl5oA" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/9X8GRGcl5oA/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>A paradigm shift is underway: users increasingly interact with services through AI chatbots rather than traditional web UIs. <strong>MCP apps</strong> — interactive widgets that live inside chatbots like ChatGPT and Claude — are at the heart of this shift. Andres from Better Stack walks through <strong>Skybridge</strong>, an open-source TypeScript framework by Alpic that handles all the complex plumbing (protocol bridging, state sync, security rules) so developers can focus on writing standard React code. In under 10 minutes, he builds a fully functional e-commerce MCP app from scratch and connects it to Claude.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> The Paradigm Shift: From Web Apps to MCP Apps <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>AI is fundamentally changing how users discover and interact with services. Rather than visiting websites directly, more and more people are using chatbots for their routine searches and research. This trend is giving rise to <strong>MCP apps</strong> — instead of returning plain JSON or markdown, services now provide interactive, helpful widgets rendered directly inside a chatbot interface.</p>
+  <p>Alpic recently released <strong>Skybridge</strong>, an open-source TypeScript framework that makes it easy to create custom MCP apps for all sorts of use cases. The video walks through what Skybridge is, how it works, and builds a working app from scratch.</p>
+  <div class="highlight">Key insight: "Instead of spitting out a JSON file or a markdown document, more apps and services are switching to providing these interactive and helpful widgets inside a chatbot."</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> How MCP Apps Work: Two Users, One Interface <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=47s" target="_blank">▶ 0:47</a></h2>
+  <p>Traditional web apps are built for one user: the human. MCP apps are fundamentally different — they're built for <strong>two users at once</strong>: the human and the AI assistant. Both share the exact same interface.</p>
+  <ul>
+    <li><strong>Human interaction</strong> — the user clicks buttons, types inputs, and slides sliders. The LLM instantly sees the updated state.</li>
+    <li><strong>AI interaction</strong> — the LLM can update data in the background, and the UI changes in real time right in front of the user.</li>
+    <li><strong>Bidirectional state sync</strong> — Skybridge handles all the complex plumbing: protocol bridging, state synchronization, and security rules.</li>
+  </ul>
+  <p>This means developers just focus on writing standard React code, while Skybridge takes care of making it work seamlessly for both humans and AI.</p>
+  <div class="highlight">Key insight: "With an MCP app, you're actually building for two users at once — the human and the AI assistant — because they both share the exact same interface."</div>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> The Dev Experience Problem (and How Skybridge 1.0 Solves It) <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=95s" target="_blank">▶ 1:35</a></h2>
+  <p>Building MCP apps for ChatGPT or Claude used to involve a painful local testing loop: manually setting up public tunnels, copy-pasting configurations, and restarting chat sessions just to fix a tiny CSS typo.</p>
+  <p>Skybridge 1.0 completely redesigned the developer tools control panel. When you run your local dev server, it fires up an <strong>emulator dashboard</strong> in your browser with three key tools:</p>
+  <ol>
+    <li><strong>Alpic Playground</strong> — a local sandbox where you can test your tools and tweak React widgets using live hot module replacement (HMR). See changes instantly without touching an actual LLM.</li>
+    <li><strong>Integrated Tunnel</strong> — with a single click, expose your local server through a secure public URL. No more messing around with external tunneling tools. Just paste the URL into ChatGPT's developer settings and you're live.</li>
+    <li><strong>Beacon Audit Tool</strong> — scans your app's metadata, tools, and security policies to catch common rejection triggers before you submit to public app stores.</li>
+  </ol>
+  <div class="highlight">Key insight: The three-tool developer dashboard (Playground + Tunnel + Audit) eliminates the biggest friction points in MCP app development — no more external tunnel setup, no more blind LLM testing, no more surprise app store rejections.</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> Getting Started: The Skybridge Skill <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=175s" target="_blank">▶ 2:55</a></h2>
+  <p>Even if you've never built an MCP app, you can get started instantly by installing the <strong>Skybridge skill</strong> onto your favorite AI agent (like Claude Code). The skill can be installed globally or scoped to a specific repository.</p>
+  <p>For the demo, Andres installs it in his repo, which creates a <code>.agents</code> directory with the Skybridge skill present. From there, all he has to do is ask Claude to build the MCP app — Claude reads the skill and knows exactly how to scaffold the project.</p>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> Live Demo: Building an E-Commerce MCP App <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=188s" target="_blank">▶ 3:08</a></h2>
+  <p>The demo starts with a pre-built React e-commerce website for camera lenses — a fully functional store with cart and checkout functionality. The goal: add an MCP app so that when a customer searches for lens recommendations in a chatbot, it calls the store's MCP app and shows product listings interactively.</p>
+  <p>After installing the Skybridge skill, Andres simply asks Claude: <em>"Build me an MCP app for my e-commerce shop."</em> Claude asks follow-up questions about the intent of the app to understand what functionality to include:</p>
+  <ul>
+    <li><strong>Product listing</strong> — list lenses based on what the user is looking for</li>
+    <li><strong>Side-by-side comparison</strong> — select lenses and compare them</li>
+    <li><strong>Cart integration</strong> — add lenses to the cart</li>
+    <li><strong>Quick checkout</strong> — provide a checkout solution directly in the chatbot</li>
+  </ul>
+  <p>In about a few minutes, Claude generates the complete MCP app. The coolest part is that you can immediately open the Skybridge developer dashboard and try it out.</p>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> Testing in the Developer Dashboard <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=264s" target="_blank">▶ 4:24</a></h2>
+  <p>The developer dashboard shows the generated tools — in this case, a <strong>Search Lenses</strong> tool and a <strong>Place Order</strong> tool. Andres demonstrates the full flow:</p>
+  <ul>
+    <li><strong>Search</strong> — set a max price ($2,000), limit to 5 results. The tool finds 14 matching lenses.</li>
+    <li><strong>Preview modes</strong> — desktop view, mobile view, dark mode, and light mode are all available.</li>
+    <li><strong>Live state sync</strong> — selecting lenses updates the tool output and state on the fly. The state panel shows real-time changes as the user interacts.</li>
+    <li><strong>Compare</strong> — select three lenses, click compare, and see them side by side with all parameters.</li>
+    <li><strong>Checkout</strong> — move to checkout, fill in name, email, shipping address, and place the order — all within the dashboard.</li>
+  </ul>
+  <div class="highlight">Key insight: The Skybridge dashboard lets you test every aspect of your MCP app — search, selection, comparison, checkout — without ever connecting to an actual LLM. This dramatically speeds up the development loop.</div>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card">
+  <h2><span class="section-num">7</span> Connecting to Claude (Live LLM Integration) <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=367s" target="_blank">▶ 6:07</a></h2>
+  <p>Once the app works in the dashboard, connecting it to a real LLM is straightforward:</p>
+  <ol>
+    <li><strong>Activate the tunnel</strong> in the developer dashboard to get a secure public URL.</li>
+    <li><strong>In Claude settings</strong>, go to the <em>Connectors</em> section and click <em>Customize</em>.</li>
+    <li><strong>Add a custom connector</strong> — give it a name and paste the tunnel URL.</li>
+    <li><strong>Click Connect</strong> — optionally set permissions for automatic tool execution or require user approval.</li>
+    <li><strong>Start a new chat</strong> and ask: "Give me some recommendations for the best lenses under $2,000 for portrait shooting."</li>
+  </ol>
+  <p>Claude immediately recognizes the MCP app, searches the lens shop catalog, and renders the interactive widget directly in the chat. Users can select lenses, compare them side by side, and proceed to checkout — all without leaving the conversation.</p>
+  <p>Andres notes one minor CSS issue: white space from a previous tool state. This is easily fixable in CSS and doesn't affect functionality.</p>
+</div>
+
+<!-- Section 8 -->
+<div class="section-card">
+  <h2><span class="section-num">8</span> App Store Readiness: The Beacon Audit <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=477s" target="_blank">▶ 7:57</a></h2>
+  <p>Before submitting an MCP app to public app stores, you can run an <strong>audit</strong> through the developer dashboard. The Beacon audit tool scans your app's metadata, tools, and security policies to identify issues that could trigger rejection during review.</p>
+  <p>This is especially valuable because app store review criteria for MCP apps are still evolving, and common mistakes (missing metadata, overly broad permissions, security policy gaps) can lead to frustrating back-and-forth rejections.</p>
+</div>
+
+<!-- Section 9 -->
+<div class="section-card">
+  <h2><span class="section-num">9</span> The Future of the Web: Interactive AI Widgets Everywhere <a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=500s" target="_blank">▶ 8:20</a></h2>
+  <p>Andres wraps up by reflecting on the broader significance of MCP apps. In just a few minutes, they built a <strong>production-ready MCP app</strong> with Skybridge that could theoretically be submitted to an AI app store.</p>
+  <p>His conviction: we will start seeing more and more interactive MCP widget apps inside our chatbots. This is the future of the modern web — not replacing traditional web apps, but augmenting them with AI-native interfaces. Frameworks like Skybridge make the process accessible for any developer who already knows React.</p>
+  <div class="highlight">Key insight: "It honestly feels like the future of the modern web. I think we will start seeing more and more of these interactive MCP widget apps inside our chatbots."</div>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>MCP apps serve two users simultaneously</strong> — the human clicks and types; the AI observes and updates. Both share the same interactive interface in real time.</li>
+    <li><strong>Skybridge handles the plumbing</strong> — protocol bridging, state synchronization, and security rules are all abstracted away so developers write standard React code.</li>
+    <li><strong>The developer dashboard is a game-changer</strong> — Alpic Playground, Integrated Tunnel, and Beacon Audit eliminate the three biggest friction points in MCP app development.</li>
+    <li><strong>No more tunnel hell</strong> — one-click secure public URL replaces manual ngrok/cloudflare tunnel setup.</li>
+    <li><strong>Skill-based scaffolding</strong> — install the Skybridge skill into Claude Code and let the AI generate the entire MCP app structure from a natural language description.</li>
+    <li><strong>Live state sync in the playground</strong> — test the full user flow (search → select → compare → checkout) without connecting to an LLM.</li>
+    <li><strong>Claude Connectors integration</strong> — paste the tunnel URL into Claude's Connectors settings to go live instantly.</li>
+    <li><strong>Beacon Audit catches rejection triggers</strong> — scan metadata, tools, and security policies before submitting to app stores.</li>
+    <li><strong>From zero to production in minutes</strong> — the demo built a complete e-commerce MCP app (search, compare, checkout) in a few minutes.</li>
+    <li><strong>The web is evolving</strong> — interactive AI widgets inside chatbots represent a new distribution channel alongside (not replacing) traditional web apps.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=0s" target="_blank">▶ 0:00</a> Introduction — the paradigm shift to MCP apps</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=47s" target="_blank">▶ 0:47</a> How MCP apps work — two users, one interface</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=95s" target="_blank">▶ 1:35</a> The dev experience problem and Skybridge 1.0</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=129s" target="_blank">▶ 2:09</a> Alpic Playground — local sandbox with HMR</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=143s" target="_blank">▶ 2:23</a> Integrated Tunnel — one-click public URL</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=158s" target="_blank">▶ 2:38</a> Beacon Audit Tool — app store readiness check</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=175s" target="_blank">▶ 2:55</a> Installing the Skybridge skill</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=188s" target="_blank">▶ 3:08</a> Demo setup — e-commerce camera lens store</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=237s" target="_blank">▶ 3:57</a> Asking Claude to build the MCP app</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=264s" target="_blank">▶ 4:24</a> Testing in the developer dashboard</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=310s" target="_blank">▶ 5:10</a> Desktop, mobile, dark/light mode preview</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=327s" target="_blank">▶ 5:27</a> Live state sync demo</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=337s" target="_blank">▶ 5:37</a> Side-by-side lens comparison</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=350s" target="_blank">▶ 5:50</a> Checkout flow inside the widget</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=367s" target="_blank">▶ 6:07</a> Connecting to Claude via Connectors</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=417s" target="_blank">▶ 6:57</a> Live Claude demo — portrait lens recommendations</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=477s" target="_blank">▶ 7:57</a> Beacon Audit for app store submission</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=9X8GRGcl5oA&t=500s" target="_blank">▶ 8:20</a> Conclusion — the future of the web</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video 9X8GRGcl5oA · Andres — Better Stack</footer>
+
+</div>
+</body>
+</html>
