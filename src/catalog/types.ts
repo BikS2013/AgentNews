@@ -42,7 +42,7 @@ export interface CatalogEntry {
 }
 
 /** Discriminator for the homepage list a CatalogEntry belongs to (PUBLIC flow). */
-export type CatalogCategory = 'deep-dive' | 'ai-news';
+export type CatalogCategory = 'deep-dive' | 'ai-news' | 'article';
 
 /**
  * Category union for the EXPERIMENTAL flow only. Includes every public
@@ -58,6 +58,7 @@ export const DEFAULT_CATALOG_CATEGORY: CatalogCategory = 'deep-dive';
 export const CATALOG_CATEGORIES: readonly CatalogCategory[] = [
   'deep-dive',
   'ai-news',
+  'article',
 ];
 
 /** Allowed `category` values in the EXPERIMENTAL flow (CLI parsing + on-disk validation). */

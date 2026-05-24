@@ -689,7 +689,7 @@ export interface RenderCatalogOptions {
  * Return type widened to include 'tools' so the experimental flow's partition
  * logic compiles; the public flow's filters never match 'tools'.
  */
-function videoCategory(entry: CatalogEntry): 'deep-dive' | 'ai-news' | 'tools' {
+function videoCategory(entry: CatalogEntry): 'deep-dive' | 'ai-news' | 'tools' | 'article' {
   return entry.category ?? DEFAULT_CATALOG_CATEGORY;
 }
 
@@ -743,11 +743,12 @@ export function renderCatalogHtml(
     : [];
   const aiNewsLinks = sortedLinks.filter((e) => linkCategory(e) === 'ai-news');
   const articleLinks = sortedLinks.filter((e) => linkCategory(e) === 'article');
+  const articleVideos = sortedVideos.filter((e) => videoCategory(e) === 'article');
 
   const aiNewsTotal = aiNewsVideos.length + aiNewsLinks.length;
   const deepDiveTotal = deepDiveVideos.length;
   const toolsTotal = toolsVideos.length;
-  const articleTotal = articleLinks.length;
+  const articleTotal = articleLinks.length + articleVideos.length;
 
   const heroDate = pickHeroDate(sortedVideos, sortedLinks);
 
@@ -769,7 +770,7 @@ export function renderCatalogHtml(
         : renderAiNewsSection(aiNewsVideos, aiNewsLinks, bp)) +
       (deepDiveTotal === 0 ? '' : renderDeepDivesSection(deepDiveVideos, bp)) +
       (toolsTotal === 0 ? '' : renderToolsSection(toolsVideos, bp)) +
-      (articleTotal === 0 ? '' : renderArticlesSection(articleLinks));
+      (articleTotal === 0 ? '' : renderArticlesSection(articleLinks, articleVideos, bp));
   }
 
   const streamCount = enableTools ? 'four' : 'three';
@@ -973,10 +974,12 @@ ${cards}
 // Section: Articles (curated external links)
 // ---------------------------------------------------------------------------
 
-function renderArticlesSection(links: readonly LinkEntry[]): string {
-  const count = links.length;
+function renderArticlesSection(links: readonly LinkEntry[], videos: readonly CatalogEntry[], bp: string): string {
+  const count = links.length + videos.length;
   const label = `${count} article${count === 1 ? '' : 's'}`;
-  const cards = links.map(renderLinkCard).join('\n');
+  const linkCards = links.map(renderLinkCard).join('\n');
+  const videoCards = videos.map((e) => renderArticleCard(e, bp)).join('\n');
+  const cards = videoCards + linkCards;
   return `
 <section class="section" id="articles">
   <div class="wrap">
@@ -989,6 +992,29 @@ ${cards}
     </div>
   </div>
 </section>`.trim();
+}
+
+/**
+ * Render a card for a self-hosted catalog entry in the Articles section.
+ * Identical layout to a Deep Dive card but tagged as "Article".
+ */
+function renderArticleCard(entry: CatalogEntry, bp: string): string {
+  const slug = escapeHtml(entry.slug);
+  const title = escapeHtml(entry.title);
+  const thumb = escapeHtml(entry.thumbnailUrl);
+  const href = `${bp}/a/${slug}`;
+  return `      <article class="card">
+        <a href="${href}" class="card__art" aria-label="${title}">
+          <img src="${thumb}" alt="${title}" loading="lazy" decoding="async">
+        </a>
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="tag">Article</span>
+          </div>
+${renderDates(entry)}
+          <h3 class="card__title"><a href="${href}">${title}</a></h3>
+        </div>
+      </article>`;
 }
 
 function renderDates(entry: CatalogEntry): string {
