@@ -25,12 +25,20 @@
   .section-card li{margin-bottom:5px;}
   .section-card strong{color:#d0d4dc;}
   .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
-  .code-block{background:#1a1d27;border:1px solid #23262f;border-radius:10px;padding:16px 20px;margin:12px 0;overflow-x:auto;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13.5px;color:#c9cdd5;line-height:1.6;}
+  .code-block{background:#1a1d27;border:1px solid #23262f;border-radius:0 0 10px 10px;padding:16px 20px;margin:0 0 12px;overflow-x:auto;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13.5px;color:#c9cdd5;line-height:1.6;white-space:pre;}
   .code-block .kw{color:#c4b5fd;}
   .code-block .str{color:#86efac;}
   .code-block .fn{color:#93c5fd;}
   .code-block .cmt{color:#555b6e;font-style:italic;}
   .code-block .op{color:#f9a8d4;}
+  .code-block .typ{color:#fbbf24;}
+  .code-block-plain{background:#1a1d27;border:1px solid #23262f;border-radius:10px;padding:16px 20px;margin:12px 0;overflow-x:auto;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13.5px;color:#c9cdd5;line-height:1.6;white-space:pre;}
+  .lang-tabs{display:flex;gap:0;margin-top:12px;}
+  .lang-tab{padding:6px 18px;font-size:12px;font-weight:600;border:1px solid #23262f;border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;transition:all 0.2s;background:#12141b;color:#8b8fa3;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;letter-spacing:0.5px;}
+  .lang-tab.active{background:#1a1d27;color:#a78bfa;border-color:#23262f;}
+  .lang-tab:not(.active):hover{color:#c9cdd5;background:#161820;}
+  .lang-panel{display:none;}
+  .lang-panel.active{display:block;}
   .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
   .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
   .takeaways ol{margin-left:20px;}
@@ -50,14 +58,15 @@
   <span>LangChain</span>
   <span class="badge">Open Source</span>
   <span class="badge">Python &amp; TypeScript</span>
-  <a href="https://github.com/langchain-ai/deepagents" target="_blank">GitHub Repo ↗</a>
+  <a href="https://github.com/langchain-ai/deepagents" target="_blank">GitHub Repo (Python) ↗</a>
+  <a href="https://github.com/langchain-ai/deepagentsjs" target="_blank">GitHub Repo (JS/TS) ↗</a>
   <a href="https://docs.langchain.com/oss/python/deepagents/overview" target="_blank">Official Docs ↗</a>
 </div>
 
 <!-- Overview -->
 <div class="overview-card">
   <h2>Overview</h2>
-  <p>LangChain just open-sourced <strong style="color:#e4e6eb;">Deep Agents</strong> — an opinionated, batteries-included agent harness built on top of LangGraph. Inspired by Claude Code, Deep Agents gives you planning, filesystem access, sub-agent orchestration, context management, and persistent memory out of the box. It works with any model that supports tool calling, from frontier APIs like OpenAI and Anthropic to self-hosted models via Ollama or vLLM. This article explains what Deep Agents is, why it exists, how the architecture works, and walks through a practical example.</p>
+  <p>LangChain just open-sourced <strong style="color:#e4e6eb;">Deep Agents</strong> — an opinionated, batteries-included agent harness built on top of LangGraph. Inspired by Claude Code, Deep Agents gives you planning, filesystem access, sub-agent orchestration, context management, and persistent memory out of the box. It works with any model that supports tool calling, from frontier APIs like OpenAI and Anthropic to self-hosted models via Ollama or vLLM. Available in both <strong style="color:#e4e6eb;">Python</strong> and <strong style="color:#e4e6eb;">TypeScript</strong>, this article explains what Deep Agents is, why it exists, how the architecture works, and walks through a practical example in both languages.</p>
 </div>
 
 <!-- Section 1 -->
@@ -90,9 +99,9 @@
 <!-- Section 3 -->
 <div class="section-card">
   <h2><span class="section-num">3</span> Core Architecture</h2>
-  <p>Deep Agents is structured as a Python monorepo with several independently versioned packages:</p>
+  <p>Deep Agents ships as two separate repositories — one for Python, one for TypeScript — each structured as a monorepo with independently versioned packages:</p>
   <ul>
-    <li><strong><code>libs/deepagents/</code></strong> — the core SDK with <code>create_deep_agent</code>, middleware, and backends</li>
+    <li><strong><code>libs/deepagents/</code></strong> — the core SDK (<code>create_deep_agent</code> in Python, <code>createDeepAgent</code> in TS)</li>
     <li><strong><code>libs/code/</code></strong> — "Deep Agents Code", a terminal-based coding agent (like Claude Code, but model-agnostic)</li>
     <li><strong><code>libs/cli/</code></strong> — deployment CLI for production environments</li>
     <li><strong><code>libs/acp/</code></strong> — Agent Context Protocol integration</li>
@@ -110,7 +119,7 @@
   <p>Deep Agents can spawn sub-agents that operate with their own isolated context windows. This means a research task can delegate to a "web searcher" sub-agent and a "critic" sub-agent running in parallel, each with their own conversation history. The parent agent stays focused on orchestration while children handle the details.</p>
 
   <p style="margin-top:16px;"><strong>📋 Planning Tools</strong></p>
-  <p>Built-in planning primitives let agents decompose complex objectives into trackable sub-tasks, monitor progress, and adapt their plan as new information arrives. This is critical for multi-step workflows where the path isn't known in advance.</p>
+  <p>Built-in planning primitives (<code>write_todos</code>) let agents decompose complex objectives into trackable sub-tasks, monitor progress, and adapt their plan as new information arrives. This is critical for multi-step workflows where the path isn't known in advance.</p>
 
   <p style="margin-top:16px;"><strong>💾 Persistent Memory</strong></p>
   <p>Deep Agents includes a virtual filesystem that persists system prompts, learned skills, and long-term memory across sessions. Pluggable state and store backends mean you can swap in whatever persistence layer your infrastructure uses.</p>
@@ -128,7 +137,7 @@
   <p>Every tool call can be intercepted — approve, edit, or reject before execution. This gives you safety rails for high-stakes operations while still allowing fully autonomous mode when appropriate.</p>
 
   <p style="margin-top:16px;"><strong>🔧 Extensible Tools and MCP Support</strong></p>
-  <p>Bring your own Python functions as tools, or connect any MCP (Model Context Protocol) server. Deep Agents is designed to be extended, not replaced — override any piece without forking the framework.</p>
+  <p>Bring your own functions as tools, or connect any MCP (Model Context Protocol) server. Deep Agents is designed to be extended, not replaced — override any piece without forking the framework.</p>
 </div>
 
 <!-- Section 5 -->
@@ -140,38 +149,76 @@
     <li><strong>Open-weight hosted</strong> — models on Baseten, Fireworks, Together AI</li>
     <li><strong>Self-hosted</strong> — Ollama, vLLM, llama.cpp for fully local deployments</li>
   </ul>
-  <p>You specify the model as a string like <code>"openai:gpt-5.5"</code> or <code>"anthropic:claude-sonnet-4"</code>, and Deep Agents handles the rest via LangChain's chat model abstraction.</p>
+  <p>In Python, you specify the model as a string like <code>"openai:gpt-5.5"</code>. In TypeScript, you pass a LangChain chat model instance like <code>new ChatOpenAI({ model: "gpt-5" })</code>.</p>
 </div>
 
 <!-- Section 6: Example -->
 <div class="section-card">
   <h2><span class="section-num">6</span> Getting Started — A Practical Example</h2>
-  <p>Here's how to build a simple research agent with Deep Agents that can search the web, delegate to a critic, and write reports.</p>
+  <p>Here's how to build a simple research agent with Deep Agents that can search the web, delegate to a critic, and write reports. Every step is shown in both Python and TypeScript.</p>
 
   <p><strong>Step 1: Install</strong></p>
-  <div class="code-block">
-<span class="cmt"># Install with uv (recommended) or pip</span>
-uv add deepagents tavily-python
+  <div class="lang-tabs">
+    <span class="lang-tab active" onclick="switchTab(this,'install')">Python</span>
+    <span class="lang-tab" onclick="switchTab(this,'install')">TypeScript</span>
+  </div>
+  <div class="lang-panel active" data-group="install" data-lang="python">
+    <div class="code-block"><span class="cmt"># Install with uv (recommended) or pip</span>
+uv add deepagents tavily-python</div>
+  </div>
+  <div class="lang-panel" data-group="install" data-lang="typescript">
+    <div class="code-block"><span class="cmt">// Install with npm, pnpm, or yarn</span>
+npm install deepagents @langchain/anthropic @langchain/tavily zod</div>
   </div>
 
   <p><strong>Step 2: Define a Custom Tool</strong></p>
-  <div class="code-block">
-<span class="kw">from</span> tavily <span class="kw">import</span> TavilyClient
+  <div class="lang-tabs">
+    <span class="lang-tab active" onclick="switchTab(this,'tool')">Python</span>
+    <span class="lang-tab" onclick="switchTab(this,'tool')">TypeScript</span>
+  </div>
+  <div class="lang-panel active" data-group="tool" data-lang="python">
+    <div class="code-block"><span class="kw">from</span> tavily <span class="kw">import</span> TavilyClient
 
 tavily <span class="op">=</span> TavilyClient()
 
-<span class="kw">def</span> <span class="fn">internet_search</span>(query: <span class="fn">str</span>) <span class="op">-></span> <span class="fn">str</span>:
+<span class="kw">def</span> <span class="fn">internet_search</span>(query: <span class="typ">str</span>) <span class="op">-&gt;</span> <span class="typ">str</span>:
     <span class="str">"""Search the internet for current information."""</span>
     results <span class="op">=</span> tavily.<span class="fn">search</span>(query<span class="op">=</span>query, max_results<span class="op">=</span><span class="str">5</span>)
     <span class="kw">return</span> <span class="str">"\n"</span>.<span class="fn">join</span>(
-        <span class="str">f"</span>{r[<span class="str">'title'</span>]}: {r[<span class="str">'content'</span>]}<span class="str">"</span>
+        <span class="kw">f</span><span class="str">"{r['title']}: {r['content']}"</span>
         <span class="kw">for</span> r <span class="kw">in</span> results[<span class="str">"results"</span>]
-    )
+    )</div>
+  </div>
+  <div class="lang-panel" data-group="tool" data-lang="typescript">
+    <div class="code-block"><span class="kw">import</span> { z } <span class="kw">from</span> <span class="str">"zod"</span>;
+<span class="kw">import</span> { tool } <span class="kw">from</span> <span class="str">"langchain"</span>;
+<span class="kw">import</span> { TavilySearch } <span class="kw">from</span> <span class="str">"@langchain/tavily"</span>;
+
+<span class="kw">const</span> internetSearch <span class="op">=</span> <span class="fn">tool</span>(
+  <span class="kw">async</span> ({ query, maxResults <span class="op">=</span> <span class="str">5</span> }: {
+    query: <span class="typ">string</span>; maxResults?: <span class="typ">number</span>;
+  }) <span class="op">=&gt;</span> {
+    <span class="kw">const</span> tavily <span class="op">=</span> <span class="kw">new</span> <span class="fn">TavilySearch</span>({ maxResults });
+    <span class="kw">return</span> <span class="kw">await</span> tavily.<span class="fn">_call</span>({ query });
+  },
+  {
+    name: <span class="str">"internet_search"</span>,
+    description: <span class="str">"Search the internet for current information"</span>,
+    schema: z.<span class="fn">object</span>({
+      query: z.<span class="fn">string</span>().<span class="fn">describe</span>(<span class="str">"The search query"</span>),
+      maxResults: z.<span class="fn">number</span>().<span class="fn">optional</span>().<span class="fn">default</span>(<span class="str">5</span>),
+    }),
+  }
+);</div>
   </div>
 
   <p><strong>Step 3: Configure Sub-agents</strong></p>
-  <div class="code-block">
-<span class="cmt"># Define a critic sub-agent that reviews the research output</span>
+  <div class="lang-tabs">
+    <span class="lang-tab active" onclick="switchTab(this,'subagent')">Python</span>
+    <span class="lang-tab" onclick="switchTab(this,'subagent')">TypeScript</span>
+  </div>
+  <div class="lang-panel active" data-group="subagent" data-lang="python">
+    <div class="code-block"><span class="cmt"># Define a critic sub-agent that reviews the research output</span>
 critic_config <span class="op">=</span> {
     <span class="str">"name"</span>: <span class="str">"critic"</span>,
     <span class="str">"model"</span>: <span class="str">"openai:gpt-4o"</span>,
@@ -180,12 +227,29 @@ critic_config <span class="op">=</span> {
         <span class="str">"accuracy, completeness, and clarity. Suggest specific "</span>
         <span class="str">"improvements."</span>
     ),
-}
+}</div>
+  </div>
+  <div class="lang-panel" data-group="subagent" data-lang="typescript">
+    <div class="code-block"><span class="kw">import</span> { <span class="kw">type</span> <span class="typ">SubAgent</span> } <span class="kw">from</span> <span class="str">"deepagents"</span>;
+
+<span class="cmt">// Define a critic sub-agent that reviews the research output</span>
+<span class="kw">const</span> criticConfig: <span class="typ">SubAgent</span> <span class="op">=</span> {
+  name: <span class="str">"critic"</span>,
+  description: <span class="str">"Reviews reports for accuracy and completeness"</span>,
+  systemPrompt:
+    <span class="str">"You are a research critic. Review the report for "</span> <span class="op">+</span>
+    <span class="str">"accuracy, completeness, and clarity. Suggest specific "</span> <span class="op">+</span>
+    <span class="str">"improvements."</span>,
+};</div>
   </div>
 
   <p><strong>Step 4: Create and Run the Agent</strong></p>
-  <div class="code-block">
-<span class="kw">from</span> deepagents <span class="kw">import</span> create_deep_agent
+  <div class="lang-tabs">
+    <span class="lang-tab active" onclick="switchTab(this,'agent')">Python</span>
+    <span class="lang-tab" onclick="switchTab(this,'agent')">TypeScript</span>
+  </div>
+  <div class="lang-panel active" data-group="agent" data-lang="python">
+    <div class="code-block"><span class="kw">from</span> deepagents <span class="kw">import</span> create_deep_agent
 
 agent <span class="op">=</span> <span class="fn">create_deep_agent</span>(
     model<span class="op">=</span><span class="str">"anthropic:claude-sonnet-4"</span>,
@@ -204,20 +268,44 @@ agent <span class="op">=</span> <span class="fn">create_deep_agent</span>(
 result <span class="op">=</span> agent.<span class="fn">invoke</span>({
     <span class="str">"messages"</span>: <span class="str">"Research the current state of AI agent frameworks "</span>
                 <span class="str">"and write a comparative analysis."</span>
-})
+})</div>
+  </div>
+  <div class="lang-panel" data-group="agent" data-lang="typescript">
+    <div class="code-block"><span class="kw">import</span> { ChatAnthropic } <span class="kw">from</span> <span class="str">"@langchain/anthropic"</span>;
+<span class="kw">import</span> { createDeepAgent } <span class="kw">from</span> <span class="str">"deepagents"</span>;
+
+<span class="kw">const</span> agent <span class="op">=</span> <span class="fn">createDeepAgent</span>({
+  model: <span class="kw">new</span> <span class="fn">ChatAnthropic</span>({
+    model: <span class="str">"claude-sonnet-4-20250514"</span>,
+    temperature: <span class="str">0</span>,
+  }),
+  tools: [internetSearch],
+  subagents: [criticConfig],
+  systemPrompt:
+    <span class="str">"You are a research assistant. When given a topic:\n"</span> <span class="op">+</span>
+    <span class="str">"1. Plan your research approach\n"</span> <span class="op">+</span>
+    <span class="str">"2. Search for current information\n"</span> <span class="op">+</span>
+    <span class="str">"3. Write a comprehensive report\n"</span> <span class="op">+</span>
+    <span class="str">"4. Delegate to the critic for review\n"</span> <span class="op">+</span>
+    <span class="str">"5. Incorporate feedback and finalize"</span>,
+});
+
+<span class="kw">const</span> result <span class="op">=</span> <span class="kw">await</span> agent.<span class="fn">invoke</span>({
+  messages: [
+    { role: <span class="str">"user"</span>, content: <span class="str">"Research the current state of AI agent frameworks and write a comparative analysis."</span> },
+  ],
+});</div>
   </div>
 
-  <div class="highlight">This example demonstrates the core Deep Agents workflow: the main agent plans, uses tools, writes files, delegates review to a sub-agent, and produces a polished output — all with built-in context management handling the details.</div>
+  <div class="highlight">This example demonstrates the core Deep Agents workflow: the main agent plans, uses tools, writes files, delegates review to a sub-agent, and produces a polished output — all with built-in context management handling the details. The Python and TypeScript APIs mirror each other closely.</div>
 </div>
 
 <!-- Section 7 -->
 <div class="section-card">
   <h2><span class="section-num">7</span> Deep Agents Code — The Terminal Coding Agent</h2>
   <p>Beyond the SDK, LangChain ships <strong>Deep Agents Code</strong> — a pre-built coding agent that runs in your terminal, similar to Claude Code or Cursor, but powered by any LLM.</p>
-  <div class="code-block">
-<span class="cmt"># Install with one command</span>
-curl -LsSf https://langch.in/dcode | bash
-  </div>
+  <div class="code-block-plain"><span class="cmt"># Install with one command</span>
+curl -LsSf https://langch.in/dcode | bash</div>
   <p>Deep Agents Code gives you an interactive coding assistant with full filesystem access, shell commands, and context management — all configurable to use your preferred model provider. It's essentially a reference implementation showing what Deep Agents can build.</p>
 </div>
 
@@ -254,17 +342,30 @@ curl -LsSf https://langch.in/dcode | bash
     <li><strong>Built for long-running work</strong> — planning, context management, and persistent memory solve the problems that break traditional single-turn agents</li>
     <li><strong>Sub-agent orchestration</strong> — delegate tasks to isolated child agents running in parallel, each with their own context window</li>
     <li><strong>Model-agnostic</strong> — works with OpenAI, Anthropic, Google, open-weight models, and self-hosted LLMs via Ollama/vLLM</li>
+    <li><strong>Python and TypeScript</strong> — first-class support in both languages with nearly identical APIs (<code>create_deep_agent</code> / <code>createDeepAgent</code>)</li>
     <li><strong>LangGraph foundation</strong> — built on LangGraph's streaming, persistence, and checkpointing, with native LangSmith integration</li>
     <li><strong>Inspired by Claude Code</strong> — LangChain identified what makes Claude Code effective and built an open, extensible version of that approach</li>
     <li><strong>Deep Agents Code</strong> — a terminal coding agent ships alongside the SDK, installable with a single curl command</li>
-    <li><strong>JavaScript support</strong> — a TypeScript version is available via <code>deepagents.js</code> for Node.js environments</li>
     <li><strong>Production-ready</strong> — tracing, evaluation, and deployment all work natively through LangSmith</li>
     <li><strong>Open source</strong> — MIT licensed, extensible by design, with a growing ecosystem of examples and community contributions</li>
   </ol>
 </div>
 
-<footer>Article generated from LangChain Deep Agents documentation and GitHub repository · langchain-ai/deepagents</footer>
+<footer>Article generated from LangChain Deep Agents documentation and GitHub repositories · langchain-ai/deepagents · langchain-ai/deepagentsjs</footer>
 
 </div>
+
+<script>
+function switchTab(clicked, group) {
+  const tabs = clicked.parentElement.querySelectorAll('.lang-tab');
+  const idx = Array.from(tabs).indexOf(clicked);
+  tabs.forEach(t => t.classList.remove('active'));
+  clicked.classList.add('active');
+  const panels = document.querySelectorAll(`.lang-panel[data-group="${group}"]`);
+  panels.forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
+}
+</script>
 </body>
 </html>
