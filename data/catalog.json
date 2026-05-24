@@ -165,7 +165,18 @@
       "thumbnailSource": "html",
       "sha256": "e5cc60067c534a4423b1dce12422128862651415cc68c9979a8ef8262882c50e",
       "category": "deep-dive"
+    },
+    {
+      "slug": "langchain-deep-agents-the-batteries-included-agent-harness-explained",
+      "title": "LangChain Deep Agents — The Batteries-Included Agent Harness, Explained",
+      "publishedAt": "2026-05-24T05:56:11.635Z",
+      "sourcePath": "/tmp/langchain-deep-agents-explained.html",
+      "articlePath": "articles/langchain-deep-agents-the-batteries-included-agent-harness-explained.html",
+      "thumbnailUrl": "https://raw.githubusercontent.com/langchain-ai/deepagents/main/.github/images/logo-dark.svg",
+      "thumbnailSource": "html",
+      "sha256": "39158ca2c6ba5706e75898a8c47e2a11f4e606df625a5c64aa3ac7391e741b89",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-23T07:20:15.000Z"
+  "updatedAt": "2026-05-24T05:56:11.645Z"
 }
