@@ -99,7 +99,18 @@
       "thumbnailSource": "html",
       "sha256": "2bdddd1818001def515215552fa77606b601f8395f4b2b5bcbc7d47dd58af6ec",
       "category": "deep-dive"
+    },
+    {
+      "slug": "mcp-apps-are-changing-the-internet-here-s-how-to-build-one-skybridge-better-stack",
+      "title": "MCP Apps Are Changing the Internet. Here's How to Build One! (Skybridge) — Better Stack",
+      "publishedAt": "2026-05-24T17:00:05.000Z",
+      "sourcePath": "/tmp/deep_dive_9X8GRGcl5oA.html",
+      "articlePath": "experimental/mcp-apps-are-changing-the-internet-here-s-how-to-build-one-skybridge-better-stack.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/9X8GRGcl5oA/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "dfa19d3108f6cb610f983e1a547f4dffa6e0d64e2fd09ce22b6ac70096c5e277",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-23T20:15:54.305Z"
+  "updatedAt": "2026-05-24T21:01:07.941Z"
 }
