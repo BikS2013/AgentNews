@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangChain Deep Agents — The Batteries-Included Agent Harness, Explained</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+  .container{max-width:860px;margin:0 auto;}
+  h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+  .meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+  .meta a{color:#a78bfa;text-decoration:none;}
+  .meta a:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+  .overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+  .overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+  .overview-card p{color:#b0b4c0;font-size:15px;}
+  .section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+  .section-card:hover{border-color:rgba(139,92,246,0.35);}
+  .section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+  .section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+  .section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+  .section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+  .section-card li{margin-bottom:5px;}
+  .section-card strong{color:#d0d4dc;}
+  .highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+  .code-block{background:#1a1d27;border:1px solid #23262f;border-radius:10px;padding:16px 20px;margin:12px 0;overflow-x:auto;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13.5px;color:#c9cdd5;line-height:1.6;}
+  .code-block .kw{color:#c4b5fd;}
+  .code-block .str{color:#86efac;}
+  .code-block .fn{color:#93c5fd;}
+  .code-block .cmt{color:#555b6e;font-style:italic;}
+  .code-block .op{color:#f9a8d4;}
+  .takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+  .takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+  .takeaways ol{margin-left:20px;}
+  .takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+  .takeaways li strong{color:#c4b5fd;}
+  footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+  @media(max-width:600px){.section-card,.overview-card,.takeaways{padding:18px 16px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://raw.githubusercontent.com/langchain-ai/deepagents/main/.github/images/logo-dark.svg" alt="LangChain Deep Agents" style="display:none;">
+
+<h1>LangChain Deep Agents — The Batteries-Included Agent Harness, Explained</h1>
+<div class="meta">
+  <span>LangChain</span>
+  <span class="badge">Open Source</span>
+  <span class="badge">Python &amp; TypeScript</span>
+  <a href="https://github.com/langchain-ai/deepagents" target="_blank">GitHub Repo ↗</a>
+  <a href="https://docs.langchain.com/oss/python/deepagents/overview" target="_blank">Official Docs ↗</a>
+</div>
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>LangChain just open-sourced <strong style="color:#e4e6eb;">Deep Agents</strong> — an opinionated, batteries-included agent harness built on top of LangGraph. Inspired by Claude Code, Deep Agents gives you planning, filesystem access, sub-agent orchestration, context management, and persistent memory out of the box. It works with any model that supports tool calling, from frontier APIs like OpenAI and Anthropic to self-hosted models via Ollama or vLLM. This article explains what Deep Agents is, why it exists, how the architecture works, and walks through a practical example.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card">
+  <h2><span class="section-num">1</span> What Are Deep Agents?</h2>
+  <p>Deep Agents is an <strong>open-source agent harness</strong> — a term LangChain uses to describe an opinionated agent framework that comes batteries-included with built-in tools and capabilities. Unlike minimal agent loops where you wire everything yourself, Deep Agents gives you a production-ready agent that runs out of the box.</p>
+  <p>The key distinction from other LangChain tools:</p>
+  <ul>
+    <li><strong>LangGraph</strong> — the low-level graph runtime for building stateful workflows</li>
+    <li><strong>LangChain's <code>create_agent</code></strong> — a minimal agent harness on top of LangGraph</li>
+    <li><strong>Deep Agents</strong> — a fully opinionated harness on top of <code>create_agent</code>, bundling filesystem, sub-agents, context management, and skills</li>
+  </ul>
+  <div class="highlight">Think of it this way: LangGraph is the engine, <code>create_agent</code> is a basic car, and Deep Agents is a fully loaded vehicle with GPS, cruise control, and autopilot built in.</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card">
+  <h2><span class="section-num">2</span> Why Deep Agents Exists</h2>
+  <p>AI agents are taking on increasingly complex, long-running work — multi-step research, autonomous coding, data pipelines that run for hours. Traditional single-turn agent loops struggle with this because they hit fundamental bottlenecks:</p>
+  <ul>
+    <li><strong>Context window overflow</strong> — long tasks accumulate tool outputs and conversation history that blow past token limits</li>
+    <li><strong>No persistent state</strong> — the agent forgets everything between sessions, forcing repeated work</li>
+    <li><strong>No delegation</strong> — a single agent trying to do everything creates a cognitive bottleneck</li>
+    <li><strong>No planning</strong> — without the ability to decompose tasks, agents get lost in complex objectives</li>
+  </ul>
+  <p>Deep Agents was built specifically to solve these problems. It provides the infrastructure layer that long-running, autonomous agents need — so developers can focus on their domain logic instead of reinventing agent plumbing.</p>
+  <div class="highlight">Inspired by Claude Code — LangChain's stated goal was to identify what makes Claude Code's general-purpose approach work, and push that further as an open, extensible framework.</div>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card">
+  <h2><span class="section-num">3</span> Core Architecture</h2>
+  <p>Deep Agents is structured as a Python monorepo with several independently versioned packages:</p>
+  <ul>
+    <li><strong><code>libs/deepagents/</code></strong> — the core SDK with <code>create_deep_agent</code>, middleware, and backends</li>
+    <li><strong><code>libs/code/</code></strong> — "Deep Agents Code", a terminal-based coding agent (like Claude Code, but model-agnostic)</li>
+    <li><strong><code>libs/cli/</code></strong> — deployment CLI for production environments</li>
+    <li><strong><code>libs/acp/</code></strong> — Agent Context Protocol integration</li>
+    <li><strong><code>libs/evals/</code></strong> — evaluation suite and Harbor integration</li>
+    <li><strong><code>libs/partners/</code></strong> — provider integrations (e.g., Daytona for sandboxed environments)</li>
+  </ul>
+  <p>The architecture follows a layered composition model. Any LangGraph <code>CompiledStateGraph</code> can be passed in as a sub-agent, so custom orchestration plugs in alongside the harness defaults.</p>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card">
+  <h2><span class="section-num">4</span> Key Features In-Depth</h2>
+
+  <p><strong>🔀 Sub-agents with Isolated Context</strong></p>
+  <p>Deep Agents can spawn sub-agents that operate with their own isolated context windows. This means a research task can delegate to a "web searcher" sub-agent and a "critic" sub-agent running in parallel, each with their own conversation history. The parent agent stays focused on orchestration while children handle the details.</p>
+
+  <p style="margin-top:16px;"><strong>📋 Planning Tools</strong></p>
+  <p>Built-in planning primitives let agents decompose complex objectives into trackable sub-tasks, monitor progress, and adapt their plan as new information arrives. This is critical for multi-step workflows where the path isn't known in advance.</p>
+
+  <p style="margin-top:16px;"><strong>💾 Persistent Memory</strong></p>
+  <p>Deep Agents includes a virtual filesystem that persists system prompts, learned skills, and long-term memory across sessions. Pluggable state and store backends mean you can swap in whatever persistence layer your infrastructure uses.</p>
+
+  <p style="margin-top:16px;"><strong>🧠 Native Context Management</strong></p>
+  <p>Context management middleware automatically handles the biggest pain point of long-running agents:</p>
+  <ul>
+    <li><strong>Conversation compression</strong> — summarizes old history to stay within token limits</li>
+    <li><strong>Tool output offloading</strong> — moves large tool results to disk to free context space</li>
+    <li><strong>Sub-agent isolation</strong> — each child agent gets its own context, preventing cross-contamination</li>
+    <li><strong>Prompt caching</strong> — reduces latency and cost for repeated patterns</li>
+  </ul>
+
+  <p style="margin-top:16px;"><strong>🛡️ Human-in-the-Loop</strong></p>
+  <p>Every tool call can be intercepted — approve, edit, or reject before execution. This gives you safety rails for high-stakes operations while still allowing fully autonomous mode when appropriate.</p>
+
+  <p style="margin-top:16px;"><strong>🔧 Extensible Tools and MCP Support</strong></p>
+  <p>Bring your own Python functions as tools, or connect any MCP (Model Context Protocol) server. Deep Agents is designed to be extended, not replaced — override any piece without forking the framework.</p>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card">
+  <h2><span class="section-num">5</span> Model Compatibility</h2>
+  <p>Deep Agents is fully model-agnostic. Any LLM that supports tool calling works:</p>
+  <ul>
+    <li><strong>Frontier APIs</strong> — OpenAI (GPT-4o, GPT-5.5), Anthropic (Claude), Google (Gemini)</li>
+    <li><strong>Open-weight hosted</strong> — models on Baseten, Fireworks, Together AI</li>
+    <li><strong>Self-hosted</strong> — Ollama, vLLM, llama.cpp for fully local deployments</li>
+  </ul>
+  <p>You specify the model as a string like <code>"openai:gpt-5.5"</code> or <code>"anthropic:claude-sonnet-4"</code>, and Deep Agents handles the rest via LangChain's chat model abstraction.</p>
+</div>
+
+<!-- Section 6: Example -->
+<div class="section-card">
+  <h2><span class="section-num">6</span> Getting Started — A Practical Example</h2>
+  <p>Here's how to build a simple research agent with Deep Agents that can search the web, delegate to a critic, and write reports.</p>
+
+  <p><strong>Step 1: Install</strong></p>
+  <div class="code-block">
+<span class="cmt"># Install with uv (recommended) or pip</span>
+uv add deepagents tavily-python
+  </div>
+
+  <p><strong>Step 2: Define a Custom Tool</strong></p>
+  <div class="code-block">
+<span class="kw">from</span> tavily <span class="kw">import</span> TavilyClient
+
+tavily <span class="op">=</span> TavilyClient()
+
+<span class="kw">def</span> <span class="fn">internet_search</span>(query: <span class="fn">str</span>) <span class="op">-></span> <span class="fn">str</span>:
+    <span class="str">"""Search the internet for current information."""</span>
+    results <span class="op">=</span> tavily.<span class="fn">search</span>(query<span class="op">=</span>query, max_results<span class="op">=</span><span class="str">5</span>)
+    <span class="kw">return</span> <span class="str">"\n"</span>.<span class="fn">join</span>(
+        <span class="str">f"</span>{r[<span class="str">'title'</span>]}: {r[<span class="str">'content'</span>]}<span class="str">"</span>
+        <span class="kw">for</span> r <span class="kw">in</span> results[<span class="str">"results"</span>]
+    )
+  </div>
+
+  <p><strong>Step 3: Configure Sub-agents</strong></p>
+  <div class="code-block">
+<span class="cmt"># Define a critic sub-agent that reviews the research output</span>
+critic_config <span class="op">=</span> {
+    <span class="str">"name"</span>: <span class="str">"critic"</span>,
+    <span class="str">"model"</span>: <span class="str">"openai:gpt-4o"</span>,
+    <span class="str">"system_prompt"</span>: (
+        <span class="str">"You are a research critic. Review the report for "</span>
+        <span class="str">"accuracy, completeness, and clarity. Suggest specific "</span>
+        <span class="str">"improvements."</span>
+    ),
+}
+  </div>
+
+  <p><strong>Step 4: Create and Run the Agent</strong></p>
+  <div class="code-block">
+<span class="kw">from</span> deepagents <span class="kw">import</span> create_deep_agent
+
+agent <span class="op">=</span> <span class="fn">create_deep_agent</span>(
+    model<span class="op">=</span><span class="str">"anthropic:claude-sonnet-4"</span>,
+    tools<span class="op">=</span>[internet_search],
+    subagents<span class="op">=</span>[critic_config],
+    system_prompt<span class="op">=</span>(
+        <span class="str">"You are a research assistant. When given a topic:\n"</span>
+        <span class="str">"1. Plan your research approach\n"</span>
+        <span class="str">"2. Search for current information\n"</span>
+        <span class="str">"3. Write a comprehensive report\n"</span>
+        <span class="str">"4. Delegate to the critic for review\n"</span>
+        <span class="str">"5. Incorporate feedback and finalize"</span>
+    ),
+)
+
+result <span class="op">=</span> agent.<span class="fn">invoke</span>({
+    <span class="str">"messages"</span>: <span class="str">"Research the current state of AI agent frameworks "</span>
+                <span class="str">"and write a comparative analysis."</span>
+})
+  </div>
+
+  <div class="highlight">This example demonstrates the core Deep Agents workflow: the main agent plans, uses tools, writes files, delegates review to a sub-agent, and produces a polished output — all with built-in context management handling the details.</div>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card">
+  <h2><span class="section-num">7</span> Deep Agents Code — The Terminal Coding Agent</h2>
+  <p>Beyond the SDK, LangChain ships <strong>Deep Agents Code</strong> — a pre-built coding agent that runs in your terminal, similar to Claude Code or Cursor, but powered by any LLM.</p>
+  <div class="code-block">
+<span class="cmt"># Install with one command</span>
+curl -LsSf https://langch.in/dcode | bash
+  </div>
+  <p>Deep Agents Code gives you an interactive coding assistant with full filesystem access, shell commands, and context management — all configurable to use your preferred model provider. It's essentially a reference implementation showing what Deep Agents can build.</p>
+</div>
+
+<!-- Section 8 -->
+<div class="section-card">
+  <h2><span class="section-num">8</span> When to Use Deep Agents vs. Alternatives</h2>
+  <ul>
+    <li><strong>Use Deep Agents</strong> when you need an autonomous agent for complex, non-deterministic, long-running tasks — research, coding, multi-step workflows, data analysis</li>
+    <li><strong>Use LangChain's <code>create_agent</code></strong> when you want a lighter harness without bundled middleware — simpler tasks, quick prototypes</li>
+    <li><strong>Use LangGraph directly</strong> when the agent loop isn't the right shape and you need a fully custom graph — deterministic workflows, complex branching logic, approval chains</li>
+    <li><strong>Use Claude Code / Cursor</strong> when you want a polished end-user product now — Deep Agents is for builders who want to customize and extend</li>
+  </ul>
+  <div class="highlight">The layers compose: any LangGraph graph can be a sub-agent inside Deep Agents, so you don't have to choose one or the other — you can combine them.</div>
+</div>
+
+<!-- Section 9 -->
+<div class="section-card">
+  <h2><span class="section-num">9</span> Security Model</h2>
+  <p>Deep Agents follows a <strong>"trust the LLM"</strong> model. The agent can do anything its tools allow — boundaries are enforced at the tool and sandbox level, not by expecting the model to self-police.</p>
+  <p>In practice, this means:</p>
+  <ul>
+    <li>Use sandboxed filesystem backends for untrusted workloads</li>
+    <li>Enable human-in-the-loop approval for dangerous operations</li>
+    <li>Restrict shell access to safe command sets when deploying autonomously</li>
+    <li>Pair with LangSmith for tracing and monitoring agent decisions</li>
+  </ul>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Agent harness, not framework</strong> — Deep Agents is opinionated and batteries-included, designed to run out of the box while remaining fully extensible</li>
+    <li><strong>Built for long-running work</strong> — planning, context management, and persistent memory solve the problems that break traditional single-turn agents</li>
+    <li><strong>Sub-agent orchestration</strong> — delegate tasks to isolated child agents running in parallel, each with their own context window</li>
+    <li><strong>Model-agnostic</strong> — works with OpenAI, Anthropic, Google, open-weight models, and self-hosted LLMs via Ollama/vLLM</li>
+    <li><strong>LangGraph foundation</strong> — built on LangGraph's streaming, persistence, and checkpointing, with native LangSmith integration</li>
+    <li><strong>Inspired by Claude Code</strong> — LangChain identified what makes Claude Code effective and built an open, extensible version of that approach</li>
+    <li><strong>Deep Agents Code</strong> — a terminal coding agent ships alongside the SDK, installable with a single curl command</li>
+    <li><strong>JavaScript support</strong> — a TypeScript version is available via <code>deepagents.js</code> for Node.js environments</li>
+    <li><strong>Production-ready</strong> — tracing, evaluation, and deployment all work natively through LangSmith</li>
+    <li><strong>Open source</strong> — MIT licensed, extensible by design, with a growing ecosystem of examples and community contributions</li>
+  </ol>
+</div>
+
+<footer>Article generated from LangChain Deep Agents documentation and GitHub repository · langchain-ai/deepagents</footer>
+
+</div>
+</body>
+</html>
