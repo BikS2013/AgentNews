@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tmux, clearly explained (multi-agent terminal) — David Ondrej</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+.container{max-width:860px;margin:0 auto;}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+.meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+.meta a{color:#a78bfa;text-decoration:none;}
+.meta a:hover{text-decoration:underline;}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+.video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+.overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+.overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+.overview-card p{color:#b0b4c0;font-size:15px;}
+.section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+.section-card:hover{border-color:rgba(139,92,246,0.35);}
+.section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+.section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+.section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+.section-card li{margin-bottom:5px;}
+.section-card strong{color:#d0d4dc;}
+.highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+.takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+.takeaways ol{margin-left:20px;}
+.takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+.takeaways li strong{color:#c4b5fd;}
+.ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+.ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+.ts-row .timestamp{flex-shrink:0;}
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+.toc-wrapper{position:sticky;top:0;z-index:100;background:rgba(15,17,23,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #23262f;padding:0.8rem 1rem;}
+.toc-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;}
+.toc-link{font-size:0.75rem;padding:0.25rem 0.7rem;border-radius:14px;background:#16181f;border:1px solid #23262f;color:#8b8fa3;transition:all 0.2s;white-space:nowrap;text-decoration:none;}
+.toc-link:hover{background:rgba(139,92,246,0.12);color:#a78bfa;border-color:#a78bfa;text-decoration:none;}
+@media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}.toc-link{font-size:0.7rem;padding:0.2rem 0.5rem;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/z7xyZQVK4Dg/maxresdefault.jpg" alt="tmux, clearly explained (multi-agent terminal)" style="display:none;">
+
+<h1>tmux, clearly explained (multi-agent terminal)</h1>
+<div class="meta">
+  <span>David Ondrej</span>
+  <span class="badge">~26 min</span>
+  <a href="https://www.youtube.com/watch?v=z7xyZQVK4Dg" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/z7xyZQVK4Dg" title="tmux, clearly explained (multi-agent terminal)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/z7xyZQVK4Dg/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+</div><!-- close .container before TOC -->
+
+<!-- Sticky TOC -->
+<nav class="toc-wrapper">
+  <div class="toc-inner">
+    <a class="toc-link" href="#s1">1. Why tmux</a>
+    <a class="toc-link" href="#s2">2. Local Setup</a>
+    <a class="toc-link" href="#s3">3. Core Concepts</a>
+    <a class="toc-link" href="#s4">4. VPS Setup</a>
+    <a class="toc-link" href="#s5">5. SSH &amp; tmux on VPS</a>
+    <a class="toc-link" href="#s6">6. Panes &amp; Splitting</a>
+    <a class="toc-link" href="#s7">7. Install Codex CLI</a>
+    <a class="toc-link" href="#s8">8. Multi-Agent Demo</a>
+    <a class="toc-link" href="#s9">9. Install Claude Code</a>
+    <a class="toc-link" href="#s10">10. Persistence Proof</a>
+    <a class="toc-link" href="#s11">11. Live App Preview</a>
+    <a class="toc-link" href="#s12">12. The Full Vision</a>
+    <a class="toc-link" href="#takeaways">🎯 Takeaways</a>
+    <a class="toc-link" href="#timestamps">⏱ Timestamps</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>David Ondrej delivers a comprehensive, hands-on tutorial on <strong>tmux</strong> — the terminal multiplexer that every agentic engineer needs. The video covers everything from local installation to running multiple AI agents (Claude Code, Codex CLI) on a VPS with persistent tmux sessions. The core thesis: while vibe coders develop locally on their MacBook, <strong>agentic engineers use tmux on a VPS to run multiple agents for hours or days</strong>, surviving disconnects, battery deaths, and laptop closures. This is a practical, step-by-step guide to the setup that top AI developers like Peter Steinberger (OpenCode) and Mario Zakner (Pi) use daily.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card" id="s1">
+  <h2><span class="section-num">1</span> Why tmux Is Essential for Agentic Engineers <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>David opens with a direct claim: tmux is <strong>the one tool every agentic engineer needs</strong>. It's a terminal multiplexer — a tool that lets you run multiple terminals at once — but its killer feature for AI agents is <strong>session persistence</strong>.</p>
+  <ul>
+    <li><strong>Terminal multiplexer</strong> — run multiple terminals simultaneously in one window</li>
+    <li><strong>Session persistence</strong> — sessions survive disconnects, battery death, laptop closure. Essential for long-running agents.</li>
+    <li><strong>Use cases</strong> — running <code>/all</code> in Hermes or Codex, large refactors, any agent task that runs for multiple hours</li>
+    <li><strong>Who uses it</strong> — Peter Steinberger (OpenCode creator), Mario Zakner (Pi creator), and "all the famous AI developers"</li>
+    <li><strong>The key difference</strong> — vibe coders develop locally on MacBooks; agentic engineers use tmux on a VPS to run multiple agents for hours or days</li>
+  </ul>
+  <div class="highlight">Key insight: "While most vibe coders develop locally on their MacBook, agentic engineers use tmux running on a VPS to run multiple agents at once for hours, sometimes days at a time."</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card" id="s2">
+  <h2><span class="section-num">2</span> Local Installation &amp; First Session <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=60s" target="_blank">▶ 1:00</a></h2>
+  <p>David walks through installing tmux locally on macOS and the fundamental workflow of creating, detaching, and reattaching sessions.</p>
+  <ul>
+    <li><strong>Install</strong> — <code>brew install tmux</code> on macOS. For other platforms, ask ChatGPT or Claude for the equivalent command.</li>
+    <li><strong>Verify</strong> — <code>tmux -V</code> to check the installed version</li>
+    <li><strong>Create a session</strong> — <code>tmux new -s &lt;name&gt;</code> — the green bar at the bottom confirms you're inside tmux</li>
+    <li><strong>Detach</strong> — <code>Ctrl+B</code> then <code>D</code> — session keeps running in the background</li>
+    <li><strong>Reattach</strong> — <code>tmux attach -t &lt;name&gt;</code> — reconnect to the running session</li>
+    <li><strong>List sessions</strong> — <code>tmux ls</code> — shows all active sessions</li>
+    <li><strong>Exit</strong> — type <code>exit</code> inside the session to close it</li>
+  </ul>
+  <div class="highlight">Key insight: The magic — you can run a command (like <code>ping google.com</code>), detach with Ctrl+B D, do other work, then reattach and find it still running.</div>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card" id="s3">
+  <h2><span class="section-num">3</span> Building Blocks — Sessions, Windows, Panes <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=186s" target="_blank">▶ 3:06</a></h2>
+  <p>David explains the three essential building blocks of tmux and why they matter for multi-agent setups.</p>
+  <ul>
+    <li><strong>Session</strong> — the whole workspace. Wraps everything. Named for easy reference.</li>
+    <li><strong>Window</strong> — like tabs in a browser. Multiple windows inside a session.</li>
+    <li><strong>Pane</strong> — split screens inside a single window. Each pane is a separate terminal.</li>
+    <li><strong>Why this matters for agents</strong> — tmux can persist, spawn, read, and write terminal sessions <strong>programmatically</strong>. This means agents can read what other agents are doing in other panes — impossible with separate terminal windows.</li>
+  </ul>
+  <div class="highlight">Key insight: "tmux is the substrate that the whole multi-agent setup stands on. Agents can see what other agents are doing if they need to."</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card" id="s4">
+  <h2><span class="section-num">4</span> VPS Setup — The Real Power <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=248s" target="_blank">▶ 4:08</a></h2>
+  <p>David pivots from local to the "real deal" — running tmux on a VPS. He walks through getting a VPS and explains why it's the future of agentic development.</p>
+  <ul>
+    <li><strong>Why VPS</strong> — you can have the weakest computer possible (2 GB RAM) and still run heavy agents because all computation happens on the VPS</li>
+    <li><strong>SSH access</strong> — connect to your VPS from any device (MacBook, phone via Terminus app). All development happens on the server.</li>
+    <li><strong>Resilience</strong> — "Even if my MacBook explodes, doesn't matter. All the agentic development is happening on the server."</li>
+    <li><strong>Agent runtime</strong> — last year agents ran for 5-10 minutes. Now with <code>/go</code> in Codex and Hermes, agents can run for <strong>days</strong>. You can't keep your laptop awake that long.</li>
+  </ul>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card" id="s5">
+  <h2><span class="section-num">5</span> SSH into VPS &amp; tmux Setup <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=337s" target="_blank">▶ 5:37</a></h2>
+  <p>David shows the step-by-step process of SSHing into the VPS and configuring tmux for comfortable use.</p>
+  <ul>
+    <li><strong>SSH in</strong> — copy the SSH command from your hosting panel, paste in terminal, enter root password</li>
+    <li><strong>Check tmux</strong> — <code>tmux -V</code> (often pre-installed on Ubuntu VPS)</li>
+    <li><strong>Install if needed</strong> — <code>apt update && apt install tmux</code></li>
+    <li><strong>Enable mouse support (non-negotiable)</strong> — <code>echo "set -g mouse on" >> ~/.tmux.conf</code>. Without this, you can't scroll, can't click between panes, and have to use keyboard shortcuts for everything.</li>
+    <li><strong>Create first session</strong> — <code>tmux new -s agents</code></li>
+  </ul>
+  <div class="highlight">Key insight: "You need to enable mouse support. Without that, you cannot scroll in tmux. You have to do everything by hand."</div>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card" id="s6">
+  <h2><span class="section-num">6</span> Splitting Panes — The Multiplexing Magic <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=457s" target="_blank">▶ 7:37</a></h2>
+  <p>David demonstrates splitting tmux panes to run multiple terminals simultaneously — the foundation for multi-agent setups.</p>
+  <ul>
+    <li><strong>Horizontal split</strong> — <code>Ctrl+B</code> then <code>%</code> (percent sign)</li>
+    <li><strong>Vertical split</strong> — <code>Ctrl+B</code> then <code>"</code> (quotation mark)</li>
+    <li><strong>Important gotcha</strong> — it's <code>Ctrl+B</code>, <strong>release</strong>, then the key. NOT <code>Ctrl+B+%</code> simultaneously.</li>
+    <li><strong>Mouse support</strong> — with mouse enabled, you can click between panes and resize them by dragging</li>
+    <li><strong>Exit a pane</strong> — type <code>exit</code> to close individual panes</li>
+    <li><strong>Kill everything</strong> — <code>tmux kill-server</code> destroys all sessions at once</li>
+  </ul>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card" id="s7">
+  <h2><span class="section-num">7</span> Installing Codex CLI on VPS <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=557s" target="_blank">▶ 9:17</a></h2>
+  <p>David installs OpenAI's Codex CLI on the VPS and demonstrates the authentication process.</p>
+  <ul>
+    <li><strong>Install</strong> — single command from the OpenAI developers docs</li>
+    <li><strong>Auth</strong> — three options: ChatGPT device code (easiest), API key, or JGBT. Device code flow: copy link → paste in browser → log into ChatGPT account → copy 9-digit code → paste in terminal.</li>
+    <li><strong>Model selection</strong> — set to GPT 5.5 medium as baseline</li>
+    <li><strong>Speed</strong> — <code>/fast</code> for 1.5x speed mode</li>
+    <li><strong>The <code>/go</code> feature</strong> — "Codex CLI with the /go feature has been made for this. You really need a VPS to run this effectively."</li>
+  </ul>
+</div>
+
+<!-- Section 8 -->
+<div class="section-card" id="s8">
+  <h2><span class="section-num">8</span> Multi-Agent Demo — Codex in tmux Panes <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=699s" target="_blank">▶ 11:39</a></h2>
+  <p>David creates a tmux session with multiple Codex instances running in parallel panes, each working on different tasks.</p>
+  <ul>
+    <li><strong>Create session</strong> — <code>tmux new -s test</code></li>
+    <li><strong>Launch Codex</strong> — <code>codex --yolo</code> in the first pane (auto-approve mode)</li>
+    <li><strong>Split &amp; launch another</strong> — <code>Ctrl+B %</code> → <code>codex --yolo</code> in second pane</li>
+    <li><strong>Keep splitting</strong> — add as many agents as needed, each in its own pane</li>
+    <li><strong>Use <code>/go</code> for long tasks</strong> — "Build a full stack web app that is a clone of reddit.com…" — this runs for hours autonomously</li>
+    <li><strong>Detach anytime</strong> — <code>Ctrl+B D</code> — agents keep running in the background</li>
+  </ul>
+  <div class="highlight">Key insight: "This is how you run multiple agents on a VPS persistently. I can do /go and say build a full stack web app… and this will run for hours."</div>
+</div>
+
+<!-- Section 9 -->
+<div class="section-card" id="s9">
+  <h2><span class="section-num">9</span> Installing Claude Code CLI <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=836s" target="_blank">▶ 13:56</a></h2>
+  <p>David installs Claude Code CLI alongside Codex on the VPS, demonstrating the multi-agent, multi-provider workflow.</p>
+  <ul>
+    <li><strong>Install</strong> — one-liner from the Claude Code docs. David makes a "rookie mistake" by not running it inside tmux — a teaching moment.</li>
+    <li><strong>Auth</strong> — subscription-based authentication: copy device link → paste in browser → authorize → paste code back in terminal</li>
+    <li><strong>Model</strong> — defaults to Opus</li>
+    <li><strong>Mixed agents</strong> — Claude Code as an "explainer/advisor/consultant" alongside Codex instances building features in parallel</li>
+  </ul>
+</div>
+
+<!-- Section 10 -->
+<div class="section-card" id="s10">
+  <h2><span class="section-num">10</span> The Persistence Proof — Kill SSH, Sessions Survive <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1077s" target="_blank">▶ 17:57</a></h2>
+  <p>David performs the ultimate proof: he completely kills the SSH connection, reconnects from a fresh terminal, and shows that all tmux sessions and agents are still running.</p>
+  <ul>
+    <li><strong>Kill SSH</strong> — completely close the terminal connection</li>
+    <li><strong>Reconnect</strong> — open new terminal → SSH into VPS again with fresh credentials</li>
+    <li><strong><code>tmux ls</code></strong> — sessions are still there. "Oh, and we have sessions running. This is the beauty of tmux."</li>
+    <li><strong>Reattach</strong> — <code>tmux attach -t test</code> — all agents still working, app still building</li>
+    <li><strong>Mobile access</strong> — apps like Terminus let you SSH from your iPhone to manage running agents on the go</li>
+  </ul>
+  <div class="highlight">Key insight: "Even though I completely killed the SSH, we can see that the app is running. This is the beauty of tmux persistence."</div>
+</div>
+
+<!-- Section 11 -->
+<div class="section-card" id="s11">
+  <h2><span class="section-num">11</span> Live App Preview — SSH Tunnel <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1260s" target="_blank">▶ 21:00</a></h2>
+  <p>David asks Claude Code how to view the app built by agents on the VPS, then sets up an SSH tunnel to preview it locally.</p>
+  <ul>
+    <li><strong>Run the dev server</strong> — <code>cd /root/web-app && npm run dev --host 0.0.0.0</code> in one of the tmux panes</li>
+    <li><strong>SSH tunnel</strong> — forward port 5173 to localhost so you can view the Vite app in your MacBook's browser</li>
+    <li><strong>Copy tip</strong> — hold <strong>Option</strong> while selecting text to bypass tmux's selection mode when copying</li>
+    <li><strong>Result</strong> — a working Flight Monitor app, built entirely on the VPS by AI agents running in tmux</li>
+  </ul>
+</div>
+
+<!-- Section 12 -->
+<div class="section-card" id="s12">
+  <h2><span class="section-num">12</span> The Full Vision — /goal for Hours <a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1362s" target="_blank">▶ 22:42</a></h2>
+  <p>David closes with the full vision: multiple agents pursuing long-running <code>/goal</code> tasks on VPS while you live your life.</p>
+  <ul>
+    <li><strong>/goal for massive refactors</strong> — "Refactor the front end to be like Palantir UI/UX, keep going until we have 20+ working features…" — runs for hours autonomously</li>
+    <li><strong>Freedom</strong> — "I can go for a walk, go to the gym, grab a coffee, and this development is happening."</li>
+    <li><strong>Multiple sessions</strong> — separate tmux sessions for different projects (web app, 3D game, etc.), each with their own agent fleet</li>
+    <li><strong>Claude Code <code>/goal</code></strong> — same persistent goal feature, also works inside tmux on VPS</li>
+    <li><strong>Setup time</strong> — "All of this can be set up within 40 minutes, maybe 60 if this is your first time."</li>
+    <li><strong>The gap</strong> — "Most vibe coders have nothing even close to this. They're scared of tmux. They don't have a VPS. If they close their laptop, all development stops."</li>
+  </ul>
+  <div class="highlight">Key insight: "Even if my MacBook literally gets shredded to pieces, it will still keep running because it's on the VPS. The Codex will keep cooking on that app."</div>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways" id="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>tmux is non-negotiable for agentic engineering</strong> — it's a terminal multiplexer that keeps sessions alive when you disconnect. Essential for long-running AI agents.</li>
+    <li><strong>Sessions, windows, panes</strong> — three building blocks. Sessions wrap everything, windows are like browser tabs, panes are split screens. Agents can read other panes programmatically.</li>
+    <li><strong>Core commands</strong> — <code>tmux new -s name</code> (create), <code>Ctrl+B D</code> (detach), <code>tmux attach -t name</code> (reattach), <code>tmux ls</code> (list), <code>tmux kill-server</code> (destroy all).</li>
+    <li><strong>Splitting panes</strong> — <code>Ctrl+B %</code> (horizontal), <code>Ctrl+B "</code> (vertical). Remember: press Ctrl+B, release, THEN press the key.</li>
+    <li><strong>Enable mouse support first</strong> — <code>echo "set -g mouse on" >> ~/.tmux.conf</code>. Without it, you can't scroll or click between panes.</li>
+    <li><strong>VPS + tmux is the real power</strong> — run agents on a VPS, SSH from any device. Your MacBook's battery, memory, and uptime no longer matter.</li>
+    <li><strong>Session persistence survives SSH disconnects</strong> — kill your connection entirely, reconnect, <code>tmux ls</code> — sessions are still running. This is proven live in the video.</li>
+    <li><strong>Multi-agent setup</strong> — run Claude Code, Codex CLI, and other agents in separate tmux panes on the same VPS, each working on different features or projects.</li>
+    <li><strong>/go and /goal for autonomous work</strong> — give an agent a long-running goal, detach from tmux, and let it work for hours or days while you do other things.</li>
+    <li><strong>Mobile SSH with Terminus</strong> — manage your running agents from your iPhone when you're away from your computer.</li>
+    <li><strong>SSH tunneling for preview</strong> — forward ports from VPS to localhost to preview apps being built by agents in your local browser.</li>
+    <li><strong>Setup takes 40-60 minutes</strong> — VPS + tmux + Claude Code + Codex CLI. Once set up, it puts you ahead of "99.9% of people" who are still developing locally.</li>
+  </ol>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index" id="timestamps">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=0s" target="_blank">▶ 0:00</a> Why tmux is essential for agentic engineers</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=60s" target="_blank">▶ 1:00</a> Local install — <code>brew install tmux</code></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=118s" target="_blank">▶ 1:58</a> First session — <code>tmux new -s</code></div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=142s" target="_blank">▶ 2:22</a> Detach and reattach demo</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=186s" target="_blank">▶ 3:06</a> Sessions, windows, panes explained</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=248s" target="_blank">▶ 4:08</a> Why VPS is the real power</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=337s" target="_blank">▶ 5:37</a> VPS setup walkthrough</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=420s" target="_blank">▶ 7:00</a> Agents running for days — why VPS matters</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=457s" target="_blank">▶ 7:37</a> Enable mouse support</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=500s" target="_blank">▶ 8:20</a> Splitting panes — Ctrl+B % and "</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=557s" target="_blank">▶ 9:17</a> Installing Codex CLI on VPS</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=660s" target="_blank">▶ 11:00</a> Codex auth — device code flow</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=699s" target="_blank">▶ 11:39</a> Multi-agent demo — Codex in tmux panes</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=780s" target="_blank">▶ 13:00</a> /go for long-running goals</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=836s" target="_blank">▶ 13:56</a> Installing Claude Code CLI</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=920s" target="_blank">▶ 15:20</a> Mixed agents — Claude + Codex together</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=960s" target="_blank">▶ 16:00</a> Mouse support deep dive</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1020s" target="_blank">▶ 17:00</a> Terminus — SSH from iPhone</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1077s" target="_blank">▶ 17:57</a> Persistence proof — kill SSH, sessions survive</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1200s" target="_blank">▶ 20:00</a> tmux on VPS is non-negotiable</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1260s" target="_blank">▶ 21:00</a> Live app preview — SSH tunnel</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1362s" target="_blank">▶ 22:42</a> /goal for massive multi-hour refactors</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=z7xyZQVK4Dg&t=1460s" target="_blank">▶ 24:20</a> Setup summary — 40-60 minutes total</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video z7xyZQVK4Dg · David Ondrej</footer>
+
+</div>
+</body>
+</html>

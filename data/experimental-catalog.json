@@ -121,7 +121,18 @@
       "thumbnailSource": "html",
       "sha256": "abcbf0cfcec5e8cd3f04409c1f418fa4a4c12f0ff958c11410bd14f83b5d12c6",
       "category": "ai-news"
+    },
+    {
+      "slug": "tmux-clearly-explained-multi-agent-terminal-david-ondrej",
+      "title": "tmux, clearly explained (multi-agent terminal) — David Ondrej",
+      "publishedAt": "2026-05-25T17:10:49.000Z",
+      "sourcePath": "/tmp/deep_dive_z7xyZQVK4Dg.html",
+      "articlePath": "experimental/tmux-clearly-explained-multi-agent-terminal-david-ondrej.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/z7xyZQVK4Dg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "5fd8ad42e09dac246e362c6c47c83709c56960912b42008a0c30dbf31ab3aec8",
+      "category": "tools"
     }
   ],
-  "updatedAt": "2026-05-25T13:22:58.716Z"
+  "updatedAt": "2026-05-25T20:13:56.170Z"
 }
