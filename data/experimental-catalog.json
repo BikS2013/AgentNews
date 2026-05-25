@@ -132,7 +132,18 @@
       "thumbnailSource": "html",
       "sha256": "5fd8ad42e09dac246e362c6c47c83709c56960912b42008a0c30dbf31ab3aec8",
       "category": "tools"
+    },
+    {
+      "slug": "all-35-claude-code-concepts-explained-for-non-coders-chase-ai",
+      "title": "All 35 Claude Code Concepts Explained for Non Coders — Chase AI",
+      "publishedAt": "2026-04-09T03:27:29.000Z",
+      "sourcePath": "/tmp/deep_dive_UAMAAoSPu8o.html",
+      "articlePath": "experimental/all-35-claude-code-concepts-explained-for-non-coders-chase-ai.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/UAMAAoSPu8o/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "30d9ea8b78c3ba76850cad2a51c129cb23b30f1f431122def99eeafd812bb9ff",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-25T20:13:56.170Z"
+  "updatedAt": "2026-05-25T22:28:46.853Z"
 }

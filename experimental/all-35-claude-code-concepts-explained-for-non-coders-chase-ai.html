@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All 35 Claude Code Concepts Explained for Non Coders — Chase AI</title>
+<style>
+:root{--bg:#0f1117;--card-bg:#1a1d27;--card-border:#2a2d3a;--accent:#3b82f6;--accent-dim:#1e3a5f;--text:#e2e8f0;--text-muted:#94a3b8;--text-bright:#f8fafc;--green:#22c55e;--red:#ef4444;--orange:#f59e0b;--purple:#a78bfa;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;padding:0;}
+a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#1a1d27 50%,#0f1117 100%);border-bottom:1px solid var(--card-border);padding:2rem 1rem;text-align:center;}
+.hero h1{font-size:1.8rem;color:var(--text-bright);margin-bottom:0.5rem;}
+.hero .meta{color:var(--text-muted);font-size:0.9rem;margin-bottom:1.2rem;}
+.thumb-link{display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform 0.2s;max-width:560px;width:100%;}
+.thumb-link:hover{transform:scale(1.02);}.thumb-link img{width:100%;display:block;}
+.meta-pills{margin-top:1.2rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;}
+.meta-pill{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:0.3rem 0.9rem;font-size:0.82rem;color:var(--text-muted);}
+.container{display:flex;max-width:1200px;margin:0 auto;gap:2rem;padding:2rem 1rem;}
+.toc{position:sticky;top:1rem;width:260px;min-width:220px;max-height:calc(100vh - 2rem);overflow-y:auto;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.2rem;font-size:0.85rem;flex-shrink:0;}
+.toc h3{color:var(--accent);font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.8rem;}
+.toc ol{list-style:none;counter-reset:toc;}.toc li{counter-increment:toc;margin-bottom:0.5rem;}
+.toc li a{color:var(--text-muted);display:block;padding:4px 0;transition:color 0.2s;}
+.toc li a:hover{color:var(--text-bright);text-decoration:none;}
+.toc li a::before{content:counter(toc) ". ";color:var(--accent);font-weight:600;}
+.content{flex:1;min-width:0;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.8rem;margin-bottom:1.5rem;}
+.card h2{color:var(--text-bright);font-size:1.3rem;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:2px solid var(--accent-dim);display:flex;align-items:center;gap:0.5rem;}
+.card h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
+.card h3{color:var(--purple);font-size:1rem;margin:1rem 0 0.5rem;}
+.card p,.card li{margin-bottom:0.6rem;}.card ul,.card ol{padding-left:1.5rem;}.card ul li::marker{color:var(--accent);}
+.ts{display:inline-block;background:var(--accent-dim);color:var(--accent);font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.78rem;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0;white-space:nowrap;transition:background 0.2s;}
+.ts:hover{background:var(--accent);color:#fff;text-decoration:none;}
+.takeaways{background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(167,139,250,0.08));border:1px solid var(--accent-dim);border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0;}
+.takeaways h3{color:var(--green);margin-top:0;}.takeaways li{color:var(--text);}
+.highlight-box{background:rgba(59,130,246,0.08);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9rem;color:var(--text);}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0.6rem;}
+.ts-row{display:flex;align-items:center;gap:0.7rem;padding:6px 10px;border-radius:8px;background:rgba(26,29,39,0.6);transition:background 0.15s;}
+.ts-row:hover{background:var(--card-bg);}.ts-row .label{color:var(--text-muted);font-size:0.85rem;}
+@media(max-width:800px){.container{flex-direction:column;}.toc{position:static;width:100%;max-height:none;}}
+</style>
+</head>
+<body>
+
+<img src="https://img.youtube.com/vi/UAMAAoSPu8o/maxresdefault.jpg" alt="All 35 Claude Code Concepts Explained for Non Coders" style="display:none;">
+
+<div class="hero">
+  <h1>All 35 Claude Code Concepts Explained for Non Coders</h1>
+  <div class="meta">Chase AI · ~57 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=UAMAAoSPu8o" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/UAMAAoSPu8o/maxresdefault.jpg" alt="Video thumbnail">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~57 min</span>
+    <span class="meta-pill">🎤 Chase AI</span>
+    <span class="meta-pill">🏷 Claude Code · Non-Coders · Terminal · Skills · MCP · Git</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Section 1 — The Essentials</a></li>
+      <li><a href="#s2">Section 2 — Building Blocks</a></li>
+      <li><a href="#s3">Section 3 — Intermediate</a></li>
+      <li><a href="#s4">Section 4 — Power User</a></li>
+      <li><a href="#takeaways">Key Takeaways</a></li>
+      <li><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="card" id="overview">
+      <h2><span class="num">✦</span> Overview</h2>
+      <p>Chase AI delivers a comprehensive roadmap of <strong>35 Claude Code concepts</strong> organized in a sliding scale from absolute essentials to power-user territory, specifically designed for people without a technical background. The video covers four sections: (1) things you MUST know immediately, (2) core building blocks for your first project, (3) intermediate concepts for leveling up, and (4) advanced power-user tools you should know exist but don't need to implement right away. By the end, you have a clear learning path from "what is a terminal?" to orchestration frameworks, scheduled tasks, and Ultra Plan.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Section 1 — The Essentials (Concepts 1–7)</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=41s" target="_blank">▶ 0:41</a></p>
+      <p>The absolute must-knows before you can do anything with Claude Code.</p>
+
+      <h3>1. Claude.ai vs. Claude Code</h3>
+      <p>Same brain (e.g., Opus 4.6), but Claude Code has a <strong>body</strong> — it can write code, access emails, interact with your computer. The chat app can only talk; Claude Code can <em>do</em>.</p>
+
+      <h3>2. Installing Claude Code</h3>
+      <p>Single line of code from the Claude Code documentation. Choose your command based on your OS (macOS, Linux, Windows/PowerShell).</p>
+
+      <h3>3. The Terminal</h3>
+      <p>The black screen with text. It's where Claude Code lives. On Mac, use the built-in Terminal; on Windows, use PowerShell or Windows Terminal. "If you don't know what the terminal is, just know it's the thing that Claude Code operates inside of."</p>
+
+      <h3>4. Navigation Commands</h3>
+      <ul>
+        <li><strong><code>cd</code></strong> — change directory (move into folders)</li>
+        <li><strong><code>ls</code></strong> — list what's inside a folder</li>
+        <li><strong><code>pwd</code></strong> — print working directory (where you currently are)</li>
+        <li><strong><code>mkdir</code></strong> — create a new folder</li>
+      </ul>
+
+      <h3>5. What Is a Project?</h3>
+      <p>A folder on your computer containing all related files. You navigate into it with <code>cd</code>, then launch Claude Code from there. Claude Code's scope is everything inside that folder.</p>
+
+      <h3>6. Starting Claude Code</h3>
+      <p>Navigate to your project folder, type <code>claude</code>, and you're in. The first prompt should be what you want to build.</p>
+
+      <h3>7. CLAUDE.md</h3>
+      <p>An auto-generated file that acts as <strong>permanent memory for your project</strong>. Whatever you put in here, Claude Code references every single time. "Less is more" — only add rules that apply to virtually every prompt.</p>
+
+      <div class="highlight-box">💡 "Claude Code can actually do things for me. It has hands. That's the biggest difference from the chat app."</div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Section 2 — Building Blocks (Concepts 8–19)</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=482s" target="_blank">▶ 8:02</a></p>
+      <p>The core concepts you need once you have your first project running.</p>
+
+      <h3>8. Context Window</h3>
+      <p>Check with <code>/context</code>. It's the "short-term memory" of your session. Once it fills up (~200K tokens), Claude Code starts forgetting earlier parts of the conversation. When it gets high, start a new session.</p>
+
+      <h3>9. Cost Management</h3>
+      <p>Use <code>/cost</code> to see how much you've spent. Set up notifications and hard limits through the Anthropic console to avoid surprises.</p>
+
+      <h3>10. Thinking Models (Extended Thinking)</h3>
+      <p>Toggle with <code>/think</code>. Makes Claude Code think longer before responding — useful for complex tasks, architecture decisions. Don't use it for simple one-liners.</p>
+
+      <h3>11. Model Selection</h3>
+      <p>Use <code>/model</code> to switch. Opus for complex tasks, Sonnet for everyday work. "You don't need a 200 IQ brain to draft an email."</p>
+
+      <h3>12. Conversation Compacting</h3>
+      <p>Use <code>/compact</code> when context window gets full. It summarizes the conversation and frees up space, but you lose granular details.</p>
+
+      <h3>13. Plan Mode</h3>
+      <p>Shift+Tab activates Plan Mode — Claude Code creates a plan first without executing. "Think before you do." Essential for complex tasks.</p>
+
+      <h3>14. Screenshots &amp; Images</h3>
+      <p>Paste screenshots directly into Claude Code. Incredibly useful for design work — "make it look like this."</p>
+
+      <h3>15. Permissions</h3>
+      <p>Claude Code asks permission before editing files, running commands, etc. You can use <code>--dangerously-skip-permissions</code> to auto-approve everything, but understand the risks.</p>
+
+      <h3>16. Yes-Man Mode</h3>
+      <p>Claude Code tends to agree with everything. Prefix prompts with "be brutally honest" or "tell me what's wrong" to get real feedback.</p>
+
+      <h3>17. Prompt Engineering Basics</h3>
+      <ul>
+        <li><strong>Be specific</strong> — don't say "make it look nice," say "use Tailwind CSS with rounded corners and a blue gradient header"</li>
+        <li><strong>Use examples</strong> — "make it look like [screenshot]" or "follow this style: [URL]"</li>
+        <li><strong>Break it down</strong> — one thing at a time, not "build me an entire SaaS"</li>
+      </ul>
+
+      <h3>18. When Things Go Wrong</h3>
+      <p><code>/undo</code> reverts the last change. If everything is broken, check Git history. Don't panic — mistakes are recoverable.</p>
+
+      <h3>19. CLI Tools (Command-Line Interfaces)</h3>
+      <p>Tools you install that extend what Claude Code can do. Examples: <code>gh</code> (GitHub CLI), <code>supabase</code> CLI, <code>vercel</code> CLI. Claude Code can use these to deploy, manage databases, etc.</p>
+
+      <div class="highlight-box">💡 "When the context window gets too high, start a new session. It's like having a conversation with someone who's been up for 48 hours — they start forgetting things."</div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Section 3 — Intermediate (Concepts 20–29)</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1273s" target="_blank">▶ 21:13</a></p>
+      <p>Leveling up — skills, MCP, subagents, code review, and deployment.</p>
+
+      <h3>20. Skills</h3>
+      <p>Reusable instruction sets for Claude Code. Install from URLs, invoke with <code>/skill-name</code> or just mention the topic. Skills can be user-level (available everywhere) or project-level (specific to one folder).</p>
+
+      <h3>21. Skill Creator Skill</h3>
+      <p>A meta-skill that helps Claude Code create custom skills for you. Great for encoding your own workflows.</p>
+
+      <h3>22. MCP (Model Context Protocol)</h3>
+      <p>A standardized way for Claude Code to connect to external data sources and services. Like giving Claude Code a phone to call APIs, databases, tools. Configure via <code>/mcp</code>.</p>
+
+      <h3>23. Subagents</h3>
+      <p>Claude Code can spawn sub-agents for specific tasks. Like a manager delegating work to specialists. Useful for parallelizing tasks.</p>
+
+      <h3>24. Claude Code Desktop App</h3>
+      <p>VS Code-like interface for people who don't want the raw terminal. Same Claude Code under the hood, but with a GUI, file explorer, and visual diff.</p>
+
+      <h3>25. Git Basics</h3>
+      <p>Version control — save snapshots of your project. Key commands: <code>git init</code>, <code>git add</code>, <code>git commit</code>. Claude Code can do all of this for you. "Think of it as save points in a video game."</p>
+
+      <h3>26. GitHub</h3>
+      <p>Cloud storage for your Git repos. Claude Code can push to GitHub, create repos, manage issues. Essential for collaboration and backup.</p>
+
+      <h3>27. Deployment</h3>
+      <p>Getting your project live on the internet. Tools like Vercel, Netlify, Cloudflare. Claude Code can handle the entire deployment process.</p>
+
+      <h3>28. Custom Slash Commands</h3>
+      <p>Create your own <code>/commands</code> that execute specific workflows. Saves time on repetitive tasks.</p>
+
+      <h3>29. Code Review</h3>
+      <p>Two approaches: (1) open a second Claude Code session and tell it to be adversarial, or (2) use the Codex plugin for a completely different AI's perspective. <code>/codex adversarial-review</code> gets OpenAI's Codex to review your Claude-generated code.</p>
+
+      <div class="highlight-box">💡 "Imagine you're some nerd on Reddit who hates AI — tell me what's wrong with this code base." That's the adversarial review mindset.</div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Section 4 — Power User (Concepts 30–35)</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2250s" target="_blank">▶ 37:30</a></p>
+      <p>Advanced concepts you should know exist, not necessarily implement on day one.</p>
+
+      <h3>30. Multi-File Projects &amp; Architecture</h3>
+      <p>As projects grow, understanding file structure becomes critical. Let Claude Code scaffold the architecture, but learn to read it.</p>
+
+      <h3>31. Git Worktrees</h3>
+      <p>Run multiple branches simultaneously in different folders. Lets you have two Claude Code sessions working on different features without conflicts. "A more advanced Git concept — don't jump into this right away."</p>
+
+      <h3>32. Orchestration Frameworks</h3>
+      <p>GitHub repos like GSD (Get Shit Done), BMAD, Superpowers — they add an orchestration layer around Claude Code, changing how it plans and executes. Chase's take: "Less is usually more. Don't use these for the sake of them. A lot of the cool things from GSD have begun to be seen in base-level Claude Code."</p>
+
+      <h3>33. Triggers &amp; Scheduled Tasks</h3>
+      <ul>
+        <li><strong><code>/loop</code></strong> — run something on an interval (session-based, max 7 days, requires terminal open)</li>
+        <li><strong>Desktop app scheduled tasks</strong> — remote tasks (run in cloud) or local tasks (requires computer on)</li>
+        <li><strong>Windows Task Scheduler</strong> — Claude Code can write scripts that your OS runs independently</li>
+      </ul>
+
+      <h3>34. Ultra Plan</h3>
+      <p>A cloud-based super planning mode (<code>/ultraplan</code>). Likely uses multiple agents under the hood. Provides a nicer interface for reviewing and commenting on plans. Approve and implement in a fresh context window.</p>
+
+      <h3>35. Remote Control &amp; Finding New Tools</h3>
+      <ul>
+        <li><strong>Remote Control</strong> — control Claude Code from your phone via the Claude mobile app. Streams your terminal to your phone. Requires an active session.</li>
+        <li><strong>GitHub Trending</strong> — browse trending repos to find new Claude Code tools. Have Claude Code do this daily and report back.</li>
+      </ul>
+
+      <div class="highlight-box">💡 "Just like with CLIs and MCPs, you can be a kid in a candy store. Don't think you're one orchestration layer away from mastering Claude Code. Less is usually more."</div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">★</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Claude Code = Claude with hands</strong> — same brain as the chat app, but it can actually do things: write code, access files, interact with your computer.</li>
+          <li><strong>The terminal is your workspace</strong> — learn <code>cd</code>, <code>ls</code>, <code>pwd</code>, <code>mkdir</code>. Everything else builds on navigation.</li>
+          <li><strong>CLAUDE.md is project memory</strong> — auto-generated, referenced on every prompt. Keep it lean — only universal rules that apply to every interaction.</li>
+          <li><strong>Context window = short-term memory</strong> — check with <code>/context</code>. When it gets high, start a new session. Don't let Claude Code become "someone who's been up for 48 hours."</li>
+          <li><strong>Plan Mode before complex tasks</strong> — Shift+Tab. Think before doing. Essential for anything more complex than a simple change.</li>
+          <li><strong>Skills are reusable instruction sets</strong> — install from URLs, user-level or project-level. The Skill Creator meta-skill helps you build your own.</li>
+          <li><strong>MCP connects Claude Code to external services</strong> — databases, APIs, tools. Standardized protocol — like giving Claude Code a phone.</li>
+          <li><strong>Adversarial code review is critical</strong> — use a second Claude Code session or the Codex plugin for an independent review. Don't trust the same brain that wrote the code.</li>
+          <li><strong>Orchestration frameworks: less is more</strong> — GSD, BMAD, Superpowers add value, but base Claude Code now includes many of their best features. Don't use them for the sake of it.</li>
+          <li><strong>Scheduled tasks have caveats</strong> — <code>/loop</code> requires terminal open (max 7 days). Desktop app scheduled tasks need the computer on. Only Windows Task Scheduler runs truly independently.</li>
+          <li><strong>Ultra Plan uses cloud agents</strong> — <code>/ultraplan</code> for complex planning with a nicer UI, commenting, and fresh context window on approval.</li>
+          <li><strong>GitHub Trending = staying current</strong> — browse daily for new Claude Code tools. Have Claude Code automate this for you every morning.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=0s" target="_blank">▶ 0:00</a> <span class="label">Introduction — the overwhelm problem</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=41s" target="_blank">▶ 0:41</a> <span class="label">Section 1 — Essentials begin</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=53s" target="_blank">▶ 0:53</a> <span class="label">#1 Claude.ai vs Claude Code</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=82s" target="_blank">▶ 1:22</a> <span class="label">#2 Installing Claude Code</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=140s" target="_blank">▶ 2:20</a> <span class="label">#3-4 Terminal &amp; navigation commands</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=300s" target="_blank">▶ 5:00</a> <span class="label">#5-6 Projects &amp; starting Claude Code</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=440s" target="_blank">▶ 7:20</a> <span class="label">#7 CLAUDE.md — project memory</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=482s" target="_blank">▶ 8:02</a> <span class="label">Section 2 — Building blocks begin</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=487s" target="_blank">▶ 8:07</a> <span class="label">#8 Context window</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=600s" target="_blank">▶ 10:00</a> <span class="label">#9-10 Cost management &amp; thinking models</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=750s" target="_blank">▶ 12:30</a> <span class="label">#11-12 Model selection &amp; compacting</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=870s" target="_blank">▶ 14:30</a> <span class="label">#13 Plan Mode (Shift+Tab)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=960s" target="_blank">▶ 16:00</a> <span class="label">#14-15 Screenshots &amp; permissions</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1080s" target="_blank">▶ 18:00</a> <span class="label">#16-17 Yes-man mode &amp; prompt engineering</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1200s" target="_blank">▶ 20:00</a> <span class="label">#18-19 Undo &amp; CLI tools</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1273s" target="_blank">▶ 21:13</a> <span class="label">Section 3 — Intermediate begin</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1280s" target="_blank">▶ 21:20</a> <span class="label">#20-21 Skills &amp; skill creator</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1560s" target="_blank">▶ 26:00</a> <span class="label">#22 MCP — Model Context Protocol</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1740s" target="_blank">▶ 29:00</a> <span class="label">#23-24 Subagents &amp; desktop app</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=1860s" target="_blank">▶ 31:00</a> <span class="label">#25-26 Git &amp; GitHub basics</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2010s" target="_blank">▶ 33:30</a> <span class="label">#27-28 Deployment &amp; custom commands</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2100s" target="_blank">▶ 35:00</a> <span class="label">#29 Code review &amp; Codex plugin</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2250s" target="_blank">▶ 37:30</a> <span class="label">Section 4 — Power user begin</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2400s" target="_blank">▶ 40:00</a> <span class="label">#30-31 Multi-file projects &amp; worktrees</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2820s" target="_blank">▶ 47:00</a> <span class="label">#32 Orchestration frameworks (GSD, BMAD)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=2971s" target="_blank">▶ 49:31</a> <span class="label">#33 Triggers &amp; scheduled tasks</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=3126s" target="_blank">▶ 52:06</a> <span class="label">#34 Ultra Plan — cloud planning</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=3287s" target="_blank">▶ 54:47</a> <span class="label">#35 Remote control &amp; finding tools</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=UAMAAoSPu8o&t=3363s" target="_blank">▶ 56:03</a> <span class="label">Final thoughts &amp; closing</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
