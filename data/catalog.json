@@ -197,7 +197,17 @@
       "thumbnailSource": "html",
       "sha256": "2d4e5e5d38790de1ac8283c8a0ea1053faeaf31b53870a4dd1e6d59db229cece",
       "category": "ai-news"
+    },
+    {
+      "slug": "how-to-extract-design-md-from-any-website-with-claude-3-methods-creativedesigntools",
+      "title": "How to Extract DESIGN.md from Any Website with Claude (3 Methods) — CreativeDesignTools",
+      "publishedAt": "2026-05-25T00:50:49.000Z",
+      "sourcePath": "/tmp/deep_dive_30_cliFup7k.html",
+      "articlePath": "articles/how-to-extract-design-md-from-any-website-with-claude-3-methods-creativedesigntools.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/30_cliFup7k/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "d53f31dcb48aa96120007957b967ad2e93a3a15be6edc54fd26d66ecc7e2a249"
     }
   ],
-  "updatedAt": "2026-05-25T19:22:28.317Z"
+  "updatedAt": "2026-05-25T20:30:51.675Z"
 }
