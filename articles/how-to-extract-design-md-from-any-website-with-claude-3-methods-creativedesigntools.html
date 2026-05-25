@@ -5,347 +5,539 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How to Extract DESIGN.md from Any Website with Claude (3 Methods) — CreativeDesignTools</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
-.container{max-width:860px;margin:0 auto;}
-h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
-.meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
-.meta a{color:#a78bfa;text-decoration:none;}
-.meta a:hover{text-decoration:underline;}
-.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
-.video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
-.overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
-.overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
-.overview-card p{color:#b0b4c0;font-size:15px;}
-.section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
-.section-card:hover{border-color:rgba(139,92,246,0.35);}
-.section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
-.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
-.section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
-.section-card ul,.section-card ol{margin:10px 0 6px 20px;}
-.section-card li{margin-bottom:5px;}
-.section-card strong{color:#d0d4dc;}
-.highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
-.takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
-.takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
-.takeaways ol{margin-left:20px;}
-.takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
-.takeaways li strong{color:#c4b5fd;}
-.ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
-.ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
-.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
-.ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
-.ts-row .timestamp{flex-shrink:0;}
-.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
-.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
-footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
-.toc-wrapper{position:sticky;top:0;z-index:100;background:rgba(15,17,23,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #23262f;padding:0.8rem 1rem;}
-.toc-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;}
-.toc-link{font-size:0.75rem;padding:0.25rem 0.7rem;border-radius:14px;background:#16181f;border:1px solid #23262f;color:#8b8fa3;transition:all 0.2s;white-space:nowrap;text-decoration:none;}
-.toc-link:hover{background:rgba(139,92,246,0.12);color:#a78bfa;border-color:#a78bfa;text-decoration:none;}
-@media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}.toc-link{font-size:0.7rem;padding:0.2rem 0.5rem;}}
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.hero .meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+.thumb-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  max-width: 560px;
+  width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.toc {
+  position: sticky;
+  top: 1rem;
+  width: 260px;
+  min-width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.toc h3 {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a {
+  color: var(--text-muted);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before {
+  content: counter(toc) ". ";
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.card h3 {
+  color: var(--purple);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.6rem;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(26,29,39,0.6);
+  transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+}
 </style>
 </head>
 <body>
-<div class="container">
 
 <img src="https://img.youtube.com/vi/30_cliFup7k/maxresdefault.jpg" alt="How to Extract DESIGN.md from Any Website with Claude (3 Methods)" style="display:none;">
 
-<h1>How to Extract DESIGN.md from Any Website with Claude (3 Methods)</h1>
-<div class="meta">
-  <span>CreativeDesignTools</span>
-  <span class="badge">~75 min</span>
-  <a href="https://www.youtube.com/watch?v=30_cliFup7k" target="_blank">Watch on YouTube ↗</a>
-</div>
-
-<div class="video-wrap">
-  <iframe id="yt-embed" src="https://www.youtube.com/embed/30_cliFup7k" title="How to Extract DESIGN.md from Any Website with Claude (3 Methods)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
-  <a id="yt-fallback" href="https://www.youtube.com/watch?v=30_cliFup7k" target="_blank" style="display:none;text-decoration:none;">
-    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/30_cliFup7k/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
-      </div>
-      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
-    </div>
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>How to Extract DESIGN.md from Any Website with Claude (3 Methods)</h1>
+  <div class="meta">CreativeDesignTools · ~75 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=30_cliFup7k" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/30_cliFup7k/maxresdefault.jpg" alt="Video thumbnail — How to Extract DESIGN.md from Any Website with Claude">
   </a>
-  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
 </div>
 
-</div>
-
-<!-- Sticky TOC -->
-<nav class="toc-wrapper">
-  <div class="toc-inner">
-    <a class="toc-link" href="#s1">1. DESIGN.md Intro</a>
-    <a class="toc-link" href="#s2">2. Resources</a>
-    <a class="toc-link" href="#s3">3. Screenshot Method</a>
-    <a class="toc-link" href="#s4">4. Prompt Anatomy</a>
-    <a class="toc-link" href="#s5">5. AI Review Pitfalls</a>
-    <a class="toc-link" href="#s6">6. Linter Validation</a>
-    <a class="toc-link" href="#s7">7. Computed Styles</a>
-    <a class="toc-link" href="#s8">8. The Script</a>
-    <a class="toc-link" href="#s9">9. JSON → DESIGN.md</a>
-    <a class="toc-link" href="#s10">10. Non-Determinism</a>
-    <a class="toc-link" href="#s11">11. DevTools Verify</a>
-    <a class="toc-link" href="#s12">12. Fluid Typography</a>
-    <a class="toc-link" href="#s13">13. Claude Code Method</a>
-    <a class="toc-link" href="#s14">14. Real Project Use</a>
-    <a class="toc-link" href="#takeaways">🎯 Takeaways</a>
-    <a class="toc-link" href="#timestamps">⏱ Timestamps</a>
-  </div>
-</nav>
-
+<!-- ─── BODY ─── -->
 <div class="container">
 
-<!-- Overview -->
-<div class="overview-card">
-  <h2>Overview</h2>
-  <p>CreativeDesignTools delivers an exhaustive, hands-on tutorial on extracting <strong>DESIGN.md</strong> files — Google's open-source design token specification — from any website using three progressive methods. From screenshot-based extraction with carefully crafted prompts, to running a JavaScript style-auditing script in DevTools, to fully automated Claude Code/Co-Work workflows, each method builds on the previous one. The video emphasizes <strong>review, validation, and understanding</strong> over blind AI trust — teaching you to catch AI hallucinations, validate with Google's linter, inspect computed styles in DevTools, and produce production-ready design files plus Tailwind configs.</p>
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">What Is DESIGN.md</a></li>
+      <li><a href="#s2">Resources &amp; Libraries</a></li>
+      <li><a href="#s3">Method 1 — Screenshots</a></li>
+      <li><a href="#s4">Prompt Anatomy &amp; Hard Rules</a></li>
+      <li><a href="#s5">Catching AI Mistakes</a></li>
+      <li><a href="#s6">Linter Validation</a></li>
+      <li><a href="#s7">Method 2 — Computed Styles</a></li>
+      <li><a href="#s8">The Style-Auditing Script</a></li>
+      <li><a href="#s9">JSON → DESIGN.md</a></li>
+      <li><a href="#s10">Non-Determinism</a></li>
+      <li><a href="#s11">DevTools Verification</a></li>
+      <li><a href="#s12">Fluid Typography</a></li>
+      <li><a href="#s13">Method 3 — Claude Code</a></li>
+      <li><a href="#s14">Real Project Use</a></li>
+      <li><a href="#takeaways">Key Takeaways</a></li>
+      <li><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="card" id="overview">
+      <h2><span class="num">✦</span> Overview</h2>
+      <p>CreativeDesignTools delivers an exhaustive, hands-on tutorial on extracting <strong>DESIGN.md</strong> files — Google's open-source design token specification — from any website using three progressive methods. From screenshot-based extraction with carefully crafted prompts, to running a JavaScript style-auditing script in DevTools, to fully automated Claude Code/Co-Work workflows, each method builds on the previous one. The video emphasizes <strong>review, validation, and understanding</strong> over blind AI trust — teaching you to catch AI hallucinations, validate with Google's linter, inspect computed styles in DevTools, and produce production-ready design files plus Tailwind configs.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> What Is DESIGN.md &amp; Why It Matters</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=0s" target="_blank">▶ 0:00</a></p>
+      <p>The DESIGN.md file is a structured design token specification open-sourced by Google. It captures a website's entire visual identity — colors, typography, spacing, elevation, motion — in a single markdown file that any AI or developer can consume.</p>
+      <ul>
+        <li><strong>Production-ready output</strong> — by the end of each method, you get a DESIGN.md file plus a Tailwind config you can drop straight into a project</li>
+        <li><strong>Three progressive methods</strong> — screenshot extraction, computed style script, and Claude Code/Co-Work automation. Each builds on the previous.</li>
+        <li><strong>Don't skip ahead</strong> — the methods are deliberately ordered so you learn to detect errors and validate AI output before automating</li>
+      </ul>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Resources — Where to Find DESIGN.md Files</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=107s" target="_blank">▶ 1:47</a></p>
+      <p>Two key resources for understanding and finding DESIGN.md files:</p>
+      <ul>
+        <li><strong>Google's open-source GitHub</strong> — the official architecture and structure specification. This is the reference every prompt should point to.</li>
+        <li><strong>getdesign.md</strong> — a community library of pre-extracted DESIGN.md files for major brands (BMW, HP, Airbnb, Airtable, AOL, etc.). Useful for reference but may be outdated — always verify against the live site.</li>
+      </ul>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Method 1 — Screenshot Extraction</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=218s" target="_blank">▶ 3:38</a></p>
+      <p>The first method works from <strong>screenshots only</strong> — no access to the live site required. You capture key screens and feed them as context to Claude.</p>
+      <ul>
+        <li><strong>What to capture</strong> — the main landing/home page, a secondary page with different components, and optionally logged-in dashboard views (sometimes uses a different design system)</li>
+        <li><strong>Three screenshot files</strong> — attach them as context to the AI prompt</li>
+        <li><strong>Limitation</strong> — AI is "guessing from pixels." Colors may be approximate, motion/animation values are always inferred, and there's no way to know CSS variable names.</li>
+        <li><strong>Best for</strong> — competitor analysis, design inspiration, sites you can't access programmatically</li>
+      </ul>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> The Extraction Prompt — Anatomy &amp; Hard Rules</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=503s" target="_blank">▶ 8:23</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=660s" target="_blank">▶ 11:00</a>
+      </p>
+      <p>A carefully structured prompt is the key to production-quality output on the first try.</p>
+      <ul>
+        <li><strong>Reference URLs</strong> — point to Google's open-source DESIGN.md spec, the README, and example files. This gives AI a strict structural reference.</li>
+        <li><strong>Structure order</strong> — branding, colors, typography, layout, spacing — matching Google's canonical order</li>
+        <li><strong>Hard rules</strong> — (1) mirror the exact layout of the reference, (2) capture the full design system spirit, (3) use real hex values from the source, (4) use an <code>&lt;!-- uncertain --&gt;</code> comment for values the AI isn't confident about</li>
+        <li><strong>The uncertain flag</strong> — forces AI to mark guesses explicitly, dramatically reducing silent hallucination</li>
+        <li><strong>Single file output</strong> — instruct the AI to produce exactly one DESIGN.md file, nothing else</li>
+      </ul>
+      <div class="highlight-box">💡 "The uncertain comment forces the AI to flag values it's not sure about. This reduces hallucination because the AI will mark guesses explicitly instead of inventing values silently."</div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Reviewing AI Output — Catching Mistakes</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=860s" target="_blank">▶ 14:20</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1044s" target="_blank">▶ 17:24</a>
+      </p>
+      <p>The review step is critical. AI can silently "fix" or "invent" values that look reasonable but aren't what you want.</p>
+      <ul>
+        <li><strong>Check dos and don'ts</strong> — make sure they're specific to YOUR design (e.g., "keep cards on white with soft purple-tinted shadows"), not generic boilerplate</li>
+        <li><strong>AI "fixing" things</strong> — example: a design had "walk, play, play" labels but the AI changed the third to "distance" because the metric was in kilometers. Smart, but changed designer's intent.</li>
+        <li><strong>Three categories</strong> — ask yourself: did it (1) change something, (2) fix something, or (3) invent something? Then decide if you keep it.</li>
+        <li><strong>Motion values are ALWAYS inferred</strong> — there's no way AI can detect animations from screenshots. Values come from Material 3 defaults.</li>
+        <li><strong>Search for "uncertain"</strong> — review all flagged items one by one against the original screenshots</li>
+      </ul>
+      <div class="highlight-box">💡 "Every time you spot something the AI outputs that doesn't seem right, ask yourself: did it change something, fix something, or invent something?"</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Validation with Google's DESIGN.md Linter</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1192s" target="_blank">▶ 19:52</a></p>
+      <p>Google provides an official linter for DESIGN.md files that validates structure and catches errors.</p>
+      <ul>
+        <li><strong>Install &amp; run</strong> — <code>npx design-lint path/to/DESIGN.md</code></li>
+        <li><strong>Output</strong> — reports errors (structural problems) and warnings (style suggestions). Aim for zero errors.</li>
+        <li><strong>Why it matters</strong> — ensures your file follows the canonical structure, making it compatible with any tool that consumes DESIGN.md files</li>
+        <li><strong>After each method</strong> — always run the linter as a final validation step</li>
+      </ul>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Method 2 — Computed Styles from Live Websites</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1365s" target="_blank">▶ 22:45</a></p>
+      <p>The second method reads the <strong>actual computed styles</strong> from a live website's browser rendering. No guessing — these are the real values.</p>
+      <ul>
+        <li><strong>Computed style</strong> — the final, resolved CSS value after all stylesheets, variables, and inheritance. If a button uses <code>var(--primary-color)</code>, the computed style is the actual hex like <code>#3b82f6</code>.</li>
+        <li><strong>Why better than screenshots</strong> — exact hex values, real font sizes, actual CSS variable names, border radii, spacing — all deterministic</li>
+        <li><strong>Source material</strong> — Awwwards nominees, competitor sites, any production website</li>
+        <li><strong>Client-side only</strong> — the script reads from the DOM, doesn't send anything to any server, doesn't install anything</li>
+      </ul>
+      <div class="highlight-box">💡 "The previous method relies on AI guessing from pixels. This method actually reads the computed styles from the browser. There's no guessing."</div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> The Style-Auditing Script — Deep Walkthrough</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1794s" target="_blank">▶ 29:54</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1993s" target="_blank">▶ 33:13</a>
+      </p>
+      <p>A JavaScript script that runs in DevTools console, walks every visible element, and extracts the full design system into JSON.</p>
+      <h3>Script Steps</h3>
+      <ul>
+        <li><strong>Step 1 — Constants &amp; helpers</strong> — filters out browser default colors (unvisited link blue, visited purple, transparent)</li>
+        <li><strong>Step 2 — CSS variables</strong> — walks every stylesheet including cross-domain, pulls all CSS variables</li>
+        <li><strong>Step 3 — Filter &amp; categorize</strong> — separates into colors and brand-meaningful names via regex</li>
+        <li><strong>Step 4 — Keyframes</strong> — captures animation variable names for team intent</li>
+        <li><strong>Step 5 — Element walk</strong> — visits up to 4,000 elements, extracts color, background, border, radius, font properties. Groups into 7 buckets.</li>
+        <li><strong>Step 6 — Frequency count → JSON</strong> — sorts by usage frequency. Most-used values define the brand.</li>
+      </ul>
+      <h3>Security</h3>
+      <ul>
+        <li><strong>Always verify scripts</strong> — ask AI "is this script safe to run?" before pasting into DevTools</li>
+        <li><strong>4,000 element cap</strong> — configurable. Bump to 6,000-10,000 for very large websites.</li>
+      </ul>
+      <div class="highlight-box">💡 "The most used values in each bucket is usually what defines the brand. A color used as text means something different than the color used as a button background — that's why we have 7 separate buckets."</div>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Turning JSON Results into a DESIGN.md</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2521s" target="_blank">▶ 42:01</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2647s" target="_blank">▶ 44:07</a>
+      </p>
+      <p>Feed the JSON output to Claude with a specialized prompt to generate the DESIGN.md file.</p>
+      <ul>
+        <li><strong>The prompt</strong> — specify URL, brand name, attach JSON, reference Google's spec. Customize for each extraction.</li>
+        <li><strong>Hard rules</strong> — (1) colors appearing &lt;3 times get "low confidence" comment, (2) each color gets a one-line comment citing frequency evidence</li>
+        <li><strong>Why frequency matters</strong> — forces AI to justify semantic role assignments. 2,340 uses = likely primary; 3 uses = probably noise.</li>
+        <li><strong>Dual design systems</strong> — the Vercel example revealed two naming conventions (geist and ds) coexisting. The AI recognized and handled both.</li>
+        <li><strong>Result structure</strong> — colors in tiers (surface, foreground, text, inverse, outline, primary), each with reasoning. Then typography, spacing, components — all canonical Google architecture.</li>
+      </ul>
+    </div>
+
+    <!-- Section 10 -->
+    <div class="card" id="s10">
+      <h2><span class="num">10</span> Non-Determinism — Why Outputs Differ</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3067s" target="_blank">▶ 51:07</a></p>
+      <p>Extracting DESIGN.md is inherently non-deterministic and open to interpretation.</p>
+      <ul>
+        <li><strong>Library vs. reality</strong> — getdesign.md showed Vercel with white background; the live site is dark mode black. Libraries may be outdated.</li>
+        <li><strong>"Almost white" vs. "pure white"</strong> — script extracted #FAFAFA, not #FFFFFF. Both are "right" in different contexts.</li>
+        <li><strong>Declared but unused tokens</strong> — CSS variables exist in stylesheets but are never rendered. They show up but aren't part of the visual design.</li>
+        <li><strong>Don't assume AI is wrong</strong> — when Claude generates a value that seems off, investigate before correcting.</li>
+      </ul>
+      <div class="highlight-box">💡 "Extracting a DESIGN.md is non-deterministic and open to interpretation. We don't know how the designers are thinking — all we have to work with is the trails they left behind in their code."</div>
+    </div>
+
+    <!-- Section 11 -->
+    <div class="card" id="s11">
+      <h2><span class="num">11</span> DevTools Verification — The Source of Truth</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3274s" target="_blank">▶ 54:34</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3420s" target="_blank">▶ 57:00</a>
+      </p>
+      <p>The browser's DevTools Computed tab is the deterministic source of truth.</p>
+      <ul>
+        <li><strong>Open DevTools</strong> — right-click → Inspect, or Cmd+Option+J (Mac)</li>
+        <li><strong>Elements tab</strong> — hover over code to highlight elements, or use the selector tool to click on any element</li>
+        <li><strong>Computed tab</strong> — shows actual rendered values (not declared CSS). Use this over Styles tab for verification.</li>
+        <li><strong>What to check</strong> — background-color, border-radius (100px = pill shape), height (40px for CTA buttons), font properties</li>
+        <li><strong>Practical tip</strong> — the console panel can hide Elements. Drag the divider down if you can't see the code.</li>
+        <li><strong>Verification confirmed</strong> — CTA button's background color matched Claude Code's output exactly</li>
+      </ul>
+    </div>
+
+    <!-- Section 12 -->
+    <div class="card" id="s12">
+      <h2><span class="num">12</span> Fluid Typography — Why Sizes Don't Match</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3600s" target="_blank">▶ 1:00:00</a></p>
+      <p>A common gotcha: the script reports 48px but DevTools shows a different value. The reason is <strong>fluid (responsive) typography</strong>.</p>
+      <ul>
+        <li><strong>Fluid typography</strong> — font sizes change based on viewport width using <code>clamp()</code>. "48px" is one value at one viewport size.</li>
+        <li><strong>Resize to see it change</strong> — dragging the browser window updates the font-size in real-time in the Computed tab</li>
+        <li><strong>Fixed vs. fluid tokens</strong> — the DESIGN.md should distinguish between fixed (14px body) and fluid tokens (heading that scales)</li>
+        <li><strong>Why this matters</strong> — recording only "48px" misses the responsive behavior. The prompt's hard rules instruct AI to label fluid typography separately.</li>
+      </ul>
+      <div class="highlight-box">💡 "The font size in our JSON script said 48px, but DevTools shows a different value. That's because Vercel uses fluid typography — the size changes based on your viewport."</div>
+    </div>
+
+    <!-- Section 13 -->
+    <div class="card" id="s13">
+      <h2><span class="num">13</span> Method 3 — Claude Code &amp; Co-Work Automation</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3959s" target="_blank">▶ 1:05:59</a>
+        <a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4088s" target="_blank">▶ 1:08:08</a>
+      </p>
+      <p>The third method automates the entire workflow using Claude Code CLI or Claude Co-Work.</p>
+      <h3>The 8-Step Prompt</h3>
+      <ul>
+        <li><strong>Step 1</strong> — Get oriented (visit URL + reference library)</li>
+        <li><strong>Step 2</strong> — Element-by-element inventory</li>
+        <li><strong>Step 3</strong> — Separate branding colors, decide fixed vs. fluid typography</li>
+        <li><strong>Step 4</strong> — Drift check against library</li>
+        <li><strong>Step 5</strong> — First-pass DESIGN.md</li>
+        <li><strong>Step 6</strong> — Verify against live website</li>
+        <li><strong>Step 7</strong> — Lint &amp; export Tailwind config</li>
+        <li><strong>Step 8</strong> — Report with both files</li>
+      </ul>
+      <h3>Claude Co-Work vs. Claude Code</h3>
+      <ul>
+        <li><strong>Co-Work UI</strong> — step-by-step progress with checkmarks. Opens reference site in browser tab. "More user-friendly."</li>
+        <li><strong>Claude Code terminal</strong> — same prompt, same steps, same output. For terminal-fluent users.</li>
+        <li><strong>Output</strong> — two files: DESIGN.md + Tailwind JSON config. Lint: 0 errors, 2 warnings.</li>
+      </ul>
+    </div>
+
+    <!-- Section 14 -->
+    <div class="card" id="s14">
+      <h2><span class="num">14</span> Using DESIGN.md in a Real Project</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4362s" target="_blank">▶ 1:12:42</a></p>
+      <p>Feeding the extracted DESIGN.md to Claude Design to generate a website with the exact same visual identity.</p>
+      <ul>
+        <li><strong>Tailwind config integration</strong> — merge the exported JSON into your <code>tailwind.config</code>. All tokens are ready to use.</li>
+        <li><strong>Alternative exports</strong> — Universal Community Tokens format if you don't use Tailwind</li>
+        <li><strong>One-shot result</strong> — Claude Design produced a website with identical colors, cursor, and spirit — single prompt, no reprompting</li>
+        <li><strong>Not for copying</strong> — use extracted designs as reference. The DESIGN.md gives the foundation; the creativity is yours.</li>
+        <li><strong>Co-Work verification</strong> — the tool opened the reference website in a browser tab and verified all values before generating the final output</li>
+      </ul>
+      <div class="highlight-box">💡 "Once you have the DESIGN.md, it's just a matter of using it in one of your projects. You don't want to copy a website — you want it as reference and build your own."</div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">★</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>DESIGN.md is Google's open-source design token spec</strong> — a single markdown file capturing colors, typography, spacing, motion, and elevation for any design system.</li>
+          <li><strong>Three progressive methods</strong> — (1) screenshot extraction, (2) computed style script, (3) Claude Code/Co-Work automation. Learn them in order.</li>
+          <li><strong>The "uncertain" comment trick</strong> — instruct AI to flag low-confidence values. Then search and review each one manually. Dramatically reduces silent hallucination.</li>
+          <li><strong>Motion values are always inferred from screenshots</strong> — AI borrows easing/duration from Material 3 defaults, not the source.</li>
+          <li><strong>AI will silently "fix" things</strong> — it might rename labels or adjust values. Always ask: did it change, fix, or invent?</li>
+          <li><strong>Frequency-based color assignment</strong> — colors used 2,000+ times are likely primary; fewer than 3 times is probably noise.</li>
+          <li><strong>DevTools Computed tab is the source of truth</strong> — the deterministic way to verify any value.</li>
+          <li><strong>Watch for fluid typography</strong> — "48px" may be one value in a responsive clamp() function. Size changes with viewport.</li>
+          <li><strong>Always validate with Google's linter</strong> — <code>npx design-lint DESIGN.md</code> catches structural errors.</li>
+          <li><strong>Production websites have messy realities</strong> — dual design systems, declared-but-unused tokens, outdated library entries.</li>
+          <li><strong>Tailwind config is a bonus deliverable</strong> — the process produces both DESIGN.md and a ready-to-merge Tailwind JSON.</li>
+          <li><strong>Learn the process before automating</strong> — "once you know the process, AI becomes a multiplier."</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=0s" target="_blank">▶ 0:00</a> <span class="label">Introduction — what DESIGN.md is</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=107s" target="_blank">▶ 1:47</a> <span class="label">Resources — Google spec &amp; getdesign.md</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=218s" target="_blank">▶ 3:38</a> <span class="label">Method 1 — screenshot extraction</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=503s" target="_blank">▶ 8:23</a> <span class="label">Extraction prompt walkthrough</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=660s" target="_blank">▶ 11:00</a> <span class="label">Hard rules — uncertain flags</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=805s" target="_blank">▶ 13:25</a> <span class="label">AI output — first result review</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=860s" target="_blank">▶ 14:20</a> <span class="label">Catching AI mistakes &amp; smart fixes</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1044s" target="_blank">▶ 17:24</a> <span class="label">AI changing labels — walk/play/distance</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1139s" target="_blank">▶ 18:59</a> <span class="label">Motion values — always inferred</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1192s" target="_blank">▶ 19:52</a> <span class="label">Linter validation — npx design-lint</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1365s" target="_blank">▶ 22:45</a> <span class="label">Method 2 — computed styles intro</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1674s" target="_blank">▶ 27:54</a> <span class="label">DevTools console — opening &amp; clearing</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1794s" target="_blank">▶ 29:54</a> <span class="label">The JavaScript style-auditing script</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1860s" target="_blank">▶ 31:00</a> <span class="label">Security check — "is this safe?"</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1993s" target="_blank">▶ 33:13</a> <span class="label">Script anatomy — 6 steps</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2160s" target="_blank">▶ 36:00</a> <span class="label">Element walk — 7 buckets</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2311s" target="_blank">▶ 38:31</a> <span class="label">JSON output review</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2521s" target="_blank">▶ 42:01</a> <span class="label">JSON → DESIGN.md prompt</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2647s" target="_blank">▶ 44:07</a> <span class="label">Hard rules — frequency &amp; confidence</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2770s" target="_blank">▶ 46:10</a> <span class="label">Vercel DESIGN.md analysis</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3067s" target="_blank">▶ 51:07</a> <span class="label">Non-determinism discussion</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3274s" target="_blank">▶ 54:34</a> <span class="label">DevTools verification</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3420s" target="_blank">▶ 57:00</a> <span class="label">Inspecting CTA button</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3537s" target="_blank">▶ 58:57</a> <span class="label">Body background — dark vs. white</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3600s" target="_blank">▶ 1:00:00</a> <span class="label">Fluid typography explained</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3959s" target="_blank">▶ 1:05:59</a> <span class="label">Method 3 — Claude Code &amp; Co-Work</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3988s" target="_blank">▶ 1:06:28</a> <span class="label">Multi-step prompt walkthrough</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4088s" target="_blank">▶ 1:08:08</a> <span class="label">Co-Work UI — steps &amp; progress</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4215s" target="_blank">▶ 1:10:15</a> <span class="label">Result — DESIGN.md + Tailwind</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4362s" target="_blank">▶ 1:12:42</a> <span class="label">Real project — Claude Design</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4503s" target="_blank">▶ 1:15:03</a> <span class="label">Closing — next steps</span></div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
-<!-- Section 1 -->
-<div class="section-card" id="s1">
-  <h2><span class="section-num">1</span> What Is DESIGN.md &amp; Why It Matters <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=0s" target="_blank">▶ 0:00</a></h2>
-  <p>The DESIGN.md file is a structured design token specification open-sourced by Google. It captures a website's entire visual identity — colors, typography, spacing, elevation, motion — in a single markdown file that any AI or developer can consume.</p>
-  <ul>
-    <li><strong>Production-ready output</strong> — by the end of each method, you get a DESIGN.md file plus a Tailwind config you can drop straight into a project</li>
-    <li><strong>Three progressive methods</strong> — screenshot extraction, computed style script, and Claude Code/Co-Work automation. Each builds on the previous.</li>
-    <li><strong>Don't skip ahead</strong> — the methods are deliberately ordered so you learn to detect errors and validate AI output before automating</li>
-  </ul>
-</div>
-
-<!-- Section 2 -->
-<div class="section-card" id="s2">
-  <h2><span class="section-num">2</span> Resources — Where to Find DESIGN.md Files <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=107s" target="_blank">▶ 1:47</a></h2>
-  <p>Two key resources for understanding and finding DESIGN.md files:</p>
-  <ul>
-    <li><strong>Google's open-source GitHub</strong> — the official architecture and structure specification. This is the reference every prompt should point to.</li>
-    <li><strong>getdesign.md</strong> — a community library of pre-extracted DESIGN.md files for major brands (BMW, HP, Airbnb, Airtable, AOL, etc.). Useful for reference but may be outdated — always verify against the live site.</li>
-  </ul>
-</div>
-
-<!-- Section 3 -->
-<div class="section-card" id="s3">
-  <h2><span class="section-num">3</span> Method 1 — Screenshot Extraction <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=218s" target="_blank">▶ 3:38</a></h2>
-  <p>The first method works from <strong>screenshots only</strong> — no access to the live site required. You capture key screens and feed them as context to Claude.</p>
-  <ul>
-    <li><strong>What to capture</strong> — the main landing/home page, a secondary page with different components, and optionally logged-in dashboard views (sometimes uses a different design system)</li>
-    <li><strong>Three screenshot files</strong> — attach them as context to the AI prompt</li>
-    <li><strong>Limitation</strong> — AI is "guessing from pixels." Colors may be approximate, motion/animation values are always inferred, and there's no way to know CSS variable names.</li>
-    <li><strong>Best for</strong> — competitor analysis, design inspiration, sites you can't access programmatically</li>
-  </ul>
-</div>
-
-<!-- Section 4 -->
-<div class="section-card" id="s4">
-  <h2><span class="section-num">4</span> The Extraction Prompt — Anatomy &amp; Hard Rules <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=503s" target="_blank">▶ 8:23</a></h2>
-  <p>A carefully structured prompt is the key to production-quality output on the first try. The prompt has several critical sections:</p>
-  <ul>
-    <li><strong>Reference URLs</strong> — point to Google's open-source DESIGN.md spec, the README, and example files. This gives AI a strict structural reference.</li>
-    <li><strong>Structure order</strong> — branding, colors, typography, layout, spacing — matching Google's canonical order</li>
-    <li><strong>Hard rules</strong> — (1) mirror the exact layout of the reference, (2) capture the full design system spirit, (3) use real hex values from the source, (4) use an <code><!-- uncertain --></code> comment for values the AI isn't confident about</li>
-    <li><strong>The uncertain flag</strong> — forces AI to mark guesses explicitly, dramatically reducing silent hallucination. You can then search for "uncertain" in the output and review each one manually.</li>
-    <li><strong>Single file output</strong> — instruct the AI to produce exactly one DESIGN.md file, nothing else</li>
-  </ul>
-  <div class="highlight">Key insight: "The uncertain comment forces the AI to flag values it's not sure about. This reduces hallucination because the AI will mark guesses explicitly instead of inventing values silently."</div>
-</div>
-
-<!-- Section 5 -->
-<div class="section-card" id="s5">
-  <h2><span class="section-num">5</span> Reviewing AI Output — Catching Mistakes <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=860s" target="_blank">▶ 14:20</a></h2>
-  <p>The review step is critical. AI can silently "fix" or "invent" values that look reasonable but aren't what you want.</p>
-  <ul>
-    <li><strong>Check dos and don'ts</strong> — make sure they're specific to YOUR design (e.g., "keep cards on white with soft purple-tinted shadows"), not generic boilerplate</li>
-    <li><strong>AI "fixing" things</strong> — example: a design had "walk, play, play" labels but the AI changed the third to "distance" because the metric was in kilometers. The AI was being smart, but it changed the designer's intent.</li>
-    <li><strong>Three categories of AI changes</strong> — ask yourself: did it (1) change something, (2) fix something, or (3) invent something? Then decide if you want to keep it.</li>
-    <li><strong>Motion values are ALWAYS inferred</strong> — there's no way AI can detect animations from screenshots. Easing, duration, and timing values come from Material 3 defaults, not from the actual source.</li>
-    <li><strong>Search for "uncertain"</strong> — review all 8+ flagged items one by one against the original screenshots</li>
-  </ul>
-  <div class="highlight">Key insight: "Every time you spot something the AI outputs that doesn't seem right, ask yourself: did it change something, fix something, or invent something?"</div>
-</div>
-
-<!-- Section 6 -->
-<div class="section-card" id="s6">
-  <h2><span class="section-num">6</span> Validation with Google's DESIGN.md Linter <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1192s" target="_blank">▶ 19:52</a></h2>
-  <p>Google provides an official linter for DESIGN.md files that validates structure and catches errors.</p>
-  <ul>
-    <li><strong>Install</strong> — <code>npx design-lint path/to/DESIGN.md</code></li>
-    <li><strong>Output</strong> — reports errors (structural problems) and warnings (style suggestions). Aim for zero errors.</li>
-    <li><strong>Why it matters</strong> — ensures your file follows the canonical structure, making it compatible with any tool that consumes DESIGN.md files</li>
-    <li><strong>After each method</strong> — always run the linter as a final validation step</li>
-  </ul>
-</div>
-
-<!-- Section 7 -->
-<div class="section-card" id="s7">
-  <h2><span class="section-num">7</span> Method 2 — Computed Styles from Live Websites <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1365s" target="_blank">▶ 22:45</a></h2>
-  <p>The second method reads the <strong>actual computed styles</strong> from a live website's browser rendering. No guessing — these are the real values the browser uses.</p>
-  <ul>
-    <li><strong>Computed style</strong> — the final, resolved CSS value after all stylesheets, variables, and inheritance are applied. If a button uses <code>var(--primary-color)</code>, the computed style is the actual hex value like <code>#3b82f6</code>.</li>
-    <li><strong>Why this is better than screenshots</strong> — exact hex values, real font sizes, actual CSS variable names, border radii, spacing — all deterministic, no pixel guessing</li>
-    <li><strong>Source material</strong> — Awwwards nominees, competitor sites, any production website you can open in your browser</li>
-    <li><strong>The script runs client-side only</strong> — it reads from the DOM, doesn't send anything to any server, doesn't install anything. Purely read-only diagnostic.</li>
-  </ul>
-  <div class="highlight">Key insight: "The previous method relies on AI guessing from pixels. This method actually reads the computed styles from the browser. There's no guessing."</div>
-</div>
-
-<!-- Section 8 -->
-<div class="section-card" id="s8">
-  <h2><span class="section-num">8</span> The Style-Auditing Script — Deep Walkthrough <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1674s" target="_blank">▶ 27:54</a></h2>
-  <p>A JavaScript script that runs in the browser's DevTools console. It walks every visible element on the page and extracts the full design system into a JSON object.</p>
-  <ul>
-    <li><strong>Step 1 — Constants &amp; helpers</strong> — filters out browser default colors (unvisited link blue, visited link purple, transparent) to avoid noise in the output</li>
-    <li><strong>Step 2 — CSS variables</strong> — walks every stylesheet (including cross-domain), pulls all CSS variables (--primary-color, --brand-accent, etc.)</li>
-    <li><strong>Step 3 — Filter &amp; categorize</strong> — separates variables into colors and brand-meaningful names using regex patterns</li>
-    <li><strong>Step 4 — Keyframes &amp; animations</strong> — captures animation variable names to understand team intent</li>
-    <li><strong>Step 5 — Element walk</strong> — visits up to 4,000 visible elements, extracting color, background, border, border-radius, font family, weight, spacing for each. Groups results into 7 buckets (text colors, background colors, border colors, SVG fills, font families, font sizes, font weights)</li>
-    <li><strong>Step 6 — Frequency count &amp; JSON output</strong> — sorts by usage frequency. The most-used values in each bucket define the brand. Outputs grouped key-value JSON.</li>
-    <li><strong>Security</strong> — always verify scripts before running in your browser. Ask an AI "is this script safe to run?" and paste the code. This script is purely read-only.</li>
-    <li><strong>4,000 element cap</strong> — configurable. Bump to 6,000-10,000 for very large websites to avoid missing elements.</li>
-  </ul>
-  <div class="highlight">Key insight: "The most used values in each bucket is usually what defines the brand. A color used as text means something different than the color used as a button background — that's why we have 7 separate buckets."</div>
-</div>
-
-<!-- Section 9 -->
-<div class="section-card" id="s9">
-  <h2><span class="section-num">9</span> Turning JSON Results into a DESIGN.md <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2521s" target="_blank">▶ 42:01</a></h2>
-  <p>With the JSON output from the script, you feed it to Claude with a specialized prompt to generate the DESIGN.md file.</p>
-  <ul>
-    <li><strong>The prompt</strong> — specify the URL, brand name, attach the JSON results, and reference Google's DESIGN.md spec. Customize URL and brand name for each extraction.</li>
-    <li><strong>Hard rules for this method</strong> — (1) any color appearing fewer than 3 times gets a "low confidence — verify on live site" comment, (2) for each color, add a one-line comment citing frequency evidence</li>
-    <li><strong>Why frequency matters</strong> — forces AI to justify its semantic role assignments. A color used 2,340 times is likely primary; a color used 3 times might be noise from an SVG icon.</li>
-    <li><strong>Dual design systems</strong> — the Vercel example revealed two naming conventions (geist and ds) coexisting, possibly from a migration. The AI recognized and handled both.</li>
-    <li><strong>Result structure</strong> — colors organized in tiers (surface, foreground, text, inverse, outline, primary), each with frequency-based reasoning comments. Then typography, rounded corners, spacing, components — all following Google's canonical architecture.</li>
-  </ul>
-</div>
-
-<!-- Section 10 -->
-<div class="section-card" id="s10">
-  <h2><span class="section-num">10</span> Non-Determinism — Why Outputs Differ <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3067s" target="_blank">▶ 51:07</a></h2>
-  <p>Extracting DESIGN.md is inherently non-deterministic and open to interpretation. Different methods produce different (but not necessarily wrong) results.</p>
-  <ul>
-    <li><strong>Library vs. reality</strong> — getdesign.md showed Vercel with a white background; the live site is dark mode black. Libraries capture snapshots that may be outdated.</li>
-    <li><strong>"Almost white" vs. "pure white"</strong> — the script extracted the primary foreground as almost-white (#FAFAFA), not pure white (#FFFFFF). Both are "right" in different contexts.</li>
-    <li><strong>Declared but unused tokens</strong> — some CSS variables exist in stylesheets but are never rendered. They show up in the extraction but aren't part of the visual design.</li>
-    <li><strong>Don't assume AI is wrong</strong> — when Claude generates a value that seems off, investigate before correcting. The "wrong" value may be the actual computed style.</li>
-  </ul>
-  <div class="highlight">Key insight: "Extracting a DESIGN.md is non-deterministic and open to interpretation. We don't know how the designers are thinking — all we have to work with is the trails they left behind in their code."</div>
-</div>
-
-<!-- Section 11 -->
-<div class="section-card" id="s11">
-  <h2><span class="section-num">11</span> DevTools Verification — The Source of Truth <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3274s" target="_blank">▶ 54:34</a></h2>
-  <p>The browser's DevTools Computed tab is the deterministic source of truth. The video walks through inspecting real elements on Vercel's website.</p>
-  <ul>
-    <li><strong>Open DevTools</strong> — right-click → Inspect, or Cmd+Option+J (Mac)</li>
-    <li><strong>Elements tab</strong> — hover over code to highlight elements, or use the selector tool to click on any element in the page</li>
-    <li><strong>Computed tab</strong> — shows the actual rendered values (not declared CSS). Use this over the Styles tab for verification.</li>
-    <li><strong>What to check</strong> — background-color, border-radius (e.g., 100px = pill shape), height (e.g., 40px for CTA buttons), font properties</li>
-    <li><strong>Practical tip</strong> — the console panel can hide the Elements panel. Drag the divider down if you can't see the code. Click the Elements tab (not Console) when inspecting.</li>
-    <li><strong>Verification confirmed</strong> — the CTA button's background color matched what Claude Code generated, proving the extraction was correct</li>
-  </ul>
-</div>
-
-<!-- Section 12 -->
-<div class="section-card" id="s12">
-  <h2><span class="section-num">12</span> Fluid Typography — Why Sizes Don't Match <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3600s" target="_blank">▶ 1:00:00</a></h2>
-  <p>A common gotcha: the script reports a font size of 48px, but DevTools shows a different value. The reason is <strong>fluid (responsive) typography</strong>.</p>
-  <ul>
-    <li><strong>Fluid typography</strong> — font sizes change based on viewport width using <code>clamp()</code> or CSS calculations. The "48px" is one possible value at one viewport size.</li>
-    <li><strong>Resize to see it change</strong> — dragging the browser window shows the font-size updating in real-time in the Computed tab</li>
-    <li><strong>Fixed vs. fluid tokens</strong> — the DESIGN.md prompt should distinguish between fixed tokens (e.g., 14px body text) and fluid tokens (e.g., heading that scales with viewport)</li>
-    <li><strong>Why this matters for DESIGN.md</strong> — if you record only "48px" you miss the responsive behavior. The prompt's hard rules instruct AI to identify and label fluid typography separately.</li>
-  </ul>
-  <div class="highlight">Key insight: "The font size in our JSON script said 48px, but DevTools shows a different value. That's because Vercel uses fluid typography — the size changes based on your viewport."</div>
-</div>
-
-<!-- Section 13 -->
-<div class="section-card" id="s13">
-  <h2><span class="section-num">13</span> Method 3 — Claude Code &amp; Co-Work Automation <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3959s" target="_blank">▶ 1:05:59</a></h2>
-  <p>The third method automates the entire workflow using Claude Code CLI or Claude Co-Work, combining all previous steps into a single prompt execution.</p>
-  <ul>
-    <li><strong>Why learn the manual methods first</strong> — "the previous methods are the best way to learn. Once you know the process, AI becomes a multiplier. You'll trust it more and work way faster."</li>
-    <li><strong>The multi-step prompt</strong> — (1) get oriented (visit URL + reference library), (2) element-by-element inventory, (3) separate branding colors &amp; decide fixed vs. fluid typography, (4) drift check against library, (5) first-pass DESIGN.md, (6) verify against live website, (7) lint &amp; export Tailwind config, (8) report with both files</li>
-    <li><strong>Claude Co-Work UI</strong> — shows step-by-step progress with checkmarks. Opens the reference website in a browser tab for verification. "More user-friendly" than the terminal.</li>
-    <li><strong>Claude Code terminal</strong> — same prompt, same steps, same output. Preference for terminal-fluent users.</li>
-    <li><strong>Output</strong> — two files: DESIGN.md + Tailwind JSON config. Lint ran automatically with 0 errors, 2 warnings.</li>
-  </ul>
-</div>
-
-<!-- Section 14 -->
-<div class="section-card" id="s14">
-  <h2><span class="section-num">14</span> Using DESIGN.md in a Real Project <a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4362s" target="_blank">▶ 1:12:42</a></h2>
-  <p>The video closes with a practical demonstration: feeding the extracted DESIGN.md to Claude Design to generate a website with the exact same visual identity.</p>
-  <ul>
-    <li><strong>Tailwind config integration</strong> — merge the exported JSON into your <code>tailwind.config</code> file. All colors, font families, font sizes, and spacing tokens are ready to use.</li>
-    <li><strong>Alternative exports</strong> — if you don't use Tailwind, export to Universal Community Tokens format</li>
-    <li><strong>One-shot result</strong> — Claude Design produced a website using the exact same colors, custom cursor, and visual spirit as the reference — in a single prompt with no reprompting</li>
-    <li><strong>Not for copying</strong> — use extracted designs as reference and inspiration, then build your own with your own taste. The DESIGN.md gives you the foundation; the creativity is yours.</li>
-    <li><strong>Claude Co-Work verification</strong> — the tool actually opened the reference website in a browser tab and verified all values against the live site before generating the final DESIGN.md</li>
-  </ul>
-  <div class="highlight">Key insight: "Once you have the DESIGN.md, it's just a matter of using it in one of your projects. You don't want to copy a website — you want it as reference and build your own."</div>
-</div>
-
-<!-- Key Takeaways -->
-<div class="takeaways" id="takeaways">
-  <h2>🎯 Key Takeaways</h2>
-  <ol>
-    <li><strong>DESIGN.md is Google's open-source design token spec</strong> — a single markdown file capturing colors, typography, spacing, motion, and elevation for any design system. Drop it into any AI workflow.</li>
-    <li><strong>Three progressive methods</strong> — (1) screenshot extraction for when you only have images, (2) computed style script for live websites with exact values, (3) Claude Code/Co-Work for full automation. Learn them in order.</li>
-    <li><strong>The "uncertain" comment trick</strong> — instruct AI to flag values it's not confident about with <code>&lt;!-- uncertain --&gt;</code>. Then search for those flags and review each one manually. Dramatically reduces silent hallucination.</li>
-    <li><strong>Motion values are always inferred from screenshots</strong> — AI cannot detect animations from static images. Easing, duration, and timing values are borrowed from Material 3 defaults, not from the source.</li>
-    <li><strong>AI will silently "fix" things</strong> — it might rename labels, correct perceived errors, or adjust values based on reasoning. Always ask: did it change, fix, or invent? Then decide if you keep it.</li>
-    <li><strong>Frequency-based color assignment</strong> — the computed style script counts how many times each color appears. Colors used 2,000+ times are likely primary; colors used fewer than 3 times are probably noise.</li>
-    <li><strong>DevTools Computed tab is the source of truth</strong> — the deterministic way to verify any value. Use it to check what the browser actually renders, not what the stylesheet declares.</li>
-    <li><strong>Watch for fluid typography</strong> — a font size of "48px" from the script may be one value in a responsive clamp() function. The actual size changes with viewport width.</li>
-    <li><strong>Always validate with Google's linter</strong> — <code>npx design-lint DESIGN.md</code> catches structural errors and ensures compatibility with the ecosystem.</li>
-    <li><strong>Production websites have messy realities</strong> — dual design systems (migration leftovers), declared-but-unused tokens, outdated library entries. Your extraction tools must handle these gracefully.</li>
-    <li><strong>The Tailwind config is a bonus deliverable</strong> — the extraction process produces both DESIGN.md and a ready-to-merge Tailwind JSON config with all tokens mapped.</li>
-    <li><strong>Learn the process before automating</strong> — "once you know the process, AI becomes a multiplier. You'll trust it more and you'll be able to work way faster."</li>
-  </ol>
-</div>
-
-<!-- Timestamp Index -->
-<div class="ts-index" id="timestamps">
-  <h2>⏱ Timestamp Index</h2>
-  <div class="ts-grid">
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=0s" target="_blank">▶ 0:00</a> Introduction — what DESIGN.md is</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=107s" target="_blank">▶ 1:47</a> Resources — Google spec &amp; getdesign.md</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=218s" target="_blank">▶ 3:38</a> Method 1 — screenshot extraction begins</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=503s" target="_blank">▶ 8:23</a> The extraction prompt walkthrough</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=660s" target="_blank">▶ 11:00</a> Hard rules — uncertain flags, structure</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=805s" target="_blank">▶ 13:25</a> AI output — first result review</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=860s" target="_blank">▶ 14:20</a> Catching AI mistakes and "smart fixes"</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1044s" target="_blank">▶ 17:24</a> AI changing labels — walk/play/distance</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1139s" target="_blank">▶ 18:59</a> Motion values — always inferred</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1192s" target="_blank">▶ 19:52</a> Linter validation — npx design-lint</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1365s" target="_blank">▶ 22:45</a> Method 2 — computed styles introduction</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1586s" target="_blank">▶ 26:26</a> How computed styles work vs. CSS variables</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1674s" target="_blank">▶ 27:54</a> DevTools console — opening &amp; clearing</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1794s" target="_blank">▶ 29:54</a> The JavaScript style-auditing script</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1860s" target="_blank">▶ 31:00</a> Security check — "is this script safe?"</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=1993s" target="_blank">▶ 33:13</a> Script anatomy — 6 steps walkthrough</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2160s" target="_blank">▶ 36:00</a> Element walk — 7 buckets, frequency count</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2311s" target="_blank">▶ 38:31</a> JSON output — reviewing the results</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2521s" target="_blank">▶ 42:01</a> JSON → DESIGN.md with specialized prompt</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2647s" target="_blank">▶ 44:07</a> Hard rules — frequency &amp; color confidence</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=2770s" target="_blank">▶ 46:10</a> Claude output — Vercel DESIGN.md analysis</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3067s" target="_blank">▶ 51:07</a> Non-determinism discussion</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3274s" target="_blank">▶ 54:34</a> DevTools verification walkthrough</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3420s" target="_blank">▶ 57:00</a> Inspecting CTA button — computed values</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3537s" target="_blank">▶ 58:57</a> Body background — black vs. white debate</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3600s" target="_blank">▶ 1:00:00</a> Fluid typography — why sizes differ</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3959s" target="_blank">▶ 1:05:59</a> Method 3 — Claude Code &amp; Co-Work</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=3988s" target="_blank">▶ 1:06:28</a> Multi-step prompt walkthrough</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4088s" target="_blank">▶ 1:08:08</a> Claude Co-Work UI — steps &amp; progress</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4215s" target="_blank">▶ 1:10:15</a> Result — DESIGN.md + Tailwind config</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4362s" target="_blank">▶ 1:12:42</a> Real project — Claude Design one-shot</div>
-    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=30_cliFup7k&t=4503s" target="_blank">▶ 1:15:03</a> Closing — next steps and resources</div>
-  </div>
-</div>
-
-<footer>Deep Dive document generated from YouTube video 30_cliFup7k · CreativeDesignTools</footer>
-
-</div>
 </body>
 </html>
