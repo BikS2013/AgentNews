@@ -57,6 +57,15 @@ a:hover { text-decoration: underline; }
 }
 .thumb-link:hover { transform: scale(1.02); }
 .thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
 
 .container {
   display: flex;
@@ -210,6 +219,11 @@ a:hover { text-decoration: underline; }
   <a class="thumb-link" href="https://www.youtube.com/watch?v=30_cliFup7k" target="_blank" rel="noopener">
     <img src="https://img.youtube.com/vi/30_cliFup7k/maxresdefault.jpg" alt="Video thumbnail — How to Extract DESIGN.md from Any Website with Claude">
   </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~75 min</span>
+    <span class="meta-pill">🎤 CreativeDesignTools</span>
+    <span class="meta-pill">🏷 DESIGN.md · Claude Code · DevTools · Tailwind · Design Systems</span>
+  </div>
 </div>
 
 <!-- ─── BODY ─── -->
@@ -234,6 +248,7 @@ a:hover { text-decoration: underline; }
       <li><a href="#s13">Method 3 — Claude Code</a></li>
       <li><a href="#s14">Real Project Use</a></li>
       <li><a href="#takeaways">Key Takeaways</a></li>
+      <li><a href="#resources">Resources &amp; Links</a></li>
       <li><a href="#timestamps">Timestamp Index</a></li>
     </ol>
   </nav>
@@ -496,6 +511,17 @@ a:hover { text-decoration: underline; }
           <li><strong>Learn the process before automating</strong> — "once you know the process, AI becomes a multiplier."</li>
         </ul>
       </div>
+    </div>
+
+    <!-- Resources & Links -->
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://github.com/google-labs-code/design.md" target="_blank">google-labs-code/design.md</a> — Google's official open-source DESIGN.md specification and architecture on GitHub</li>
+        <li><a href="https://getdesign.md/" target="_blank">getdesign.md</a> — Community library of pre-extracted DESIGN.md files for major brands (BMW, Airbnb, Vercel, etc.)</li>
+        <li><a href="https://claude.com/product/claude-code" target="_blank">Claude Code</a> — Anthropic's CLI coding agent used in Method 3 for automated DESIGN.md extraction</li>
+        <li><a href="https://claude.ai/design" target="_blank">Claude Design</a> — Anthropic's design tool for bringing your DESIGN.md into a real project with one prompt</li>
+      </ul>
     </div>
 
     <!-- Timestamp Index -->
