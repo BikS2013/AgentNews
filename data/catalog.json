@@ -186,7 +186,18 @@
       "thumbnailUrl": "https://img.youtube.com/vi/T6O9U185UFU/maxresdefault.jpg",
       "thumbnailSource": "html",
       "sha256": "ccc3f27826bc24427166789a35ed0abaa297ce2b6e0f9975e66488d0deba6a8d"
+    },
+    {
+      "slug": "anthropic-just-open-sourced-all-of-legal-ai-70-agents-free-bitwise-ai",
+      "title": "Anthropic Just Open-Sourced All of Legal AI (70 Agents, Free) — Bitwise AI",
+      "publishedAt": "2026-05-13T17:12:04.000Z",
+      "sourcePath": "/tmp/deep_dive_7H8-zRB5hbU.html",
+      "articlePath": "articles/anthropic-just-open-sourced-all-of-legal-ai-70-agents-free-bitwise-ai.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/7H8-zRB5hbU/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "2d4e5e5d38790de1ac8283c8a0ea1053faeaf31b53870a4dd1e6d59db229cece",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-24T21:08:53.173Z"
+  "updatedAt": "2026-05-25T19:22:28.317Z"
 }
