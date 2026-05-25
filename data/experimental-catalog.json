@@ -110,7 +110,18 @@
       "thumbnailSource": "html",
       "sha256": "dfa19d3108f6cb610f983e1a547f4dffa6e0d64e2fd09ce22b6ac70096c5e277",
       "category": "deep-dive"
+    },
+    {
+      "slug": "top-1-opportunity-for-senior-engineers-agentic-engineering-indydevdan",
+      "title": "Top #1 Opportunity for Senior Engineers: Agentic Engineering — IndyDevDan",
+      "publishedAt": "2026-05-25T13:00:27.000Z",
+      "sourcePath": "/tmp/deep_dive_2KcITKKJikA.html",
+      "articlePath": "experimental/top-1-opportunity-for-senior-engineers-agentic-engineering-indydevdan.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/2KcITKKJikA/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "abcbf0cfcec5e8cd3f04409c1f418fa4a4c12f0ff958c11410bd14f83b5d12c6",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-24T21:01:07.941Z"
+  "updatedAt": "2026-05-25T13:22:58.716Z"
 }
