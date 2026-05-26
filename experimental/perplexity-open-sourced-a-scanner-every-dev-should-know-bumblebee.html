@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perplexity Open-Sourced a Scanner Every Dev Should Know — Bumblebee</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:0 16px 64px;}
+
+/* Header-Based TOC */
+.toc-bar{position:sticky;top:0;z-index:100;background:rgba(15,17,23,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #23262f;padding:10px 0;margin-bottom:28px;}
+.toc-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.toc-pill{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#8b8fa3;background:rgba(35,38,47,0.7);border:1px solid transparent;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
+.toc-pill:hover,.toc-pill.active{color:#a78bfa;background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.25);}
+
+.container{max-width:860px;margin:0 auto;}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+.meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+.meta a{color:#a78bfa;text-decoration:none;}
+.meta a:hover{text-decoration:underline;}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+.meta-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.meta-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:13px;background:rgba(35,38,47,0.7);border:1px solid #23262f;color:#8b8fa3;}
+.video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+.overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+.overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+.overview-card p{color:#b0b4c0;font-size:15px;}
+.section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+.section-card:hover{border-color:rgba(139,92,246,0.35);}
+.section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+.section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+.section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+.section-card li{margin-bottom:5px;}
+.section-card strong{color:#d0d4dc;}
+.highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+.takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+.takeaways ol{margin-left:20px;}
+.takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+.takeaways li strong{color:#c4b5fd;}
+.resources{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.resources h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+.resources a{color:#a78bfa;text-decoration:none;}
+.resources a:hover{text-decoration:underline;}
+.resources li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+.resources ul{margin-left:20px;}
+.ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+.ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+.ts-row .timestamp{flex-shrink:0;}
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+
+.code-block{background:#1a1d27;border:1px solid #23262f;border-radius:10px;padding:16px 20px;margin:12px 0;overflow-x:auto;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13.5px;color:#c9cdd5;line-height:1.6;}
+.code-block .kw{color:#c4b5fd;}
+.code-block .str{color:#86efac;}
+.code-block .fn{color:#93c5fd;}
+.code-block .cmt{color:#555b6e;font-style:italic;}
+.code-block .op{color:#f9a8d4;}
+
+@media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index,.resources{padding:18px 16px;}}
+</style>
+</head>
+<body>
+
+<!-- TOC Bar -->
+<nav class="toc-bar">
+  <div class="toc-inner">
+    <a class="toc-pill" href="#overview">Overview</a>
+    <a class="toc-pill" href="#s1">The Problem</a>
+    <a class="toc-pill" href="#s2">What Is Bumblebee</a>
+    <a class="toc-pill" href="#s3">Install & Self-Test</a>
+    <a class="toc-pill" href="#s4">Baseline Scan</a>
+    <a class="toc-pill" href="#s5">NDJSON Output</a>
+    <a class="toc-pill" href="#s6">Not Another SCA</a>
+    <a class="toc-pill" href="#s7">Scan Profiles</a>
+    <a class="toc-pill" href="#s8">Coverage</a>
+    <a class="toc-pill" href="#s9">Read-Only Design</a>
+    <a class="toc-pill" href="#s10">Should You Use It</a>
+    <a class="toc-pill" href="#takeaways">Takeaways</a>
+    <a class="toc-pill" href="#resources">Resources</a>
+    <a class="toc-pill" href="#timestamps">Timestamps</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/L6iAw5yitfc/maxresdefault.jpg" alt="Perplexity Bumblebee" style="display:none;">
+
+<h1>Perplexity Open-Sourced a Scanner Every Dev Should Know — Bumblebee</h1>
+
+<div class="meta">
+  <span>Better Stack</span>
+  <span class="badge">~8 min</span>
+  <a href="https://www.youtube.com/watch?v=L6iAw5yitfc" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="meta-pills">
+  <span class="meta-pill">⏱ 8:22</span>
+  <span class="meta-pill">🎤 Better Stack</span>
+  <span class="meta-pill">🏢 Perplexity AI</span>
+  <span class="meta-pill">🏷 Supply Chain Security</span>
+  <span class="meta-pill">🏷 Developer Tools</span>
+  <span class="meta-pill">🏷 Open Source</span>
+  <span class="meta-pill">🏷 MCP</span>
+</div>
+
+<!-- Video Embed -->
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/L6iAw5yitfc" title="Perplexity Bumblebee" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=L6iAw5yitfc" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/L6iAw5yitfc/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+<!-- Overview -->
+<div class="overview-card" id="overview">
+  <h2>Overview</h2>
+  <p>Perplexity has open-sourced Bumblebee, a read-only scanner that inventories every package, editor extension, browser extension, and AI tool config on a developer's machine — without running package managers or executing project code. In this hands-on walkthrough, Better Stack installs Bumblebee, runs it live, and breaks down its three scan profiles (baseline, project, and deep/incident response), its NDJSON output format, and why a read-only approach matters during supply chain incidents. The video covers what makes Bumblebee different from SCA tools, SBOM generators, and EDR solutions, and explains exactly when and how developers should integrate it into their security workflow.</p>
+</div>
+
+<!-- Section 1: The Dev Machine Supply Chain Problem -->
+<div class="section-card" id="s1">
+  <h2><span class="section-num">1</span> The Dev Machine Supply Chain Problem <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>When a supply chain attack drops, the question isn't "is production safe?" — it's "did anyone install this thing locally?" The old security model was simple: scan the repo, scan the container, scan production. But that no longer reflects how developers actually work.</p>
+  <p>Today, a single developer laptop can have:</p>
+  <ul>
+    <li><strong>Multiple package managers</strong> — npm, pip, Go modules, Bun, etc.</li>
+    <li><strong>Browser extensions</strong> — Chrome, Firefox add-ons with broad permissions</li>
+    <li><strong>Editor extensions</strong> — VS Code, Cursor plugins</li>
+    <li><strong>AI coding tools</strong> — Claude, Copilot, local agents</li>
+    <li><strong>MCP configs</strong> — model context protocol server configurations</li>
+  </ul>
+  <div class="highlight">That is a lot of trust packed into one machine. And it's the part your existing security stack probably doesn't see clearly.</div>
+</div>
+
+<!-- Section 2: What Is Bumblebee -->
+<div class="section-card" id="s2">
+  <h2><span class="section-num">2</span> What Is Bumblebee <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=35s" target="_blank">▶ 0:35</a></h2>
+  <p>Perplexity built Bumblebee internally for exactly this problem, then open-sourced it. It's a <strong>read-only, single binary scanner</strong> that inventories packages, editor extensions, browser extensions, and AI tool configs from local metadata.</p>
+  <p>Key design principles:</p>
+  <ul>
+    <li><strong>No <code>npm ls</code></strong> — doesn't call package managers</li>
+    <li><strong>No <code>pip show</code></strong> — doesn't import any Python packages</li>
+    <li><strong>No project code execution</strong> — doesn't build your Go project</li>
+    <li><strong>Metadata only</strong> — reads file system metadata, nothing else</li>
+  </ul>
+  <div class="highlight">Bumblebee reads metadata, emits inventory, matches known exposures, and gets out. That's the entire design philosophy.</div>
+</div>
+
+<!-- Section 3: Install & Self-Test -->
+<div class="section-card" id="s3">
+  <h2><span class="section-num">3</span> Install &amp; Self-Test <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=85s" target="_blank">▶ 1:25</a></h2>
+  <p>Installation is a single Go install command from GitHub. That gives you a single Go binary — no daemon, no service, nothing running in the background.</p>
+  <div class="code-block">
+<span class="cmt"># Install Bumblebee</span>
+go install github.com/perplexityai/bumblebee@latest
+
+<span class="cmt"># Run self-test to verify installation</span>
+bumblebee self-test
+<span class="cmt"># Expected output: "self-test okay"</span>
+  </div>
+  <p>The self-test confirms the scanner can detect its known fixture data correctly. If you get "self-test okay," you're ready to scan.</p>
+</div>
+
+<!-- Section 4: Running a Baseline Scan -->
+<div class="section-card" id="s4">
+  <h2><span class="section-num">4</span> Running a Baseline Scan <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=115s" target="_blank">▶ 1:55</a></h2>
+  <p>The baseline scan is the standard developer endpoint inventory. It checks common global and user-level package roots, editor extensions, browser extensions, and supported MCP configs.</p>
+  <div class="code-block">
+<span class="cmt"># Run a baseline scan and output to NDJSON file</span>
+bumblebee scan --profile baseline <span class="op">></span> scan-results.ndjson
+  </div>
+  <p>This is the scan you'd use for regular recurring checks — "what normally exists on this developer machine?" is the question it answers.</p>
+</div>
+
+<!-- Section 5: Reading NDJSON Output -->
+<div class="section-card" id="s5">
+  <h2><span class="section-num">5</span> Reading the NDJSON Output <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=135s" target="_blank">▶ 2:15</a></h2>
+  <p>Each line in the output is a structured JSON record containing:</p>
+  <ul>
+    <li><strong>Ecosystem</strong> — which package ecosystem (npm, PyPI, Go, etc.)</li>
+    <li><strong>Package name</strong> — the exact package or extension identifier</li>
+    <li><strong>Version</strong> — currently installed version</li>
+    <li><strong>Source file</strong> — where Bumblebee found the metadata</li>
+    <li><strong>Confidence level</strong> — how certain the detection is</li>
+    <li><strong>Location metadata</strong> — the full path on disk</li>
+  </ul>
+  <p>Because it's NDJSON (newline-delimited JSON), you can pipe it into <code>jq</code>, ship it to a file, collect it through MDM, ingest it into a SIEM, or hand it to another agentic workflow. It's designed to be boring, scriptable infrastructure.</p>
+  <div class="code-block">
+<span class="cmt"># View the first few results</span>
+head scan-results.ndjson
+
+<span class="cmt"># Filter for npm packages only</span>
+cat scan-results.ndjson <span class="op">|</span> jq <span class="str">'select(.ecosystem == "npm")'</span>
+
+<span class="cmt"># Search for a specific package</span>
+cat scan-results.ndjson <span class="op">|</span> jq <span class="str">'select(.name == "suspicious-package")'</span>
+  </div>
+  <div class="highlight">Instead of asking "do I maybe have this installed somewhere on the system?" — you can now actually see it right there in structured data.</div>
+</div>
+
+<!-- Section 6: Not Another SCA Tool -->
+<div class="section-card" id="s6">
+  <h2><span class="section-num">6</span> Why Bumblebee Is Not Another SCA Tool <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=180s" target="_blank">▶ 3:00</a></h2>
+  <p>At first glance, Bumblebee might look like just another security scanner. But it occupies a different niche entirely:</p>
+  <ul>
+    <li><strong>SCA tools</strong> — focus on your <em>application dependencies</em> (what your project uses)</li>
+    <li><strong>SBOM tools</strong> — focus on <em>what you shipped</em> (what's in the artifact)</li>
+    <li><strong>EDR</strong> — focus on <em>what you executed</em> (runtime behavior)</li>
+    <li><strong>Bumblebee</strong> — focuses on the <em>local developer state</em> (what's present on the machine)</li>
+  </ul>
+  <p>The critical scenario: a compromised package advisory drops. You need to know which laptops might be exposed. The obvious move is to ask everyone to run package manager commands — but <strong>that's exactly the wrong thing</strong>. If you're looking for something malicious, you don't want your investigation command to accidentally execute the malicious behavior (lifecycle scripts, plugin hooks, etc.).</p>
+  <div class="highlight">Bumblebee's approach: read metadata, emit inventory, match known exposures, then get out. No execution, no risk of triggering the very thing you're investigating.</div>
+</div>
+
+<!-- Section 7: Scan Profiles -->
+<div class="section-card" id="s7">
+  <h2><span class="section-num">7</span> Baseline vs Project vs Deep Scan Profiles <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=234s" target="_blank">▶ 3:54</a></h2>
+  <p>Bumblebee ships with three scan profiles, each designed for a different use case:</p>
+  <ul>
+    <li><strong>Baseline</strong> — lightweight recurring scan. Looks at global packages, user-level toolchains, extensions, and MCP configs. Answer: "What normally exists on this developer machine?"</li>
+    <li><strong>Project</strong> — scans known workspace directories (<code>~/code</code>, <code>~/source</code>, <code>~/work</code>). Use this when you care about lock files across actual dev folders.</li>
+    <li><strong>Deep</strong> — incident response mode. You point it at explicit roots (even something broad like <code>~</code>), usually with an exposure catalog and a duration limit.</li>
+  </ul>
+  <div class="code-block">
+<span class="cmt"># Normal workflow: baseline when things are calm</span>
+bumblebee scan --profile baseline <span class="op">></span> baseline.ndjson
+
+<span class="cmt"># When something bad happens: switch to deep scan</span>
+bumblebee scan --profile deep --root /home/user <span class="op">></span> deep-scan.ndjson
+  </div>
+  <div class="highlight">Baseline when things are calm. Deep scan when there's smoke. That's the entire operational model.</div>
+</div>
+
+<!-- Section 8: Coverage -->
+<div class="section-card" id="s8">
+  <h2><span class="section-num">8</span> What Bumblebee Scans <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=295s" target="_blank">▶ 4:55</a></h2>
+  <p>The coverage is what makes Bumblebee genuinely interesting. It can scan across:</p>
+  <ul>
+    <li><strong>Package managers</strong> — npm, pnpm, Yarn, Bun, Go modules, PyPI, and more</li>
+    <li><strong>Editor extensions</strong> — VS Code, Cursor extensions</li>
+    <li><strong>Browser extensions</strong> — Chrome, Firefox, etc.</li>
+    <li><strong>MCP JSON configs</strong> — this is a major feature because MCP configs are becoming the new <code>.env</code> files, scattered across developer machines</li>
+  </ul>
+  <p><strong>Technical specs:</strong></p>
+  <ul>
+    <li>Single Go binary with <strong>zero non-standard library dependencies</strong></li>
+    <li>Fast — metadata-only scanning completes in seconds</li>
+    <li>Outputs NDJSON — pipeable into <code>jq</code>, MDM, SIEM, or agentic workflows</li>
+    <li>Open source — MIT licensed</li>
+  </ul>
+</div>
+
+<!-- Section 9: Read-Only Design -->
+<div class="section-card" id="s9">
+  <h2><span class="section-num">9</span> Why Read-Only Scanning Matters <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=330s" target="_blank">▶ 5:30</a></h2>
+  <p>The read-only approach is not a minor detail — it's the core safety property. During a supply chain incident, the advice "just run the package manager and see what happens" can be dangerous. If the package you're investigating has malicious lifecycle scripts or weird plugin behavior, your scanner could accidentally trigger the very exploit you're looking for.</p>
+  <p>Bumblebee fills a real gap in the security stack:</p>
+  <ul>
+    <li><strong>CI/CD</strong> — most teams have some visibility here</li>
+    <li><strong>Container/production</strong> — usually covered by existing tools</li>
+    <li><strong>Developer machines</strong> — this is the messy part that Bumblebee addresses</li>
+  </ul>
+  <p>Dev machines have half-finished projects, old clones, global packages, test virtual environments, AI tooling — all the stuff that never shows up in your clean official inventory. Bumblebee gives you a practical way to see that local state.</p>
+  <div class="highlight">The AI config coverage is right on time. Local agents, MCP servers, and tool-calling workflows are moving fast, and MCP configs are becoming the new .env files across developer machines.</div>
+</div>
+
+<!-- Section 10: Should You Use It -->
+<div class="section-card" id="s10">
+  <h2><span class="section-num">10</span> Should Developers Use Bumblebee? <a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=439s" target="_blank">▶ 7:20</a></h2>
+  <p>The answer is <strong>yes</strong>, especially if your day-to-day work touches npm, Go, VS Code, Cursor, Claude, MCP servers, or similar tools. The recommended workflow:</p>
+  <ol>
+    <li><strong>Run a baseline scan once a week</strong> — one single command gives you a snapshot of what's on your machine</li>
+    <li><strong>Dump the NDJSON to a central location</strong> — archive results for searchability</li>
+    <li><strong>When an incident hits</strong> — search across everything instead of asking everyone in Slack "Hey, does anyone have this?"</li>
+  </ol>
+  <div class="code-block">
+<span class="cmt"># Weekly baseline scan (add to cron)</span>
+bumblebee scan --profile baseline <span class="op">></span> ~/scans/$(date +%Y-%m-%d)-baseline.ndjson
+  </div>
+  <p><strong>Current limitations to keep in mind:</strong></p>
+  <ul>
+    <li><strong>Brand new</strong> — just dropped, expect changes and rapid iteration</li>
+    <li><strong>macOS and Linux only</strong> — no Windows support yet</li>
+    <li><strong>Depends on advisory data</strong> — the exposure catalog flow gets much more useful when you have good advisory data to match against</li>
+    <li><strong>Not EDR</strong> — answers a narrower question: "What packages, extensions, and dev tool configs are present on this machine? Do any match something we know is bad?"</li>
+  </ul>
+  <div class="highlight">Bumblebee tells you which dev machines are currently exposed through local package metadata, extension manifests, and supported AI tool configs. That is extremely useful in the first hour when anything goes wrong — nobody wants to debate, they want to know who is exposed, where is it, and how fast to prove it.</div>
+</div>
+
+<!-- Key Takeaways -->
+<div class="takeaways" id="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong>Developer machines are the blind spot</strong> — traditional security tools cover CI/CD, containers, and production, but dev laptops with their package managers, extensions, and AI tools are largely invisible</li>
+    <li><strong>Bumblebee is a read-only scanner</strong> — it reads file system metadata only, never executing package managers, importing packages, or running project code</li>
+    <li><strong>Not another SCA tool</strong> — SCA covers app dependencies, SBOM covers shipped artifacts, EDR covers execution; Bumblebee covers local developer state</li>
+    <li><strong>Three scan profiles for different contexts</strong> — baseline for weekly checks, project for workspace-level auditing, deep for incident response</li>
+    <li><strong>NDJSON output is deliberately boring</strong> — pipe into jq, ship to MDM, ingest into SIEM, or feed to agentic workflows. Scriptable infrastructure by design</li>
+    <li><strong>MCP config scanning is a killer feature</strong> — as AI tool configs proliferate across dev machines, having visibility into them is increasingly critical</li>
+    <li><strong>Read-only matters during incidents</strong> — when investigating a malicious package, you don't want your investigation tool to accidentally trigger the exploit</li>
+    <li><strong>Zero non-standard dependencies</strong> — single Go binary, fast installation, no daemon or service to manage</li>
+    <li><strong>Brand new but promising</strong> — macOS and Linux only for now, expect rapid changes, but the core design is sound</li>
+    <li><strong>Practical workflow</strong> — baseline scan weekly, archive NDJSON centrally, deep scan during incidents, search across everything when it matters most</li>
+  </ol>
+</div>
+
+<!-- Resources -->
+<div class="resources" id="resources">
+  <h2>🔗 Resources &amp; Links</h2>
+  <ul>
+    <li><a href="https://www.perplexity.ai/hub/blog/perplexity-is-open-sourcing-bumblebee" target="_blank">Perplexity Blog — Bumblebee Announcement</a></li>
+    <li><a href="https://github.com/perplexityai/bumblebee" target="_blank">Bumblebee GitHub Repository</a></li>
+  </ul>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index" id="timestamps">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=0s" target="_blank">▶ 0:00</a> The Dev Machine Supply Chain Problem</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=35s" target="_blank">▶ 0:35</a> Why Developer Laptops Are Now an Attack Surface</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=85s" target="_blank">▶ 1:25</a> Bumblebee Install and Self-Test</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=115s" target="_blank">▶ 1:55</a> Running a Baseline Scan with Bumblebee</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=135s" target="_blank">▶ 2:15</a> Reading Bumblebee NDJSON Output</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=180s" target="_blank">▶ 3:00</a> Why Bumblebee Is Not Another SCA Tool</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=234s" target="_blank">▶ 3:54</a> Baseline vs Project vs Deep Scan Profiles</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=295s" target="_blank">▶ 4:55</a> What Bumblebee Scans: npm, PyPI, VS Code, Browsers, MCP</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=330s" target="_blank">▶ 5:30</a> Bumblebee Pros: Fast, Safe, Open Source</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=365s" target="_blank">▶ 6:05</a> Why Read-Only Scanning Matters During Incidents</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=L6iAw5yitfc&t=439s" target="_blank">▶ 7:20</a> Should Developers Use Bumblebee?</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video L6iAw5yitfc · Better Stack</footer>
+
+</div>
+
+<!-- TOC active state tracking -->
+<script>
+(function(){
+  var pills=document.querySelectorAll('.toc-pill');
+  var sections=[];
+  pills.forEach(function(p){
+    var id=p.getAttribute('href').slice(1);
+    var el=document.getElementById(id);
+    if(el) sections.push({el:el,pill:p});
+  });
+  function update(){
+    var scrollY=window.scrollY+80;
+    var active=null;
+    for(var i=sections.length-1;i>=0;i--){
+      if(sections[i].el.offsetTop<=scrollY){active=sections[i];break;}
+    }
+    pills.forEach(function(p){p.classList.remove('active');});
+    if(active) active.pill.classList.add('active');
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>
