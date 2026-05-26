@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Hours Testing Claude Code vs ChatGPT Codex — Honest Results</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.hero .meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+.thumb-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  max-width: 560px;
+  width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.toc {
+  position: sticky;
+  top: 1rem;
+  width: 260px;
+  min-width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.toc h3 {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a {
+  color: var(--text-muted);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before {
+  content: counter(toc) ". ";
+  color: var(--accent);
+  font-weight: 600;
+}
+.toc li.no-counter a::before { content: ""; }
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.card h3 {
+  color: var(--purple);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.6rem;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(26,29,39,0.6);
+  transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+/* Comparison tables */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+.compare-col { background: rgba(15,17,23,0.5); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px 16px; }
+.compare-col h4 { font-size: 0.9rem; margin-bottom: 8px; }
+.compare-col.claude h4 { color: var(--purple); }
+.compare-col.codex h4 { color: var(--green); }
+.compare-col ul { margin: 0; padding-left: 16px; }
+.compare-col li { font-size: 0.85rem; margin-bottom: 3px; color: var(--text-muted); }
+
+/* Verdict badges */
+.verdict { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; }
+.verdict.claude { background: rgba(167,139,250,0.15); color: var(--purple); }
+.verdict.codex { background: rgba(34,197,94,0.15); color: var(--green); }
+.verdict.tie { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .ts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/RLjaUES9P8A/maxresdefault.jpg" alt="100 Hours Testing Claude Code vs ChatGPT Codex" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>100 Hours Testing Claude Code vs ChatGPT Codex — Honest Results</h1>
+  <div class="meta">Nate Herk · ~27 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=RLjaUES9P8A" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/RLjaUES9P8A/maxresdefault.jpg" alt="Video thumbnail — Claude Code vs ChatGPT Codex">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~27 min</span>
+    <span class="meta-pill">🎤 Nate Herk</span>
+    <span class="meta-pill">🏷 Claude Code · Codex · AI Coding Agents · Comparison · Token Economics</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Overview</a></li>
+      <li><a href="#s2">Claude Code Explained</a></li>
+      <li><a href="#s3">Meet Codex</a></li>
+      <li><a href="#s4">The Overlap</a></li>
+      <li><a href="#s5">Claude Code's Edge</a></li>
+      <li><a href="#s6">Codex Fights Back</a></li>
+      <li><a href="#s7">Third-Party Harnesses</a></li>
+      <li><a href="#s8">Pricing Breakdown</a></li>
+      <li><a href="#s9">Test: Research Report</a></li>
+      <li><a href="#s10">Test: Landing Page</a></li>
+      <li><a href="#s11">Test: Dashboard</a></li>
+      <li><a href="#s12">The Numbers</a></li>
+      <li><a href="#s13">Honest Verdict</a></li>
+      <li><a href="#s14">Final Mindset</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Section 1: Overview -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Overview</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=0s" target="_blank">▶ 0:00</a>
+      </p>
+      <p>Over the past years, OpenAI went from being the biggest AI company to becoming "kind of mid" in the coding space — developers basically forgot OpenAI existed thanks to tools like Claude Code. But recently, a lot of videos have been claiming that OpenAI Codex is actually better than Claude Code. Nate Herk spent over 100 hours testing both tools head-to-head to answer this question definitively.</p>
+      <p>The comparison covers three dimensions:</p>
+      <ul>
+        <li><strong>Features</strong> — what each tool uniquely does best</li>
+        <li><strong>Price</strong> — subscription tiers, token economics, and session limits</li>
+        <li><strong>Three live builds</strong> — same prompts, side by side, with measured metrics</li>
+      </ul>
+      <div class="highlight-box">The thesis planted early: it's not about which tool is "better" — it's about which tool is best for the specific use case currently sitting in front of you.</div>
+    </div>
+
+    <!-- Section 2: Claude Code Explained -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Claude Code Explained</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=30s" target="_blank">▶ 0:30</a>
+      </p>
+      <p>Claude Code is Anthropic's coding agent. You give it a task — fix a bug, build a feature, review a pull request — and it goes off, plans the work, opens your project, edits files, runs commands, and asks for permission along the way based on your settings.</p>
+      <p><strong>Available on:</strong></p>
+      <ul>
+        <li>Terminal (CLI)</li>
+        <li>VS Code extension</li>
+        <li>Full desktop app (Mac and Windows)</li>
+        <li>Web version in research preview (browser/phone)</li>
+      </ul>
+      <p><strong>Under the hood:</strong> Runs Opus (Anthropic's smartest model), Sonnet, or Haiku. Opus and Sonnet are top-tier for coding work.</p>
+      <p>The part Nate really likes: Claude Code is <strong>less of a tool and more of a workflow system</strong> you can shape into your own engineering setup. Key customization features:</p>
+      <ul>
+        <li><strong>Skills</strong> — reusable knowledge you drop in</li>
+        <li><strong>Hooks</strong> — automated triggers that fire when events happen in your session</li>
+        <li><strong>Sub-agents</strong> — specialist agents Claude spins up on its own to handle specific work</li>
+      </ul>
+    </div>
+
+    <!-- Section 3: Meet Codex -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Meet Codex</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=88s" target="_blank">▶ 1:28</a>
+      </p>
+      <p>The new Codex (not the retired 2021 model) is OpenAI's full agentic coding system — similar shape to Claude Code but with different opinions on how work should flow.</p>
+      <p><strong>Available on:</strong> Terminal, desktop app (Mac/Windows), VS Code extension (also works with Cursor and other IDEs), and cloud version at chatgpt.com/codex.</p>
+      <p><strong>Models:</strong> GPT family — GPT-Codex for coding-specific work, and GPT-Codex-Spark (faster, smaller, still in research preview for Pro users).</p>
+      <p>What stands out about Codex is the <strong>unified shipping vibe</strong>. Where Claude Code feels like a workflow system you're building out, Codex feels like an opinionated machine designed to take you from "agent is done" all the way to "code is shipped to production."</p>
+      <ul>
+        <li><strong>Built-in Git work trees</strong> — separate working copies so multiple tasks run in parallel without overriding each other</li>
+        <li><strong>Included in every ChatGPT plan</strong> — free, Plus, Pro, Business, Enterprise. Claude Code requires a paid subscription.</li>
+      </ul>
+      <div class="highlight-box">Nate's gut feeling after 100+ hours: Claude Code feels more creative, better at brainstorming and pushing back when you're going down the wrong path. Codex feels really good at following instructions and has been sharper at reviewing code and finding bugs.</div>
+    </div>
+
+    <!-- Section 4: The Massive Overlap -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> The Massive Overlap</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=204s" target="_blank">▶ 3:24</a>
+      </p>
+      <p>After heavy use of both tools, the overlap is <strong>way bigger than most comparison videos admit</strong>. Both tools share:</p>
+      <ul>
+        <li>Edit code on your local machine</li>
+        <li>Desktop apps and VS Code extensions</li>
+        <li>Command line interface</li>
+        <li>MCP support (open protocol for external tools)</li>
+        <li>Same skills format (markdown + YAML front matter)</li>
+        <li>Plugin marketplace for community tools</li>
+        <li>Cloud delegation (fire off a task and walk away)</li>
+        <li>Hooks and sub-agents</li>
+      </ul>
+      <div class="highlight-box">The real question isn't "does my tool have feature X?" — it becomes "which one gives me the better workflow for the way I actually want to work?"</div>
+    </div>
+
+    <!-- Section 5: Claude Code's Edge -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Claude Code's Unique Advantages</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=244s" target="_blank">▶ 4:04</a>
+      </p>
+      <p>What sets Claude Code apart is the <strong>depth of customization</strong>:</p>
+      <ul>
+        <li><strong>30 hook events</strong> vs Codex's ~6 — 5× the granularity for automated triggers (on prompt submit, tool run, session start, task creation, etc.)</li>
+        <li><strong>Auto-delegating sub-agents</strong> — Claude spawns sub-agents on its own when needed (planner agent, explorer agent, code reviewer agent). Codex won't spawn sub-agents unless you explicitly ask.</li>
+        <li><strong>/ultra plan</strong> — ships the planning phase to a cloud session for browser-based review with inline comments, then sends it back to terminal for execution</li>
+        <li><strong>/ultra review</strong> — spins up multiple reviewer agents for deep multi-agent code review with reproduced findings (3 free runs on Pro/Max)</li>
+        <li><strong>/loop</strong> — recurring prompt on a schedule or maintenance mode. Handles unfinished tasks, addresses PR comments, fixes merge conflicts automatically.</li>
+        <li><strong>Channels</strong> — MCP server that pushes events from Telegram, Discord, or iMessage into a running session. You can text your agent from your phone.</li>
+        <li><strong>Claude Agent SDK</strong> — same engine as Claude Code exposed as Python and TypeScript SDK. Build your own agents on top.</li>
+        <li><strong>Enterprise auth</strong> — supports Bedrock, Vertex AI, and Microsoft Foundry. Codex doesn't have this level of auth flexibility.</li>
+      </ul>
+      <div class="highlight-box">If you want a customizable coding system you can shape into your own workflow, Claude Code is in a class of its own right now.</div>
+    </div>
+
+    <!-- Section 6: Codex Fights Back -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Codex Fights Back</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=379s" target="_blank">▶ 6:19</a>
+      </p>
+      <p>What Codex does better than Claude Code:</p>
+      <ul>
+        <li><strong>Unified shipping workflow</strong> — built around work trees from the ground up. Review, stage, commit, and push from the same desktop app. A full shipping pipeline in one tool.</li>
+        <li><strong>In-app browser</strong> — built-in browser inside the desktop app to view your agent's work. Leave visual comments right on the page. No switching to Chrome to check results.</li>
+        <li><strong>Sharper computer use</strong> — particularly the QA use case: tell Codex "QA the app I just built" and it opens it, clicks around, finds bugs, logs them with severity ratings, expected vs actual behavior, reproduction steps, and triage summary.</li>
+        <li><strong>@Codex GitHub integration</strong> — tag @Codex in a PR comment or issue, and Codex spins up a cloud sandbox to handle it. Zero setup.</li>
+        <li><strong>/goal</strong> — for work too big for a single prompt but smaller than an open-ended backlog. Define a goal with a verifiable stopping condition and Codex grinds until finished (hours-long tasks). <em>Note: Claude Code released /goal right after recording.</em></li>
+        <li><strong>GPT Image 2 access</strong> — one of the strongest image generation models, built right into Codex. Anthropic has no image generation model at all.</li>
+      </ul>
+    </div>
+
+    <!-- Section 7: Third-Party Harnesses -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> The Third-Party Harness Loophole</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=553s" target="_blank">▶ 9:13</a>
+      </p>
+      <p>This is where the two companies <strong>diverge philosophically</strong>. Third-party tools like OpenClaw and Hermes Agent have blown up because they feel proactive — native crons, heartbeats, skills, and the ability to wrap coding agents.</p>
+
+      <div class="compare-grid">
+        <div class="compare-col codex">
+          <h4>✅ OpenAI's Stance (Permissive)</h4>
+          <ul>
+            <li>Sign in with your ChatGPT subscription in third-party tools like OpenClaw</li>
+            <li>Same works with Hermes Agent</li>
+            <li>Sam Altman publicly endorsed this approach (May 2nd tweet)</li>
+            <li>No need for separate API key — way cheaper</li>
+          </ul>
+        </div>
+        <div class="compare-col claude">
+          <h4>❌ Anthropic's Stance (Restrictive)</h4>
+          <ul>
+            <li>Claude Agent SDK docs explicitly say third-party use isn't allowed without approval</li>
+            <li>Using Claude subscription in OpenClaw or Hermes is technically not permitted</li>
+            <li>Changes the economics of your decision</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-box">If you live inside third-party agent tools, you're probably going to want to go with ChatGPT Codex — the economics just work out better.</div>
+    </div>
+
+    <!-- Section 8: Pricing -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Pricing Breakdown</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=622s" target="_blank">▶ 10:22</a>
+      </p>
+      <p>Both tools are included with their parent subscription — no separate API key needed to start.</p>
+
+      <div class="compare-grid">
+        <div class="compare-col claude">
+          <h4>Claude Code Plans</h4>
+          <ul>
+            <li><strong>Pro</strong> — $20/month (includes Claude Code)</li>
+            <li><strong>Max 5×</strong> — $100/month (5× Pro usage)</li>
+            <li><strong>Max 20×</strong> — $200/month (20× usage)</li>
+          </ul>
+        </div>
+        <div class="compare-col codex">
+          <h4>Codex Plans</h4>
+          <ul>
+            <li><strong>Free</strong> — includes Codex access</li>
+            <li><strong>Plus</strong> — $20/month</li>
+            <li><strong>Team</strong> — $100/month (2× Codex usage promo)</li>
+            <li><strong>Pro</strong> — $200/month (near-unlimited)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Context Windows</h3>
+      <ul>
+        <li><strong>Claude Code</strong> — 1 million tokens (Opus and Sonnet)</li>
+        <li><strong>Codex</strong> — ~256,000 tokens (latest GPT model)</li>
+      </ul>
+
+      <h3>Session Limits — The Real Issue</h3>
+      <p>Many users are complaining about hitting Claude Code limits (session or weekly) faster than before. Nate tracked actual token usage in live tests and found Claude Code consistently uses <strong>2–5× more output tokens</strong> than Codex for the same work. Since output tokens cost more than input tokens, this means:</p>
+      <div class="highlight-box">You hit your Claude Code session limit faster — not because the limit changed, but because the model generates more output tokens per task compared to Codex.</div>
+    </div>
+
+    <!-- Section 9: Test 1 - Research Report -->
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Test 1: Research Report PDF</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=768s" target="_blank">▶ 12:48</a>
+      </p>
+      <p>Both tools received the same prompt: build a branded research report PDF about automation tools for SMBs. No API keys were provided — both used their native web search and fetch tools.</p>
+
+      <div class="compare-grid">
+        <div class="compare-col claude">
+          <h4>Claude Code's Output</h4>
+          <ul>
+            <li>15-page PDF</li>
+            <li>Story-driven, narrative structure with bullet breakdowns</li>
+            <li>Better header and footer design</li>
+            <li>Title spacing issues (hard to read)</li>
+            <li>Top picks: Zapier, Lindy, Make.com</li>
+            <li>Clickable source links at the bottom</li>
+          </ul>
+        </div>
+        <div class="compare-col codex">
+          <h4>Codex's Output</h4>
+          <ul>
+            <li>9-page PDF</li>
+            <li>Table-driven, consistent format for each tool</li>
+            <li>Clean title but square logo issue</li>
+            <li>Spacing felt slightly rushed/squished</li>
+            <li>Top picks: Zapier, Lindy, Relay</li>
+            <li>Clickable source links at the bottom</li>
+          </ul>
+        </div>
+      </div>
+
+      <p><strong>Speed:</strong> Codex finished in ~8 minutes, Claude took 8:15. <strong>Tokens:</strong> Codex used 2.8M vs Claude's 4.7M. <span class="verdict codex">Codex Edge</span> — faster and more token-efficient on the most research-heavy task.</p>
+    </div>
+
+    <!-- Section 10: Test 2 - Landing Page -->
+    <div class="card" id="s10">
+      <h2><span class="num">10</span> Test 2: Landing Page</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=910s" target="_blank">▶ 15:10</a>
+      </p>
+      <p>Same exact prompt to both tools: build a landing page with a provided logo and reference to an existing site for design inspiration.</p>
+
+      <div class="compare-grid">
+        <div class="compare-col claude">
+          <h4>Claude Code</h4>
+          <ul>
+            <li>Forgot to place the logo in the header</li>
+            <li>Pulsing microphone animation (creative touch)</li>
+            <li>Blinking text cursor effect</li>
+            <li>Better fonts, less "vibe coded" feel</li>
+            <li>Sliding brand banner vs static boxes</li>
+            <li>Better glow effects and icon usage</li>
+            <li>Cleaner pricing section</li>
+          </ul>
+        </div>
+        <div class="compare-col codex">
+          <h4>Codex</h4>
+          <ul>
+            <li>Logo placed correctly in header</li>
+            <li>Similar colors and feel</li>
+            <li>More generic design elements</li>
+            <li>Static six-box layout instead of sliding banner</li>
+            <li>Random letters instead of icons</li>
+            <li>Functional but less polished overall</li>
+          </ul>
+        </div>
+      </div>
+
+      <p><strong>Speed:</strong> Codex 3 minutes flat vs Claude 4:39. <strong>Visual winner:</strong> <span class="verdict claude">Claude Code</span> — the underlying design and base was clearly better despite the missing logo (an easy one-prompt fix).</p>
+    </div>
+
+    <!-- Section 11: Test 3 - Dashboard -->
+    <div class="card" id="s11">
+      <h2><span class="num">11</span> Test 3: Marketing Dashboard</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=992s" target="_blank">▶ 16:32</a>
+      </p>
+      <p>The most complex test: a marketing analytics dashboard with interactive charts, date filters, and made-up but realistic data.</p>
+
+      <div class="compare-grid">
+        <div class="compare-col claude">
+          <h4>Claude Code</h4>
+          <ul>
+            <li>Dark mode with polished gradient effects</li>
+            <li>All date filters functional</li>
+            <li>Clean hover states on revenue chart</li>
+            <li>Gradient purchase funnel</li>
+            <li>Orders + average order value metrics</li>
+            <li><strong>Build time: ~2 minutes</strong></li>
+            <li><strong>Tokens: ~283K total</strong></li>
+          </ul>
+        </div>
+        <div class="compare-col codex">
+          <h4>Codex</h4>
+          <ul>
+            <li>Functionally identical</li>
+            <li>But visually "cheaper" feeling</li>
+            <li>Generic, bland conversion funnel</li>
+            <li>Revenue metric only (fewer KPIs)</li>
+            <li>All interactions working correctly</li>
+            <li><strong>Build time: ~8 minutes</strong></li>
+            <li><strong>Tokens: ~1.64M total</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <p><span class="verdict claude">Claude Code Wins</span> — roughly 4× faster, 6× fewer tokens, and visually superior. This was the most complex task and Claude's advantage was most pronounced here.</p>
+      <div class="highlight-box">Claude plans the task tightly before executing. Codex tends to grind through more iterations, which is why input tokens stack up on its side for complex builds.</div>
+    </div>
+
+    <!-- Section 12: The Numbers -->
+    <div class="card" id="s12">
+      <h2><span class="num">12</span> The Numbers — Full Breakdown</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=1045s" target="_blank">▶ 17:25</a>
+      </p>
+      <p>Models used: <strong>GPT-5.5</strong> (Codex) vs <strong>Opus 4.7</strong> (Claude Code), both on high settings.</p>
+
+      <h3>Aggregate Results (3 builds combined)</h3>
+      <ul>
+        <li><strong>Total time:</strong> Codex ~26 minutes vs Claude ~15 minutes</li>
+        <li><strong>Total tokens:</strong> Both ~6 million total, but different distributions</li>
+        <li><strong>Total cost (API billing):</strong> Claude $11 vs Codex $7 — Claude was more expensive</li>
+      </ul>
+
+      <h3>The Output Token Pattern</h3>
+      <p>The most striking finding: Claude Code's output tokens are <strong>consistently 2–5× higher</strong> than Codex across every single build:</p>
+      <ul>
+        <li><strong>Test 1 (Report):</strong> Claude 84K output vs Codex 18K output</li>
+        <li><strong>Test 2 (Landing):</strong> Claude 80K output vs Codex 20K output</li>
+        <li><strong>Test 3 (Dashboard):</strong> Claude 41K output vs Codex 16K output</li>
+      </ul>
+
+      <h3>Efficiency Scatter Plot</h3>
+      <p>When plotted on a time × token scatter (faster + leaner = bottom-left, best), Claude Code had two data points in the ideal bottom-left zone plus one outlier in the excellent zone. Codex data points clustered consistently in the middle — more predictable but less efficient.</p>
+
+      <h3>Model Pricing Context</h3>
+      <p>GPT-5.5 and Opus 4.7 have similar input pricing ($5/million), but GPT-5.5 output is $5 more expensive per million. Despite this, <strong>Codex was cheaper overall</strong> because it produces far fewer output tokens. Claude's higher output verbosity offsets its lower per-token output price.</p>
+
+      <div class="highlight-box">Pro tip: Ask Claude Code or Codex to read its JSONL session log — it can pull time, tokens, cache reads, and all cost data for any session.</div>
+    </div>
+
+    <!-- Section 13: Honest Verdict -->
+    <div class="card" id="s13">
+      <h2><span class="num">13</span> The Honest Verdict — When to Use Each</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=1262s" target="_blank">▶ 21:02</a>
+      </p>
+      <p>This was <strong>not a clean sweep</strong> in either direction. Each tool won at different things.</p>
+
+      <div class="compare-grid">
+        <div class="compare-col claude">
+          <h4>Reach for Claude Code When:</h4>
+          <ul>
+            <li>Complex front-end work</li>
+            <li>Visual design quality matters</li>
+            <li>Task requires deep planning</li>
+            <li>You want auto-delegation of sub-agents</li>
+            <li>Building custom workflows (hooks, skills, channels)</li>
+            <li>Need the Agent SDK for embedding agents</li>
+            <li>Enterprise environment (Bedrock/Vertex auth)</li>
+            <li>Brainstorming and creative problem-solving</li>
+          </ul>
+        </div>
+        <div class="compare-col codex">
+          <h4>Reach for Codex When:</h4>
+          <ul>
+            <li>Research-heavy tasks pulling from the web</li>
+            <li>Structured documents (PDFs, reports)</li>
+            <li>Want unified work tree → review → ship pipeline</li>
+            <li>Long-running objectives (/goal)</li>
+            <li>Using @Codex on GitHub PRs</li>
+            <li>Project needs image generation</li>
+            <li>Following precise instructions without deviation</li>
+            <li>Token efficiency matters (session limits)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box">A popular workflow emerging in the community: use Claude Code for planning, brainstorming, and strategy, then bring in Codex to review the code or execute on that plan.</div>
+    </div>
+
+    <!-- Section 14: Final Mindset -->
+    <div class="card" id="s14">
+      <h2><span class="num">14</span> Final Mindset — Portable Skills, Portable Folders</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=1486s" target="_blank">▶ 24:46</a>
+      </p>
+      <p>Because you're working with coding agents, all you're really doing is making files inside folders. Markdown, JSON, Python, TypeScript — everything gets pushed to GitHub. You can pull that same project into Claude Code, Codex, OpenClaw, Hermes Agent, or whatever the next tool is.</p>
+      <p><strong>You're not locked in.</strong> Moving between tools is simple:</p>
+      <ol>
+        <li>Open the project in the other agent</li>
+        <li>Tell it "I built this in Claude Code, you are Codex — walk through it, understand it, update what needs changing"</li>
+        <li>Swap small config files (e.g., <code>CLAUDE.md</code> → <code>AGENTS.md</code>)</li>
+      </ol>
+      <div class="highlight-box">You're building portable skills inside portable folders. Whatever tool gives you the best workflow right now, just use that one. Keep an open mind.</div>
+      <p><strong>Caveat:</strong> Everything discussed is as of mid-May 2026. Both tools ship at incredible speed — new models drop, pricing shifts, research preview features graduate or get removed. The architectural differences will hold up, but specific numbers might not.</p>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>The overlap is massive</strong> — both tools share local editing, desktop apps, VS Code extensions, CLI, MCP, skills, hooks, sub-agents, cloud delegation, and plugin marketplaces</li>
+          <li><strong>Claude Code excels at customization</strong> — 30 hook events (vs 6), auto-delegating sub-agents, /ultra plan, /ultra review, /loop, channels, and the Agent SDK make it a workflow system, not just a tool</li>
+          <li><strong>Codex excels at shipping</strong> — unified work tree pipeline, in-app browser with visual comments, sharper computer use for QA, @Codex GitHub integration, and GPT Image 2</li>
+          <li><strong>Claude Code feels creative</strong> — better at brainstorming, pushing back, and deep planning. Codex feels like a precise executor that follows instructions faithfully</li>
+          <li><strong>Claude won front-end and design</strong> — the dashboard build was 4× faster, 6× fewer tokens, and visually superior. Landing page design was also stronger despite missing the logo</li>
+          <li><strong>Codex won research efficiency</strong> — faster and more token-efficient on the research report. More consistent and predictable across all three tests</li>
+          <li><strong>Output tokens are the hidden cost</strong> — Claude generates 2–5× more output tokens per task, which means you hit session limits faster even though per-token pricing looks similar</li>
+          <li><strong>Third-party harnesses favor OpenAI</strong> — Anthropic restricts using Claude subscriptions in tools like OpenClaw/Hermes. OpenAI publicly endorses it (Sam Altman tweet)</li>
+          <li><strong>Context window gap is 4×</strong> — Claude Code supports 1M tokens vs Codex's 256K. This matters for large codebases</li>
+          <li><strong>You're not locked in</strong> — everything is files in folders pushed to GitHub. Switching tools is a one-prompt operation. Build portable skills in portable folders</li>
+          <li><strong>Consider subscribing to both</strong> — many developers find value in using Claude Code for planning/brainstorming and Codex for execution/review</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=0s" target="_blank">▶ 0:00</a><span class="label">Biggest comeback?</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=30s" target="_blank">▶ 0:30</a><span class="label">Claude Code explained</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=88s" target="_blank">▶ 1:28</a><span class="label">Meet Codex</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=244s" target="_blank">▶ 4:04</a><span class="label">Claude's edge</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=379s" target="_blank">▶ 6:19</a><span class="label">Codex fights back</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=553s" target="_blank">▶ 9:13</a><span class="label">Sketchy loophole</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=622s" target="_blank">▶ 10:22</a><span class="label">Pricing pain</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=768s" target="_blank">▶ 12:48</a><span class="label">Report showdown</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=910s" target="_blank">▶ 15:10</a><span class="label">Landing page</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=992s" target="_blank">▶ 16:32</a><span class="label">Dashboard battle</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=1045s" target="_blank">▶ 17:25</a><span class="label">The numbers</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=1262s" target="_blank">▶ 21:02</a><span class="label">Honest verdict</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=RLjaUES9P8A&t=1486s" target="_blank">▶ 24:46</a><span class="label">Final mindset</span></div>
+      </div>
+    </div>
+
+    <footer>Deep Dive document generated from YouTube video RLjaUES9P8A · Nate Herk | AI Automation</footer>
+
+  </main>
+</div>
+
+</body>
+</html>

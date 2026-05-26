@@ -154,7 +154,18 @@
       "thumbnailSource": "html",
       "sha256": "bbb79f522a4b9149dde01b12a147ca1fb8663338b80bfa33af47ad6d86eab9b0",
       "category": "tools"
+    },
+    {
+      "slug": "100-hours-testing-claude-code-vs-chatgpt-codex-honest-results",
+      "title": "100 Hours Testing Claude Code vs ChatGPT Codex — Honest Results",
+      "publishedAt": "2026-05-26T20:02:02.000Z",
+      "sourcePath": "/tmp/claude-code-vs-codex-100-hours.html",
+      "articlePath": "experimental/100-hours-testing-claude-code-vs-chatgpt-codex-honest-results.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/RLjaUES9P8A/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "1e2219dc2b980a60add79b143a2c65ee9055ec1253c698c4ca6a00a6b8309133",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-26T18:34:58.774Z"
+  "updatedAt": "2026-05-26T23:06:05.337Z"
 }
