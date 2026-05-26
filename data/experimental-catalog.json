@@ -143,7 +143,18 @@
       "thumbnailSource": "html",
       "sha256": "30d9ea8b78c3ba76850cad2a51c129cb23b30f1f431122def99eeafd812bb9ff",
       "category": "deep-dive"
+    },
+    {
+      "slug": "perplexity-open-sourced-a-scanner-every-dev-should-know-bumblebee",
+      "title": "Perplexity Open-Sourced a Scanner Every Dev Should Know — Bumblebee",
+      "publishedAt": "2026-05-26T09:00:34.000Z",
+      "sourcePath": "/tmp/bumblebee-perplexity-scanner.html",
+      "articlePath": "experimental/perplexity-open-sourced-a-scanner-every-dev-should-know-bumblebee.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/L6iAw5yitfc/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "bbb79f522a4b9149dde01b12a147ca1fb8663338b80bfa33af47ad6d86eab9b0",
+      "category": "tools"
     }
   ],
-  "updatedAt": "2026-05-25T22:28:46.853Z"
+  "updatedAt": "2026-05-26T18:34:58.774Z"
 }
