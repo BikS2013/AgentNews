@@ -165,7 +165,18 @@
       "thumbnailSource": "html",
       "sha256": "1e2219dc2b980a60add79b143a2c65ee9055ec1253c698c4ca6a00a6b8309133",
       "category": "deep-dive"
+    },
+    {
+      "slug": "mitchell-hashimoto-s-new-way-of-writing-code-the-pragmatic-engineer",
+      "title": "Mitchell Hashimoto's New Way of Writing Code – The Pragmatic Engineer",
+      "publishedAt": "2026-02-25T16:37:56.000Z",
+      "sourcePath": "/tmp/mitchell-hashimoto-ai-workflow.html",
+      "articlePath": "experimental/mitchell-hashimoto-s-new-way-of-writing-code-the-pragmatic-engineer.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/WjckELpzLOU/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "551849a3dd44ee413a6c456ef0439ef0bbbdc48be519327e8b877b4171b41dbc",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-26T23:06:05.337Z"
+  "updatedAt": "2026-05-26T23:35:06.700Z"
 }

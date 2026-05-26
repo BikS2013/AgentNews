@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitchell Hashimoto's New Way of Writing Code – The Pragmatic Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--card-bg:#1a1d27;--card-border:#2a2d3a;--accent:#3b82f6;--accent-dim:#1e3a5f;--text:#e2e8f0;--text-muted:#94a3b8;--text-bright:#f8fafc;--green:#22c55e;--red:#ef4444;--orange:#f59e0b;--purple:#a78bfa;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;padding:0;}
+a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#1a1d27 50%,#0f1117 100%);border-bottom:1px solid var(--card-border);padding:2rem 1rem;text-align:center;}
+.hero h1{font-size:1.8rem;color:var(--text-bright);margin-bottom:0.5rem;}
+.hero .meta{color:var(--text-muted);font-size:0.9rem;margin-bottom:1.2rem;}
+.thumb-link{display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform 0.2s;max-width:560px;width:100%;}.thumb-link:hover{transform:scale(1.02);}.thumb-link img{width:100%;display:block;}
+.meta-pills{margin-top:1.2rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;}
+.meta-pill{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:0.3rem 0.9rem;font-size:0.82rem;color:var(--text-muted);}
+.container{display:flex;max-width:1200px;margin:0 auto;gap:2rem;padding:2rem 1rem;}
+.toc{position:sticky;top:1rem;width:260px;min-width:220px;max-height:calc(100vh - 2rem);overflow-y:auto;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.2rem;font-size:0.85rem;flex-shrink:0;}
+.toc h3{color:var(--accent);font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.8rem;}
+.toc ol{list-style:none;counter-reset:toc;}.toc li{counter-increment:toc;margin-bottom:0.5rem;}
+.toc li a{color:var(--text-muted);display:block;padding:4px 0;transition:color 0.2s;}.toc li a:hover{color:var(--text-bright);text-decoration:none;}
+.toc li a::before{content:counter(toc) ". ";color:var(--accent);font-weight:600;}
+.toc li.no-counter a::before{content:"";}
+.content{flex:1;min-width:0;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.8rem;margin-bottom:1.5rem;}
+.card h2{color:var(--text-bright);font-size:1.3rem;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:2px solid var(--accent-dim);display:flex;align-items:center;gap:0.5rem;}
+.card h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
+.card h3{color:var(--purple);font-size:1rem;margin:1rem 0 0.5rem;}
+.card p,.card li{margin-bottom:0.6rem;}.card ul,.card ol{padding-left:1.5rem;}.card ul li::marker{color:var(--accent);}
+.ts{display:inline-block;background:var(--accent-dim);color:var(--accent);font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.78rem;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0;white-space:nowrap;transition:background 0.2s;}.ts:hover{background:var(--accent);color:#fff;text-decoration:none;}
+.takeaways{background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(167,139,250,0.08));border:1px solid var(--accent-dim);border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0;}.takeaways h3{color:var(--green);margin-top:0;}.takeaways li{color:var(--text);}
+.highlight-box{background:rgba(59,130,246,0.08);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:0.9rem;color:var(--text);}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0.6rem;}
+.ts-row{display:flex;align-items:center;gap:0.7rem;padding:6px 10px;border-radius:8px;background:rgba(26,29,39,0.6);transition:background 0.15s;}.ts-row:hover{background:var(--card-bg);}.ts-row .label{color:var(--text-muted);font-size:0.85rem;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+@media(max-width:800px){.container{flex-direction:column;}.toc{position:static;width:100%;max-height:none;}.ts-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/WjckELpzLOU/maxresdefault.jpg" alt="Mitchell Hashimoto's new way of writing code" style="display:none;">
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <h1>Mitchell Hashimoto's New Way of Writing Code</h1>
+  <p class="meta">The Pragmatic Engineer · Published 25 Feb 2026 · ~1 h 58 min</p>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=WjckELpzLOU" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/WjckELpzLOU/maxresdefault.jpg" alt="Video thumbnail">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~2h</span>
+    <span class="meta-pill">🎤 Mitchell Hashimoto</span>
+    <span class="meta-pill">🏢 HashiCorp / Ghostty</span>
+    <span class="meta-pill">🏷 AI Coding · Open Source · Terraform · Ghostty · Developer Workflow</span>
+  </div>
+</header>
+
+<!-- ===== CONTAINER ===== -->
+<div class="container">
+
+  <!-- ===== TOC (Left Side) ===== -->
+  <nav class="toc">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#s1">From Self-Taught to HashiCorp</a></li>
+      <li><a href="#s2">Building HashiCorp: Open Source to IPO</a></li>
+      <li><a href="#s3">The Almost-VMware Acquisition</a></li>
+      <li><a href="#s4">Honest Take on AWS, GCP &amp; Azure</a></li>
+      <li><a href="#s5">AI's Impact on Open Source</a></li>
+      <li><a href="#s6">Ghostty: A Modern Terminal</a></li>
+      <li><a href="#s7">How Mitchell Uses AI</a></li>
+      <li><a href="#s8">Open Source + AI: The Trust Crisis</a></li>
+      <li><a href="#s9">Git Is Breaking Under Agents</a></li>
+      <li><a href="#s10">Hiring in the AI Era</a></li>
+      <li><a href="#s11">Mitchell's AI Adoption Journey</a></li>
+      <li><a href="#s12">Advice for Founders &amp; What's Changing</a></li>
+      <li class="no-counter"><a href="#takeaways">Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">Resources</a></li>
+      <li class="no-counter"><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <!-- ===== CONTENT ===== -->
+  <main class="content">
+
+    <!-- SECTION 1 -->
+    <section class="card" id="s1">
+      <h2><span class="num">1</span> From Self-Taught to HashiCorp</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=0" target="_blank">0:00</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=439" target="_blank">7:19</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=952" target="_blank">15:52</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=1102" target="_blank">18:22</a></p>
+
+      <h3>The 12-Year-Old Coder</h3>
+      <p>Mitchell Hashimoto taught himself to code at the age of 12, originally motivated by video games. He quickly gravitated toward web programming, picking up <strong>PHP</strong> and <strong>Perl</strong> as his first languages. With parents who wouldn't buy programming books, he turned to the only free resource available: <strong>open-source code</strong>. He printed out the entire PHP manual and literally walked to school reading it page by page.</p>
+
+      <div class="highlight-box">
+        💡 <strong>The "aha moment":</strong> Mitchell describes the instant he truly understood <em>variables</em> — that a name could hold a value and change — as the moment everything clicked and programming went from magic to logic.
+      </div>
+
+      <h3>Headhunted at 18</h3>
+      <p>Mitchell's open-source contributions were visible enough that he got headhunted at just 18 years old by a <strong>Ruby on Rails consultancy</strong>. There he met his future boss — someone who ran Linux exclusively and didn't use a mouse. That exposure pulled Mitchell from web development deep into <strong>infrastructure and systems</strong>, setting the trajectory for everything that followed.</p>
+
+      <h3>The 2010s Startup Scene in San Francisco</h3>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=1102" target="_blank">18:22</a> Mitchell paints a vivid picture of San Francisco's startup scene in the early 2010s — a period of intense energy where cloud computing was just becoming mainstream. AWS was still relatively new, and the idea that you'd provision servers through an API felt revolutionary. This was the fertile ground from which HashiCorp would grow.</p>
+
+      <h3>Meeting Armon &amp; The Birth of HashiCorp</h3>
+      <p>Co-founder <strong>Armon Dadgar</strong> emailed Mitchell while both were at university. Mitchell responded in <em>two minutes</em>. HashiCorp was born from a <strong>failed research project</strong> and a notebook full of unsolved problems in infrastructure automation. Rather than chase a single idea, they catalogued gaps in the ecosystem and systematically attacked them one by one.</p>
+
+      <div class="highlight-box">
+        📓 <strong>The Notebook Method:</strong> Instead of starting with a product idea, Mitchell and Armon kept a shared notebook of infrastructure problems nobody was solving well. This became the roadmap for Vagrant, Terraform, Vault, Consul, and more.
+      </div>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section class="card" id="s2">
+      <h2><span class="num">2</span> Building HashiCorp: From Open Source to IPO</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=1391" target="_blank">23:11</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2128" target="_blank">35:28</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2308" target="_blank">38:28</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2888" target="_blank">48:08</a></p>
+
+      <h3>Funding &amp; The Mayfield Connection</h3>
+      <p>HashiCorp secured early funding from <strong>Mayfield</strong>, with a key connection through Chuck Robbins. The funding allowed them to go all-in on building open-source tools, but monetization remained an open question. The initial strategy was to build strong community adoption first and figure out revenue later — a bet that would take years to pay off.</p>
+
+      <h3>An Early Failure: The Atlas SaaS Model</h3>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2128" target="_blank">35:28</a> HashiCorp's first attempt at commercialization was <strong>Atlas</strong>, a SaaS platform that tried to bundle their tools into a hosted offering. It failed. The market wasn't ready for it, the product-market fit wasn't there, and the team learned a painful lesson about the difference between building great open-source tools and building a viable commercial product.</p>
+
+      <h3>The Open-Core Pivot</h3>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2308" target="_blank">38:28</a> The pivot to <strong>open-core</strong> with <strong>Terraform Enterprise</strong> changed everything. The model was simple: the core tool (Terraform) stays open source and free; the enterprise version adds governance, collaboration, and compliance features that large organizations need. This became the blueprint for HashiCorp's entire product line.</p>
+
+      <div class="highlight-box">
+        🏆 <strong>Terraform wasn't first — it was 7th.</strong> Mitchell emphasizes that Terraform was the <em>seventh</em> infrastructure-as-code tool to market. It won not because of timing but because of its approach: declarative configuration, a plugin-based provider model, and a relentless focus on the multi-cloud problem.
+      </div>
+
+      <h3>The Product Portfolio</h3>
+      <ul>
+        <li><strong>Vagrant</strong> — the first product, local development environments</li>
+        <li><strong>Terraform</strong> — infrastructure as code, the breakout hit</li>
+        <li><strong>Vault</strong> — secrets management and encryption</li>
+        <li><strong>Consul</strong> — service discovery and mesh networking</li>
+      </ul>
+      <p>Each addressed a specific problem from the notebook. Revenue grew from early millions to significant scale as enterprise adoption accelerated.</p>
+
+      <h3>Taking HashiCorp Public</h3>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2888" target="_blank">48:08</a> The IPO represented the culmination of years of patient open-source-first strategy. Mitchell reflects on the journey from two university students with a notebook to a publicly traded company — a process that took far longer than either of them originally imagined.</p>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section class="card" id="s3">
+      <h2><span class="num">3</span> The Almost-VMware Acquisition</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=3118" target="_blank">51:58</a></p>
+
+      <h3>VMware Comes Knocking</h3>
+      <p>Before the IPO, <strong>VMware approached HashiCorp with an acquisition offer</strong>. This was a pivotal moment. Mitchell and Armon had to seriously consider whether to sell the company they'd spent years building.</p>
+
+      <h3>The Regret Minimization Framework</h3>
+      <p>To make the decision, they used what they called the <strong>"regret minimization framework"</strong> — asking themselves which choice they'd regret least in 10 or 20 years. They arrived at a minimum number: <strong>$100 million</strong>. This was the floor below which walking away from their life's work simply wasn't worth it.</p>
+
+      <div class="highlight-box">
+        🎲 <strong>The board vote that changed history:</strong> The VMware board vote to approve the acquisition <em>didn't pass</em>. If it had, Terraform as we know it might never have been built. The timing was early enough that many of HashiCorp's most impactful products and growth were still ahead.
+      </div>
+
+      <h3>Personal vs. Passion</h3>
+      <p>Mitchell discusses the tension between the <strong>personal financial security</strong> an acquisition would have provided versus the <strong>passion</strong> of continuing to build. For founders, this is one of the hardest decisions: a guaranteed life-changing outcome versus the uncertain but potentially much larger upside of independence. The VMware vote failing turned out to be one of the best things that ever happened to HashiCorp.</p>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section class="card" id="s4">
+      <h2><span class="num">4</span> Honest Take on AWS, GCP &amp; Azure</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=3550" target="_blank">59:10</a></p>
+
+      <p>Mitchell provides a remarkably candid assessment of working with the three major cloud providers, drawing on years of direct partnership experience at HashiCorp.</p>
+
+      <h3>AWS: Arrogant but Dominant</h3>
+      <ul>
+        <li><strong>"Really arrogant. Felt like they were doing us a favor."</strong></li>
+        <li>Subtle undertone of <em>"we'll spin up a competing product and kill your company"</em> in every interaction</li>
+        <li>HashiCorp maintained <strong>5 full-time engineers</strong> dedicated solely to the AWS Terraform provider — roughly <strong>$1M/year</strong> in cost</li>
+        <li>AWS provided <em>zero</em> help or support for the provider</li>
+        <li>The breakthrough came only when HashiCorp <strong>threatened to deprecate the AWS provider entirely</strong> — that's when AWS finally began contributing</li>
+      </ul>
+
+      <div class="highlight-box">
+        💰 <strong>$1M/year on a free provider:</strong> HashiCorp spent $1M annually maintaining the AWS Terraform provider that AWS customers relied on, while AWS — the primary beneficiary — contributed nothing until threatened with deprecation.
+      </div>
+
+      <h3>Microsoft / Azure: Business-Savvy Partners</h3>
+      <ul>
+        <li>Mitchell's <strong>most positive view</strong> of any cloud provider</li>
+        <li>Technically, Azure was described as a "hairy" product — complex and sometimes messy under the hood</li>
+        <li>But the business side was <strong>exceptionally competent</strong></li>
+        <li>First question in every meeting: <strong>"How do we both win?"</strong></li>
+        <li><strong>First cloud provider to officially support Terraform</strong></li>
+        <li>The partnership mentality made them the easiest to work with by far</li>
+      </ul>
+
+      <h3>Google Cloud: Best Tech, Worst Business</h3>
+      <ul>
+        <li><strong>Best technology and most incredible architecture</strong> of all three</li>
+        <li>But <strong>nobody cared about business outcomes</strong></li>
+        <li>Meetings would devolve into hours-long discussions about <em>edge cases and technical minutiae</em></li>
+        <li>When it came to <strong>co-selling, partnerships, and go-to-market</strong> — complete silence</li>
+        <li>The engineering-first culture meant commercial partnerships felt like an afterthought</li>
+      </ul>
+
+      <div class="highlight-box">
+        🏢 <strong>The cloud provider personality test:</strong> AWS = arrogant dominance, Azure = partnership-first business acumen, GCP = brilliant engineering with business blindness. Mitchell's ranking for partnership: Azure &gt; GCP &gt; AWS.
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section class="card" id="s5">
+      <h2><span class="num">5</span> AI's Impact on Open Source</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=3962" target="_blank">1:06:02</a></p>
+
+      <p>Mitchell raises an alarm about the state of open-source contributions in the AI era. The <strong>signal-to-noise ratio has become incredibly low</strong>. AI has made it trivial to generate plausible-looking but subtly incorrect code contributions.</p>
+
+      <h3>Before vs. After AI</h3>
+      <ul>
+        <li><strong>Before:</strong> Bad contributions came from people who were <em>genuinely trying</em> to help. Even if the code was wrong, the intent was clear and the effort was real.</li>
+        <li><strong>After:</strong> Low-effort AI-generated PRs flood projects. The code looks superficially correct but often misses context, introduces subtle bugs, or solves problems that don't exist.</li>
+      </ul>
+
+      <div class="highlight-box">
+        🔒 <strong>"Default deny, you must earn trust."</strong> Open source was always built on a system of trust. AI has fundamentally broken that assumption. Mitchell's new stance: contributions are rejected by default until a contributor has demonstrated genuine understanding and commitment.
+      </div>
+    </section>
+
+    <!-- SECTION 6 -->
+    <section class="card" id="s6">
+      <h2><span class="num">6</span> Ghostty: Building a Modern Terminal</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=4020" target="_blank">1:07:00</a></p>
+
+      <h3>Why a Terminal?</h3>
+      <p>After leaving HashiCorp, Mitchell wanted to <strong>rebuild his atrophied systems programming skills</strong>. After 15 years of infrastructure-level work, he craved low-level, close-to-the-metal programming. He chose his technologies first — <strong>Zig</strong> and <strong>GPUs</strong> — then found the project. A terminal emulator was the perfect intersection.</p>
+
+      <h3>The Surprising Architecture</h3>
+      <p>The biggest revelation: a terminal is actually <strong>30% terminal and 70% font renderer</strong>. The majority of the engineering challenge is getting text to render correctly and quickly on screen.</p>
+
+      <ul>
+        <li><strong>UI thread</strong> — handles user input and window management</li>
+        <li><strong>IO thread</strong> — manages the shell process and data flow</li>
+        <li><strong>Renderer thread</strong> — GPU-accelerated rendering synced to VSYNC at 30/60/120 fps</li>
+      </ul>
+
+      <h3>Performance Obsession</h3>
+      <p>Mitchell optimized frame rendering from <strong>800 microseconds down to 9 microseconds</strong> — nearly a 100× improvement. This level of performance caught the attention of <strong>Salvatore Sanfilippo</strong> (creator of Redis), who praised Ghostty for being fast enough to <strong>tail production logs</strong> without the terminal becoming the bottleneck.</p>
+
+      <div class="highlight-box">
+        ⚡ <strong>9 microseconds per frame:</strong> Ghostty renders frames so quickly that the terminal itself is never the performance bottleneck — even when tailing high-volume production logs in real time.
+      </div>
+
+      <h3>libghostty: Terminal as a Library</h3>
+      <p>One of Ghostty's most forward-thinking decisions: <strong>libghostty</strong>, an extracted library (MIT-licensed) that lets any application embed a terminal. This means terminal functionality can be integrated into IDEs, dashboards, or any tool that needs to run shell commands — without reinventing terminal emulation from scratch.</p>
+
+      <h3>AI's Unexpected Boost to Terminals</h3>
+      <p>Counter-intuitively, <strong>terminal usage has gone UP since 2023</strong>, not down. The rise of CLI-based AI tools like Claude Code means developers are spending more time in terminals than ever. Even desktop applications that appear graphical often execute commands in pseudo-terminals under the hood. AI has made the terminal <em>more</em> relevant, not less.</p>
+    </section>
+
+    <!-- SECTION 7 -->
+    <section class="card" id="s7">
+      <h2><span class="num">7</span> How Mitchell Uses AI</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=4753" target="_blank">1:19:13</a></p>
+
+      <h3>The Daily Toolkit</h3>
+      <p>Mitchell uses AI tools every single day: <strong>Claude Code</strong>, <strong>AMP</strong>, <strong>Codex</strong>, and various chat interfaces. He doesn't commit to a single tool — he uses whatever is best for the task at hand and sometimes runs multiple in competition.</p>
+
+      <h3>The Core Principle</h3>
+      <div class="highlight-box">
+        🧠 <strong>"It's really allowed me to choose what I want to actually think about."</strong> The fundamental value of AI coding agents for Mitchell isn't speed — it's cognitive freedom. He can focus his mental energy on the problems that matter most.
+      </div>
+
+      <h3>The Always-Running Agent Workflow</h3>
+      <p>Mitchell's standard workflow is built around one rule: <strong>always have an agent running</strong>. The pattern:</p>
+      <ul>
+        <li>If <strong>Mitchell is coding</strong> → an agent is <strong>planning</strong> the next task</li>
+        <li>If <strong>agents are coding</strong> → Mitchell is <strong>reviewing</strong> their output</li>
+        <li>He runs <strong>no more than 2 agents simultaneously</strong> — more than that and context-switching erodes the quality advantage</li>
+        <li>Sometimes he runs <strong>Claude Code vs. Codex in direct competition</strong> on the same task and picks the better result</li>
+        <li>He especially loves agents for <strong>research tasks</strong> — exploring APIs, reading documentation, summarizing options</li>
+      </ul>
+
+      <h3>Context-Dependent Code Review</h3>
+      <p>Mitchell's approach to reviewing AI-generated code varies dramatically based on context:</p>
+      <ul>
+        <li><strong>Ghostty code:</strong> Reviews <em>everything</em> meticulously. This is a performance-critical systems project where subtle bugs can have real consequences.</li>
+        <li><strong>Personal wedding website:</strong> Doesn't care about reviewing. Just ship it. The stakes don't justify the effort.</li>
+      </ul>
+      <p>This pragmatic distinction — knowing when to be rigorous and when to accept "good enough" — is central to getting real value from AI tools.</p>
+    </section>
+
+    <!-- SECTION 8 -->
+    <section class="card" id="s8">
+      <h2><span class="num">8</span> Open Source + AI: The Trust Crisis</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=5316" target="_blank">1:28:36</a></p>
+
+      <h3>Ghostty's Evolving AI Policy</h3>
+      <p>Ghostty's stance on AI-generated contributions has shifted significantly over time. It started with a simple <strong>disclosure requirement</strong> — just tell us if AI was used. But the situation escalated rapidly:</p>
+
+      <ul>
+        <li><strong>Phase 1:</strong> Disclosure — just be honest about AI usage</li>
+        <li><strong>Phase 2:</strong> More restrictive — AI-generated PRs held to higher scrutiny</li>
+        <li><strong>Phase 3:</strong> Agents started <em>opening PRs directly</em>, bypassing human involvement entirely</li>
+      </ul>
+
+      <h3>"Effort for Effort"</h3>
+      <div class="highlight-box">
+        🤝 <strong>"Effort for effort":</strong> Mitchell's philosophy — if you put hours of genuine work into a contribution, he'll reciprocate with a thorough review and constructive feedback. If it's a low-effort AI-generated PR, it gets an equally quick rejection.
+      </div>
+
+      <h3>The Dead Giveaway</h3>
+      <p>Mitchell can spot agent-generated PRs instantly: <strong>Claude opens a draft PR with no body, then edits it moments later</strong> to fill in the description. This pattern is unmistakable and has become the signature of low-quality automated contributions.</p>
+
+      <p>The quantity of low-quality AI PRs reached <strong>unsustainable levels</strong>, forcing the project to adopt increasingly strict policies. The step change wasn't just more AI-assisted contributions — it was <em>fully autonomous agents</em> submitting code with no human in the loop.</p>
+    </section>
+
+    <!-- SECTION 9 -->
+    <section class="card" id="s9">
+      <h2><span class="num">9</span> Git Is Breaking Under Agents</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=5506" target="_blank">1:31:46</a></p>
+
+      <h3>A Question Nobody Used to Ask</h3>
+      <p>For the first time in <strong>12–15 years</strong>, Mitchell is hearing the question <em>"Will Git still be around?"</em> and people aren't laughing when they ask it. That's a remarkable shift for a tool that has been utterly dominant in version control.</p>
+
+      <h3>Why Git &amp; GitHub Are Failing</h3>
+      <p>Git and GitHub's forge model <strong>doesn't work with agentic infrastructure today</strong>. The core problems:</p>
+      <ul>
+        <li><strong>Massive churn:</strong> Agents create branches, commits, and PRs at a rate that overwhelms traditional workflows</li>
+        <li><strong>Lost context:</strong> The <em>prompt history</em> that produced AI-generated code is often more valuable than the diff itself, but Git doesn't capture it</li>
+        <li><strong>CI/CD overload:</strong> Continuous integration systems aren't resourced for the volume of automated contributions agents generate</li>
+      </ul>
+
+      <div class="highlight-box">
+        📧 <strong>Version control's "Gmail moment":</strong> Mitchell envisions a future where version control systems never delete anything, archive everything, and provide dramatically better tooling for context and history — much like Gmail transformed email from "manage your inbox size" to "search everything, delete nothing."
+      </div>
+
+      <h3>Harness Engineering</h3>
+      <p>Mitchell introduces the concept of <strong>"harness engineering"</strong>: when an AI agent does something bad, don't just fix it — <strong>build tooling the agent can call to prevent or correct that behavior in the future</strong>. This creates a flywheel where every mistake makes the system more robust.</p>
+
+      <h3>Testing Must Expand Dramatically</h3>
+      <p>With agents writing code, <strong>testing must become far more expansive</strong>. The traditional testing pyramid isn't sufficient when code is generated at scale by non-human contributors. More tests, more edge cases, more integration scenarios — testing is the primary quality gate in an agentic world.</p>
+    </section>
+
+    <!-- SECTION 10 -->
+    <section class="card" id="s10">
+      <h2><span class="num">10</span> Hiring in the AI Era</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=5997" target="_blank">1:39:57</a></p>
+
+      <h3>The Best Engineers Have "Boring" Backgrounds</h3>
+      <p>Mitchell drops a counterintuitive observation: his <strong>best engineers</strong> consistently had what most people would consider "boring" backgrounds:</p>
+      <ul>
+        <li>No social media presence</li>
+        <li>No public GitHub profile</li>
+        <li>9-to-5 work schedule — they don't code at night</li>
+        <li>But during work hours: <strong>completely locked in and exceptionally skilled</strong></li>
+      </ul>
+
+      <div class="highlight-box">
+        🧘 <strong>The best engineers context-switch the least.</strong> Mitchell's observation is that deep, focused work — not hustle culture or side projects — is the strongest predictor of engineering excellence.
+      </div>
+
+      <h3>Thinking Without a Screen</h3>
+      <p>Mitchell himself spends significant time <strong>lying awake at night thinking through code</strong>, mentally running CLI commands, tracing execution paths, and working through architectural decisions. By the time he sits down at the keyboard, much of the hard thinking is already done.</p>
+
+      <h3>AI Competency as a Hiring Requirement</h3>
+      <p>Going forward, Mitchell would <strong>require AI competency in hiring</strong>. Not for every task — but candidates must demonstrate understanding of <em>when</em> AI tools are useful, how to prompt effectively, and how to evaluate AI-generated output. The goal: <strong>everyone on the team should have an agent running at all times.</strong></p>
+    </section>
+
+    <!-- SECTION 11 -->
+    <section class="card" id="s11">
+      <h2><span class="num">11</span> Mitchell's AI Adoption Journey</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6472" target="_blank">1:47:52</a></p>
+
+      <h3>Initial Skepticism</h3>
+      <p>Mitchell tried Claude Code at its launch in <strong>May 2025</strong> and was <strong>not impressed</strong>. His first experience didn't match the hype. But as he continued seeing positive remarks from people he respected, a different feeling emerged: <strong>fear of falling behind</strong>.</p>
+
+      <h3>Forcing the Adoption</h3>
+      <p>Rather than dismiss AI tools, Mitchell <strong>forced himself to reproduce his normal work using agents</strong>. The early days were painful — he was essentially <em>doubling his work</em>, doing everything his normal way and then again with AI assistance. It was slower, not faster.</p>
+
+      <h3>The Breakthroughs</h3>
+      <p>Persistence paid off. Mitchell discovered several key techniques that dramatically improved results:</p>
+      <ul>
+        <li><strong>Separate planning step:</strong> Having the agent plan before coding makes output significantly better</li>
+        <li><strong>Better test harness:</strong> More comprehensive tests = better agent results, because the agent can verify its own work</li>
+        <li><strong>AGENTS.md file:</strong> Documenting common mistakes in a file the agent reads prevents it from repeating the same errors</li>
+      </ul>
+
+      <div class="highlight-box">
+        🔄 <strong>"Like adopting Git":</strong> Mitchell compares AI tool adoption to the Git learning curve — it takes more than an hour to become proficient. The initial awkwardness doesn't mean the tool is bad; it means you haven't yet developed the mental model for using it effectively.
+      </div>
+    </section>
+
+    <!-- SECTION 12 -->
+    <section class="card" id="s12">
+      <h2><span class="num">12</span> Advice for Founders &amp; What's Changing</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6641" target="_blank">1:50:41</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6800" target="_blank">1:53:20</a> <a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6903" target="_blank">1:55:03</a></p>
+
+      <h3>For Founders</h3>
+      <ul>
+        <li><strong>Startups are much longer than you think</strong> — imagine committing for 10 years, because that's closer to reality</li>
+        <li>You need a certain <strong>hubris</strong> — a genuine belief that you'll do it better than anyone else</li>
+        <li>AI startups face unique pressure: the expectation to <strong>move faster than ever</strong> because the tools theoretically enable it</li>
+      </ul>
+
+      <h3>For Software Engineers</h3>
+      <ul>
+        <li>The expectation is shifting: engineers are expected to do <strong>far more independently</strong> — full demos, designs, research, prototypes</li>
+        <li>The <strong>capacity to experiment</strong> is dramatically higher. What used to take a week to prototype can now take hours.</li>
+        <li>But <strong>productionizing still feels similar</strong> — taking something from prototype to production-ready hasn't gotten proportionally easier</li>
+      </ul>
+
+      <h3>The Pre-Seed Shift</h3>
+      <div class="highlight-box">
+        🚀 <strong>"Show me the prototype"</strong> has replaced <strong>"Let me raise a seed to build one."</strong> When tools make prototyping nearly free, investors expect to see working software before writing checks. The bar for initial funding has fundamentally changed.
+      </div>
+
+      <h3>The Closing Rule</h3>
+      <p>Mitchell leaves the audience with one powerful habit:</p>
+      <div class="highlight-box">
+        💻 <strong>"Before closing your laptop, ask yourself: What slow task could an agent be doing while I'm gone?"</strong> This simple question ensures you're always leveraging AI's ability to work asynchronously — turning downtime into productive time.
+      </div>
+    </section>
+
+    <!-- ===== TAKEAWAYS ===== -->
+    <section class="card" id="takeaways">
+      <h2><span class="num">★</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>12 Things to Remember</h3>
+        <ol>
+          <li><strong>Start with problems, not products</strong> — Mitchell and Armon's notebook of unsolved infrastructure problems became HashiCorp's entire roadmap.</li>
+          <li><strong>Being first doesn't matter</strong> — Terraform was the 7th infrastructure-as-code tool. Approach and execution beat timing.</li>
+          <li><strong>Open-core &gt; SaaS for dev tools</strong> — HashiCorp's failed Atlas SaaS pivot vs. the successful Terraform Enterprise open-core model.</li>
+          <li><strong>Cloud providers are not your friends</strong> — AWS spent nothing on a provider they depended on; Azure asked "How do we both win?" Know who you're partnering with.</li>
+          <li><strong>AI is breaking open-source trust</strong> — "Default deny, you must earn trust" is the new reality for maintainers drowning in low-quality AI PRs.</li>
+          <li><strong>Terminals are more relevant than ever</strong> — CLI-based AI tools have actually increased terminal usage since 2023.</li>
+          <li><strong>Always have an agent running</strong> — Mitchell's core workflow: if you're coding, the agent plans; if the agent's coding, you're reviewing.</li>
+          <li><strong>Context determines rigor</strong> — review AI code carefully for critical systems, ship without review for throwaway projects.</li>
+          <li><strong>Git needs a "Gmail moment"</strong> — version control must evolve to handle agentic infrastructure, prompt history, and massive churn.</li>
+          <li><strong>Harness engineering</strong> — when AI makes a mistake, build tooling it can use to prevent that mistake in the future.</li>
+          <li><strong>AI adoption is like learning Git</strong> — initial awkwardness doesn't mean the tool is bad. Invest time building the right mental model.</li>
+          <li><strong>Before closing your laptop</strong> — ask what slow task an agent could be doing while you're away.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== RESOURCES ===== -->
+    <section class="card" id="resources">
+      <h2><span class="num">☍</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://mitchellh.com" target="_blank">mitchellh.com</a> — Mitchell Hashimoto's personal site and blog</li>
+        <li><a href="https://ghostty.org" target="_blank">ghostty.org</a> — Ghostty terminal emulator</li>
+        <li><a href="https://github.com/ghostty-org/ghostty" target="_blank">Ghostty on GitHub</a> — Source code and documentation</li>
+        <li><a href="https://mitchellh.com/writing/ai-adoption-journey" target="_blank">Mitchell's AI Adoption Blog Post</a> — Detailed write-up of his AI workflow evolution</li>
+        <li><a href="https://www.youtube.com/watch?v=WjckELpzLOU" target="_blank">Full Video on YouTube</a> — The Pragmatic Engineer interview</li>
+      </ul>
+    </section>
+
+    <!-- ===== TIMESTAMP INDEX ===== -->
+    <section class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=0" target="_blank">0:00</a><span class="label">Intro</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=439" target="_blank">7:19</a><span class="label">HashiCorp origins</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=952" target="_blank">15:52</a><span class="label">Early cloud computing</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=1102" target="_blank">18:22</a><span class="label">The 2010s startup scene in SF</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=1391" target="_blank">23:11</a><span class="label">Funding HashiCorp</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2128" target="_blank">35:28</a><span class="label">An early failure in commercialization</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2308" target="_blank">38:28</a><span class="label">The open-core pivot</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=2888" target="_blank">48:08</a><span class="label">Taking HashiCorp public</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=3118" target="_blank">51:58</a><span class="label">The almost-VMware acquisition</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=3550" target="_blank">59:10</a><span class="label">Mitchell's take on AWS, GCP and Azure</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=3962" target="_blank">1:06:02</a><span class="label">AI's impact on open source</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=4020" target="_blank">1:07:00</a><span class="label">Ghostty</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=4753" target="_blank">1:19:13</a><span class="label">How Mitchell uses AI</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=5316" target="_blank">1:28:36</a><span class="label">Open source + AI</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=5506" target="_blank">1:31:46</a><span class="label">The problem of Git and monorepos</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=5997" target="_blank">1:39:57</a><span class="label">Mitchell's hiring practices</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6472" target="_blank">1:47:52</a><span class="label">Mitchell's AI adoption journey</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6641" target="_blank">1:50:41</a><span class="label">Advice to future founders</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6800" target="_blank">1:53:20</a><span class="label">What's changing for software engineers</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=WjckELpzLOU&t=6903" target="_blank">1:55:03</a><span class="label">Closing</span></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Deep Dive document generated from YouTube video <a href="https://www.youtube.com/watch?v=WjckELpzLOU" target="_blank">WjckELpzLOU</a> · The Pragmatic Engineer
+</footer>
+
+</body>
+</html>
