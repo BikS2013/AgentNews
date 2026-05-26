@@ -29,7 +29,17 @@
       "sourceSite": "levelup.gitconnected.com",
       "publishedAt": "2026-04-22T14:51:42.000Z",
       "category": "article"
+    },
+    {
+      "id": "how-to-build-a-software-factory-with-claude-code-from-vibe-coding-to-agentic-development",
+      "title": "How to Build a Software Factory with Claude Code: From Vibe Coding to Agentic Development",
+      "url": "https://www.freecodecamp.org/news/how-to-build-software-factory-with-claude-code/",
+      "imageUrl": "https://cdn.hashnode.com/uploads/covers/5fc16e412cae9c5b190b6cdd/9dba291f-c5b1-4c0c-99a6-44941e60f014.png",
+      "sourceSite": "www.freecodecamp.org",
+      "publishedAt": "2026-05-22T00:00:00.000Z",
+      "summary": "Comprehensive freeCodeCamp handbook by Qudrat Ullah on building a structured AI-assisted development workflow. Covers the five layers of AI-assisted development (context, knowledge, agents, workflows, delivery), seven specialized subagents (codebase-researcher, story-writer, spec-writer, backend-builder, frontend-builder, test-verifier, implementation-validator), orchestrator design, CLAUDE.md best practices, skills, hooks, and a complete PR review checklist. Includes hands-on setup for Next.js/Node.js projects.",
+      "category": "article"
     }
   ],
-  "updatedAt": "2026-05-23T09:20:38.000Z"
+  "updatedAt": "2026-05-26T23:50:38.899Z"
 }
