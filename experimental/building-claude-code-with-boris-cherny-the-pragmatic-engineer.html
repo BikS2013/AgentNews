@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Claude Code with Boris Cherny — The Pragmatic Engineer</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.hero .meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+.thumb-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  max-width: 560px;
+  width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.toc {
+  position: sticky;
+  top: 1rem;
+  width: 260px;
+  min-width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.toc h3 {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a {
+  color: var(--text-muted);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before {
+  content: counter(toc) ". ";
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.card h3 {
+  color: var(--purple);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.6rem;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(26,29,39,0.6);
+  transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+.overview-card {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.06));
+  border: 1px solid rgba(59,130,246,0.18);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.overview-card h2 {
+  color: var(--accent);
+  font-size: 1.15rem;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+}
+.overview-card p { color: var(--text); font-size: 0.95rem; }
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<img src="https://img.youtube.com/vi/julbw1JuAz0/maxresdefault.jpg" alt="Building Claude Code with Boris Cherny" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>Building Claude Code with Boris Cherny — The Pragmatic Engineer</h1>
+  <div class="meta">Boris Cherny &amp; Gergely Orosz · ~98 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=julbw1JuAz0" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/julbw1JuAz0/maxresdefault.jpg"
+         alt="Video thumbnail — Building Claude Code with Boris Cherny">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~98 min</span>
+    <span class="meta-pill">🎤 Boris Cherny</span>
+    <span class="meta-pill">🏢 Anthropic</span>
+    <span class="meta-pill">🏷 Claude Code · Agentic AI · Software Engineering · Developer Tools · AI Safety</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Boris's Origin Story</a></li>
+      <li><a href="#s2">Lessons from Meta</a></li>
+      <li><a href="#s3">Joining Anthropic</a></li>
+      <li><a href="#s4">Origins of Claude Code</a></li>
+      <li><a href="#s5">Boris's Daily Workflow</a></li>
+      <li><a href="#s6">Parallel Agents</a></li>
+      <li><a href="#s7">Code Reviews</a></li>
+      <li><a href="#s8">Architecture &amp; RAG</a></li>
+      <li><a href="#s9">Permissions &amp; Sandboxing</a></li>
+      <li><a href="#s10">Engineering Culture</a></li>
+      <li><a href="#s11">Prototyping Culture</a></li>
+      <li><a href="#s12">Claude Cowork</a></li>
+      <li><a href="#s13">Agent Teams / Swarms</a></li>
+      <li><a href="#s14">Printing Press Analogy</a></li>
+      <li><a href="#s15">Skills That Still Matter</a></li>
+      <li><a href="#s16">Book Recommendations</a></li>
+      <li><a href="#takeaways">Key Takeaways</a></li>
+      <li><a href="#resources">Resources &amp; Links</a></li>
+      <li><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="overview-card">
+      <h2>Overview</h2>
+      <p>Boris Cherny — creator and Head of Claude Code at Anthropic, former Principal Engineer at Meta, and author of <em>Programming TypeScript</em> (O'Reilly) — sits down with Gergely Orosz to trace the full arc of Claude Code: from weekend side-project to one of the fastest-growing developer tools in history. The conversation covers Boris's daily workflow of shipping 20–30 PRs a day with zero hand-written code, the architecture behind Claude Code (spoiler: no RAG — just glob and grep), how code review works when AI writes everything, the birth of Claude Cowork and Agent Teams, and a striking printing-press analogy for the transformation software engineering is undergoing right now.</p>
+    </div>
+
+    <!-- Section 1: Boris's Origin Story -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Boris's Origin Story</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=0s" target="_blank">▶ 0:00</a>
+      </p>
+      <p>Boris's path into programming was entirely practical. At around 13, he discovered HTML while selling Pokémon cards on eBay — finding that a <code>&lt;blink&gt;</code> tag could bump his prices from 49¢ to 99¢. Around the same time, he programmed math solvers on a TI-83 calculator, eventually dropping from BASIC to assembly to make them faster. When every student in his class got an A after he shared the solver via serial cable, the teacher caught on.</p>
+      <p>He studied economics in college but dropped out to do startups. His first venture was a cannabis review site that "actually kind of blew up." He pivoted into chemical testing, then joined Y Combinator's Agile Diagnosis — a medical decision-tree startup for hospitals. There he rode his motorcycle to UCSF to shadow doctors and discovered the root cause of flat DAUs: doctors typed with one finger because they wore latex gloves.</p>
+      <div class="highlight-box"><strong>Key insight:</strong> "Coding is a means to build things. It's not an end to itself." — this thread runs through the entire conversation.</div>
+    </div>
+
+    <!-- Section 2: Lessons from Meta -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Lessons from Meta</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=675s" target="_blank">▶ 11:15</a>
+      </p>
+      <p>Boris spent seven years at Meta (five as a Principal Engineer), working across Instagram, Facebook, WhatsApp, and Messenger. He became one of the most prolific code authors <em>and</em> code reviewers in the company — largely because being based in Japan meant no meetings, giving him uninterrupted coding time.</p>
+      <h3>The Code Quality Machine</h3>
+      <ul>
+        <li><strong>Instagram's broken dev stack</strong> — Click-to-definition didn't work, the Python type checker didn't work, and the whole thing was "this hack-together Django with a fork of CPython." Engineers adapted by using Meta's global index and searching for <code>foo(</code> instead of using IDE navigation.</li>
+        <li><strong>Facebook's Flow/Hack stack</strong> — Boris describes it as "probably the best web dev stack in the world" — fully optimized, with working type checkers and IDE support. The contrast between Facebook and Instagram's developer experience was stark.</li>
+        <li><strong>Code quality at scale</strong> — He led code quality initiatives across multiple products, building automated systems to catch recurring patterns. His methodology: track every code review comment in a spreadsheet, and when any issue appears 3-4 times, write a lint rule to automate it away.</li>
+      </ul>
+      <div class="highlight-box"><strong>"One of our superpowers as engineers is we are able to automate all of the tedious work. There's very few other fields where you can do this."</strong></div>
+    </div>
+
+    <!-- Section 3: Joining Anthropic -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Joining Anthropic</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1186s" target="_blank">▶ 19:46</a>
+      </p>
+      <p>Boris describes two "felt-like-AGI moments" that pulled him toward Anthropic. The first was using Claude 3 Opus for the first time — the model wrote code that didn't just compile but was <em>good</em>. It felt qualitatively different from anything before.</p>
+      <p>He was hired by Ben Mann (one of Anthropic's co-founders) and joined the Labs team. Famously, his first pull request at Anthropic was rejected — not because the code was bad, but because he wrote it by hand. The culture was already "let the model write it."</p>
+      <p>Boris also revealed a personal motivation: he's a sci-fi reader who understands how badly AI could go if mismanaged. After seeing safety challenges from the inside, what was initially "an important concern" became "the most important thing" for him.</p>
+    </div>
+
+    <!-- Section 4: Origins of Claude Code -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> The Origins of Claude Code</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1388s" target="_blank">▶ 23:08</a>
+      </p>
+      <p>Claude Code started as a simple terminal chatbot — "because that's what I thought AI was," Boris says. The turning point came when tool use was introduced. Boris gave the model a single tool: bash.</p>
+      <p>His first test: <em>"What music am I listening to?"</em> The model wrote an AppleScript to query his music player and one-shotted it with Sonnet 3.5. This was Boris's second AGI moment.</p>
+      <h3>The Bitter Lesson Corollary</h3>
+      <p>Boris articulates a key philosophical insight about building AI products:</p>
+      <div class="highlight-box"><strong>"The model is its own thing. You give it tools. You let it run programs. You let it write programs. But you don't make it a component of a larger system. Just let the model do its thing. Don't try to put it in a box."</strong></div>
+      <p>At the time, everyone else was treating the model as a module to slot into a program — stub out a function, make it AI-powered. Claude Code's approach was fundamentally different: give the model autonomy and tools, then get out of the way.</p>
+      <h3>The Internal Debate</h3>
+      <p>When Claude Code spread inside Anthropic, the internal adoption chart "was just vertical." Dario Aghavard asked if Boris was forcing people to use it. The answer was no — people voted with their feet. The decision to release externally was driven by safety research: to study how agents behave in the wild and learn from real-world usage patterns, making the model safer as a result.</p>
+      <p>The first three months, Boris was the sole developer. Claude Code now writes approximately <strong>80% of all code at Anthropic</strong>.</p>
+    </div>
+
+    <!-- Section 5: Boris's Daily Workflow -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Boris's Daily Workflow</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1975s" target="_blank">▶ 32:55</a>
+      </p>
+      <p>Boris ships <strong>20–30 pull requests every day</strong>. With Opus 4.5, he stopped using an IDE entirely — he uninstalled it a month later when he noticed he hadn't opened it once.</p>
+      <h3>The Setup</h3>
+      <ul>
+        <li><strong>Five terminal tabs</strong>, each with a separate checkout of the repository (five parallel workspaces)</li>
+        <li><strong>Plan mode first</strong> — almost every task starts with <code>Shift+Tab</code> twice to enter plan mode. Boris iterates on the plan before letting it execute.</li>
+        <li><strong>Desktop app overflow</strong> — when terminal tabs run out, he uses the Claude desktop app, which has built-in Git worktree support for automatic environment isolation.</li>
+        <li><strong>iOS app coding</strong> — roughly a third to half of his code is written from his phone. "If you told me 6 months ago I'd be coding on a phone, that's crazy."</li>
+      </ul>
+      <h3>The Quality Bar</h3>
+      <p>During a coding vacation in Europe (December), Boris wrote 10–20 PRs per day. Opus 4.5 wrote 100% of every single one — he didn't edit a single line manually. Over the entire month, the model introduced maybe <strong>two bugs</strong>. By his estimate, hand-writing that code would have produced ~20 bugs.</p>
+      <div class="highlight-box"><strong>"I'll be honest — it writes better code than I do."</strong> — Boris Cherny</div>
+    </div>
+
+    <!-- Section 6: Parallel Agents -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Parallel Agents</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2187s" target="_blank">▶ 36:27</a>
+      </p>
+      <p>Boris describes two modes of using Claude Code:</p>
+      <ul>
+        <li><strong>Learn/Exploratory mode</strong> — for new codebases. Use <code>/config</code> to set "explanatory" output style. Follow along with the model. Highly recommended for onboarding.</li>
+        <li><strong>Productive mode</strong> — for familiar codebases. Start in plan mode, iterate on the plan, then let it execute. Round-robin between 5+ parallel agents.</li>
+      </ul>
+      <p>The workflow: start Claude in plan mode in tab 1, give it a prompt. While it's thinking, switch to tab 2 and start another plan. Then tab 3, tab 4. When tab 1 finishes, come back, review the plan, iterate, then let it implement.</p>
+      <p>With Opus 4.5, once the plan is right, Claude "will one-shot the implementation almost every time." With 4.6, it's even more reliable. The most important thing is getting the plan right — the back-and-forth to refine the plan matters more than anything else.</p>
+    </div>
+
+    <!-- Section 7: Code Reviews -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Code Reviews When AI Writes Everything</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2425s" target="_blank">▶ 40:25</a>
+      </p>
+      <h3>The Multi-Layer Verification Stack</h3>
+      <ol>
+        <li><strong>Claude self-tests</strong> — when writing code, Claude often decides to run tests locally or write new tests. When modifying Claude Code itself, it launches itself in a subprocess to verify it still works. This behavior "just started spontaneously with Opus 4.5 — we didn't code it in."</li>
+        <li><strong>Claude-P (Agent SDK in CI)</strong> — every pull request at Anthropic is code-reviewed by Claude Code running in CI. This catches "maybe 80% of bugs." Claude automatically addresses some; others it leaves for a human.</li>
+        <li><strong>Human code review</strong> — always a second pass by an engineer. "There always has to be a person in the loop approving the change."</li>
+        <li><strong>Type checkers, linters, builds</strong> — deterministic verification alongside non-deterministic AI review.</li>
+      </ol>
+      <h3>Deterministic + Non-Deterministic</h3>
+      <p>To deal with LLM non-determinism, the team uses <strong>best-of-N</strong> approaches: launching parallel agents to review, then parallel deduping agents to filter false positives. The open-source code review skill in the Claude Code repo implements this pattern.</p>
+      <p>Boris's updated lint workflow: instead of the old spreadsheet-then-lint-rule process, he now tags <code>@Claude</code> directly on a coworker's PR and says "please write a lint rule for this." Claude writes and submits the lint rule on the spot.</p>
+    </div>
+
+    <!-- Section 8: Architecture & RAG -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Architecture: No RAG, Just Glob and Grep</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2838s" target="_blank">▶ 47:18</a>
+      </p>
+      <h3>The Core Architecture</h3>
+      <p>Claude Code is "very simple" according to Boris:</p>
+      <ul>
+        <li><strong>Core agent loop</strong> — a query loop with a few tools that are constantly being added, removed, and experimented with.</li>
+        <li><strong>Terminal/editor interface</strong> — the UX layer.</li>
+        <li><strong>Security layer</strong> — "actually a ton of different pieces" around safety and human-in-the-loop.</li>
+      </ul>
+      <h3>The RAG Story</h3>
+      <p>Early on, Boris tried RAG with a local TypeScript vector database using cloud embedding models. It "worked pretty good" but had critical problems:</p>
+      <ul>
+        <li><strong>Code drift</strong> — local functions weren't indexed yet, so RAG wouldn't find them.</li>
+        <li><strong>Permission complexity</strong> — who can access the index? How do you prevent a rogue IT person from accessing someone else's embeddings?</li>
+        <li><strong>Enterprise security</strong> — for an enterprise product, these questions are deal-breakers.</li>
+      </ul>
+      <p>They tried many alternatives: recursive model-based indexing, various search approaches. The winner?</p>
+      <div class="highlight-box"><strong>"Agentic search just outperformed everything. And what is agentic search? It's just a fancy word for glob and grep. That's all it is."</strong></div>
+      <p>This was partially inspired by Boris's Instagram experience, where engineers used Meta's global index to search for <code>foo(</code> instead of relying on broken IDE navigation. The same pattern works for the model.</p>
+      <h3>Iteration Velocity</h3>
+      <p>Even the spinner in Claude Code has gone through "like a hundred iterations." Out of those, maybe 10-20 made it to production. "Almost all the code we write we throw away because it's just so easy to write this code and try stuff."</p>
+    </div>
+
+    <!-- Section 9: Permissions & Sandboxing -->
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Permissions and Sandboxing</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3158s" target="_blank">▶ 52:38</a>
+      </p>
+      <h3>The Swiss Cheese Model</h3>
+      <p>Safety and permissions follow a multi-layered approach. For prompt injection, Claude Code uses <strong>three layers</strong>:</p>
+      <ol>
+        <li><strong>Model alignment</strong> — Opus 4.6 is trained to resist prompt injection at the model layer.</li>
+        <li><strong>Runtime classifiers</strong> — if a request seems prompt-injected, it's blocked and the model retries.</li>
+        <li><strong>Sub-agent summarization</strong> — for tools like web fetch, results are summarized by a sub-agent before reaching the main agent, reducing injection surface.</li>
+      </ol>
+      <h3>Command Permissions</h3>
+      <p>Few Unix commands are truly safe to pre-allow. Even <code>find</code> has flags that execute arbitrary code. Even <code>set</code> can be exploited. Claude Code is "fairly conservative by default" but lets users configure allow lists.</p>
+      <p>The permission prompt system (run once / run for session / allow globally) dates back to the very first internal release in September 2024. Boris and Ben Mann brainstormed it as a solution when internal safety teams pushed back: "You can't just let the model run bash commands."</p>
+      <div class="highlight-box"><strong>"If you're not sure, just ask the human and then they can decide."</strong> — the simplest safety mechanism, built into v1.</div>
+    </div>
+
+    <!-- Section 10: Engineering Culture -->
+    <div class="card" id="s10">
+      <h2><span class="num">10</span> Engineering Culture at Anthropic</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3305s" target="_blank">▶ 55:05</a>
+      </p>
+      <h3>One Title: Member of Technical Staff</h3>
+      <p>Everyone at Anthropic shares the same title. The rationale: when your title says "software engineer," people won't ask you product questions. When everyone is "member of technical staff," the default assumption is everyone does everything. This encourages cross-functional collaboration.</p>
+      <p>Boris sees this as "a glimpse of the future" — all disciplines are moving toward this generalist model, accelerated by AI making it easier for engineers to do product work and vice versa.</p>
+      <h3>Everyone Codes</h3>
+      <p>On the Claude Code team, <strong>everyone codes</strong> — engineers, the engineering manager, designers, data scientists, and even the finance person. It started when a data scientist was spotted using Claude Code for SQL queries with ASCII visualizations. Within a week, the entire row of data scientists had Claude Code running.</p>
+      <h3>No PRDs</h3>
+      <p>Anthropic doesn't write Product Requirements Documents. Instead: "Better just send a PR." The product team is extremely technical (Kat, the product lead, was a former engineering manager), and with Claude Code making prototyping instant, written specs have been replaced by working code.</p>
+    </div>
+
+    <!-- Section 11: Prototyping Culture -->
+    <div class="card" id="s11">
+      <h2><span class="num">11</span> The Prototyping Revolution</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3600s" target="_blank">▶ 1:00:00</a>
+      </p>
+      <p>Boris built <strong>15–20 interactive, working prototypes</strong> for the to-do list feature in Claude Code — in a day and a half. Gergely notes this would have taken 1-2 weeks in traditional engineering, and teams would have built three, not twenty.</p>
+      <h3>Agent Teams (Swarms) Were Prototyped for Months</h3>
+      <p>Daisy, Suzanne, Karen, and other team members prototyped "probably hundreds of versions" of what became Agent Teams before getting a UX that felt right. "There's just no way we could have shipped this if we started with static mocks in Figma or a PRD."</p>
+      <h3>The New Economics of Building</h3>
+      <div class="highlight-box"><strong>"In the old way of building, the cost was high so you had to aim very carefully before taking your shot. Now the cost is very low, but we don't know where we're aiming. So we just have to try and see what feels good."</strong></div>
+      <p>The condensed file-read view went through ~30 prototypes. After internal dogfooding for a month, more tweaks based on external feedback. Boris personally went back and forth with users on GitHub issues to iterate until the default felt right — while still allowing configuration for those who wanted expanded output.</p>
+      <h3>Plugins: Built by Swarms Over a Weekend</h3>
+      <p>Daisy had an early version of swarms. She told it: "Your job is to build plugins. Come up with a spec, create an Asana board, split into tasks, and build it." She set up a container, enabled dangerous mode, and let it run for the entire weekend. It spawned a couple hundred agents, created 100 tasks, and implemented what became the shipped version of plugins.</p>
+    </div>
+
+    <!-- Section 12: Claude Cowork -->
+    <div class="card" id="s12">
+      <h2><span class="num">12</span> Claude Cowork</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3915s" target="_blank">▶ 1:05:15</a>
+      </p>
+      <h3>Built for Non-Engineers</h3>
+      <p>Claude Cowork was born from observing <strong>latent demand</strong>: non-engineers were already using Claude Code for things like monitoring tomato plants (webcam + daily check-ins), recovering wedding photos from corrupted hard drives, running SQL queries, and financial forecasting. When you see people "jumping through hoops to use a product not designed for them, that's a really good sign it's time to build one for them."</p>
+      <h3>Built in ~10 Days</h3>
+      <p>A small team, fully building with Claude Code. From the product side, it's a tab in the Claude desktop app (alongside Code and Chat). Underneath, it runs the same Claude Agent SDK that powers Claude Code.</p>
+      <h3>Where the Complexity Lives</h3>
+      <ul>
+        <li><strong>Safety guardrails</strong> — classifiers on the back end, VM sandboxing, OS-level protections against accidental file deletion. "If someone launches the app and deletes a bunch of family photos, that's really not good."</li>
+        <li><strong>Permission system adaptation</strong> — inherited from Claude Code but redesigned for non-technical users.</li>
+        <li><strong>Chrome extension integration</strong> — Cowork is "really, really good when you pair it with a Chrome extension." Boris uses it weekly for project management: Cowork opens a spreadsheet in one Chrome tab, Slack in another, finds unfilled status rows, and messages the relevant engineers on Slack.</li>
+      </ul>
+      <p>Growth trajectory: "much steeper than Claude Code was at the beginning" — an instant hit, unlike Claude Code which had a slow initial take-off before the May inflection with Opus 4 / Sonnet 4.</p>
+    </div>
+
+    <!-- Section 13: Agent Teams / Swarms -->
+    <div class="card" id="s13">
+      <h2><span class="num">13</span> Agent Teams and Uncorrelated Context Windows</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=4485s" target="_blank">▶ 1:14:45</a>
+      </p>
+      <h3>The Key Concept: Uncorrelated Context Windows</h3>
+      <p>Boris introduces a core concept driving Agent Teams:</p>
+      <ul>
+        <li><strong>Correlated</strong> — second task in the same context window as the first; it knows about all prior context.</li>
+        <li><strong>Uncorrelated</strong> — sub-agent gets a fresh context window with only the specific prompt from the parent. It doesn't see the parent's full context.</li>
+      </ul>
+      <p>Throwing more tokens at a problem using <em>uncorrelated</em> windows gives better results than doing so in a single correlated window. Boris calls this "a form of test-time compute."</p>
+      <h3>Opus 4.6 as the Unlock</h3>
+      <p>The team experimented with swarms since ~October, but "it really just clicked with Opus 4.6." The model figured out how to effectively delegate and coordinate. Internal evaluations showed significant improvements on complex tasks that exceeded what a single agent could build.</p>
+      <p>Agent Teams is released as a research preview because it uses a lot of tokens. The main agent decides delegation rules contextually — "there's no regimented way."</p>
+      <div class="highlight-box"><strong>"Sometimes you see these cute exchanges where the agents are talking to each other and discussing something. It's very humanistic in a way."</strong></div>
+    </div>
+
+    <!-- Section 14: Printing Press Analogy -->
+    <div class="card" id="s14">
+      <h2><span class="num">14</span> The Printing Press Analogy</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=4876s" target="_blank">▶ 1:21:16</a>
+      </p>
+      <p>Boris develops an extended analogy between AI and the printing press that serves as the episode's philosophical anchor:</p>
+      <ul>
+        <li><strong>Before:</strong> Less than 1% of Europe's population was literate. A small class of scribes — trained for years, employed by kings who were often themselves illiterate — had a monopoly on writing.</li>
+        <li><strong>After:</strong> The cost of printed material dropped ~100x in 30-50 years. Volume increased ~10,000x in 50-100 years. Global literacy eventually reached 70%, though that took 200-300 years and required industrialization.</li>
+        <li><strong>The parallel:</strong> Software engineers are today's scribes. Business owners are today's "kings" — they know what they want built but can't write code. AI is the printing press, making the craft accessible to everyone.</li>
+      </ul>
+      <p>Gergely's sharpening of the metaphor: there are CEOs who come with whiteboard drawings saying "this should be easy" — they're the illiterate kings who need scribes. AI removes that middleman.</p>
+      <div class="highlight-box"><strong>"The scribes didn't disappear. They became writers and authors. And the reason they exist is because the market for literature just expanded a ton."</strong></div>
+      <h3>Intellectual Humility as a Survival Skill</h3>
+      <p>Boris is candid about the emotional challenge: models improve so fast that ideas that failed last month may work now, and vice versa. "I constantly have to remind myself" to re-evaluate assumptions. Junior engineers sometimes find better approaches than he does because they don't carry outdated priors.</p>
+    </div>
+
+    <!-- Section 15: Skills That Still Matter -->
+    <div class="card" id="s15">
+      <h2><span class="num">15</span> Skills That Still Matter for Engineers</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=5536s" target="_blank">▶ 1:32:12</a>
+      </p>
+      <h3>What's Less Valuable</h3>
+      <ul>
+        <li>Strong opinions about code style, languages, and frameworks — "I can't wait to get past these endless debates. The model can use whatever language and rewrite it if you don't like it."</li>
+      </ul>
+      <h3>What's More Valuable</h3>
+      <ul>
+        <li><strong>Being methodical and hypothesis-driven</strong> — matters for product design (what to build next) and day-to-day engineering (debugging). The model helps, but humans still need this skill.</li>
+        <li><strong>Curiosity and cross-disciplinary breadth</strong> — the next billion-dollar product "might just be one person whose brain can think across engineering, product, business, design, and finance."</li>
+        <li><strong>Adaptability</strong> — Gergely's addition. Boris was great at deep focus before; now he's great at context-switching across parallel agents. Being open to completely changing your working style with each new model release.</li>
+        <li><strong>Short attention span / context switching</strong> — Boris calls this "the year of ADHD." The work has become jumping between Claude instances, managing agents. "It's not about deep work. It's about how good am I at context switching."</li>
+      </ul>
+      <h3>Standout Engineer Archetypes</h3>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=5416s" target="_blank">▶ 1:30:16</a>
+      </p>
+      <ul>
+        <li><strong>Amazing prototypers</strong> — take something from 0 to 0.5, find the technology unlock.</li>
+        <li><strong>Product-market-fit finders</strong> — 0.5 to 1, or 0 to 1.</li>
+        <li><strong>Multi-disciplinary hybrids</strong> — product + engineering, design + engineering, infrastructure + product. Boris sees more of these emerging.</li>
+      </ul>
+    </div>
+
+    <!-- Section 16: Book Recommendations -->
+    <div class="card" id="s16">
+      <h2><span class="num">16</span> Book Recommendations</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=5724s" target="_blank">▶ 1:35:24</a>
+      </p>
+      <ul>
+        <li><strong><em>Accelerando</em> by Charles Stross</strong> — "Essentially the product roadmap for the next 50 years." Covers AI takeoff and singularity, ending with "group lobster consciousnesses orbiting Jupiter." Boris says it captures the quickening pace of the current moment better than anything else.</li>
+        <li><strong>Cixin Liu's short stories</strong> — the Three-Body Problem author has excellent short story collections beyond the main trilogy.</li>
+        <li><strong><em>Functional Programming in Scala</em></strong> — Boris's technical recommendation. "Even if language choice doesn't matter as much anymore, there's an art to functional programming that teaches you how to code better." He's done all the exercises three times. "It just knocks this idea of functional types into your head."</li>
+      </ul>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Don't box the model</strong> — give it tools and autonomy. Claude Code's architecture philosophy: let the model be its own thing, not a component in a larger system. This is a corollary of the Bitter Lesson.</li>
+          <li><strong>Glob and grep beat RAG</strong> — Claude Code abandoned vector databases in favor of "agentic search" (glob + grep). Simpler, more reliable, no permissions headaches, no stale index problems.</li>
+          <li><strong>Plan mode is the highest-leverage workflow</strong> — once the plan is right, Opus 4.5+ one-shots the implementation. The back-and-forth to refine the plan is where the value lives.</li>
+          <li><strong>AI code review catches 80% of bugs</strong> — Claude-P runs on every PR at Anthropic, but a human always does the second pass. Best-of-N with parallel reviewing agents further increases reliability.</li>
+          <li><strong>The model spontaneously self-tests</strong> — with Opus 4.5, Claude Code started launching itself in subprocesses to verify it still works. No one coded this behavior.</li>
+          <li><strong>Prototyping has replaced planning documents</strong> — 15-20 working prototypes in 1.5 days instead of a 2-week PRD cycle. "Better just send a PR."</li>
+          <li><strong>Uncorrelated context windows are a form of test-time compute</strong> — Agent Teams work because fresh sub-agent contexts outperform extending a single correlated window.</li>
+          <li><strong>Safety requires Swiss cheese layers</strong> — model alignment, runtime classifiers, sub-agent summarization, permission prompts, sandboxing. No single mechanism is sufficient.</li>
+          <li><strong>We're living through a printing press moment</strong> — scribes became writers when the market for literature expanded. Software engineers won't disappear; the market for software will explode.</li>
+          <li><strong>The year of the generalist</strong> — cross-disciplinary thinking is the new superpower. The next big product may come from one person who thinks across engineering, product, design, and business.</li>
+          <li><strong>Intellectual humility is non-negotiable</strong> — ideas that failed last month may work now. Junior engineers sometimes find better approaches because they carry fewer outdated priors.</li>
+          <li><strong>Context switching replaces deep focus</strong> — Boris calls it "the year of ADHD." Managing 5+ parallel agents is the new coding workflow.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Resources & Links -->
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://newsletter.pragmaticengineer.com/p/how-claude-code-is-built" target="_blank">How Claude Code is Built</a> — Pragmatic Engineer deep dive</li>
+        <li><a href="https://newsletter.pragmaticengineer.com/p/how-anthropic-built-artifacts" target="_blank">How Anthropic Built Artifacts</a> — Pragmatic Engineer deep dive</li>
+        <li><a href="https://newsletter.pragmaticengineer.com/p/how-codex-is-built" target="_blank">How Codex is Built</a> — Pragmatic Engineer deep dive</li>
+        <li><a href="https://newsletter.pragmaticengineer.com/p/cursor" target="_blank">Real-World Engineering Challenges: Building Cursor</a> — Pragmatic Engineer deep dive</li>
+        <li><a href="https://borischerny.com" target="_blank">Boris Cherny's website</a></li>
+        <li><a href="https://newsletter.pragmaticengineer.com/podcast" target="_blank">The Pragmatic Engineer Podcast</a> — transcript and references</li>
+      </ul>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=0s" target="_blank">▶ 0:00</a><span class="label">Intro</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=127s" target="_blank">▶ 2:07</a><span class="label">Boris's coding origins — Pokémon, TI-83, eBay</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=241s" target="_blank">▶ 4:01</a><span class="label">Startups — cannabis review site, YC, medical software</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=675s" target="_blank">▶ 11:15</a><span class="label">Lessons from Meta — 7 years across Instagram, Facebook</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=918s" target="_blank">▶ 15:18</a><span class="label">Facebook's Flow/Hack vs Instagram's broken Python stack</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1186s" target="_blank">▶ 19:46</a><span class="label">Joining Anthropic — AGI moments, first rejected PR</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1388s" target="_blank">▶ 23:08</a><span class="label">Origins of Claude Code — chatbot to tool use</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1537s" target="_blank">▶ 25:37</a><span class="label">"What music am I listening to?" — the bash tool moment</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1602s" target="_blank">▶ 26:42</a><span class="label">The Bitter Lesson corollary — don't box the model</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1705s" target="_blank">▶ 28:25</a><span class="label">Internal debate: release or keep it internal?</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1831s" target="_blank">▶ 30:31</a><span class="label">80% of code at Anthropic written by Claude Code</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=1975s" target="_blank">▶ 32:55</a><span class="label">Boris's daily workflow — 5 tabs, plan mode, iOS coding</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2155s" target="_blank">▶ 35:55</a><span class="label">Git worktrees and desktop app overflow</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2187s" target="_blank">▶ 36:27</a><span class="label">Parallel agents — learn mode vs productive mode</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2425s" target="_blank">▶ 40:25</a><span class="label">Code reviews — multi-layer verification stack</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2555s" target="_blank">▶ 42:35</a><span class="label">Claude spontaneously self-testing with Opus 4.5</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2700s" target="_blank">▶ 45:00</a><span class="label">Best-of-N reviewing + automated lint rules via @Claude</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=2838s" target="_blank">▶ 47:18</a><span class="label">Claude Code's architecture — core loop, tools, security</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3000s" target="_blank">▶ 50:00</a><span class="label">RAG abandoned — agentic search (glob + grep) wins</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3158s" target="_blank">▶ 52:38</a><span class="label">Permissions and sandboxing — Swiss cheese model</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3305s" target="_blank">▶ 55:05</a><span class="label">Engineering culture — flat titles, everyone codes</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3540s" target="_blank">▶ 59:00</a><span class="label">No PRDs — "better just send a PR"</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3600s" target="_blank">▶ 1:00:00</a><span class="label">20 prototypes in 1.5 days — the new economics of building</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3900s" target="_blank">▶ 1:05:00</a><span class="label">Plugins built by swarms over a weekend</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=3915s" target="_blank">▶ 1:05:15</a><span class="label">Claude Cowork — built for non-engineers in ~10 days</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=4200s" target="_blank">▶ 1:10:00</a><span class="label">Cowork + Chrome extension — automated project management</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=4368s" target="_blank">▶ 1:12:48</a><span class="label">Observability, privacy, and enterprise constraints</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=4485s" target="_blank">▶ 1:14:45</a><span class="label">Agent Teams — uncorrelated context windows</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=4876s" target="_blank">▶ 1:21:16</a><span class="label">Printing press analogy — scribes, kings, and software engineers</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=5416s" target="_blank">▶ 1:30:16</a><span class="label">Standout engineer archetypes</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=5532s" target="_blank">▶ 1:32:12</a><span class="label">Skills that still matter — and the year of ADHD</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=julbw1JuAz0&t=5724s" target="_blank">▶ 1:35:24</a><span class="label">Book recs — Accelerando, Cixin Liu, FP in Scala</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
