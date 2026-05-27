@@ -176,7 +176,18 @@
       "thumbnailSource": "html",
       "sha256": "551849a3dd44ee413a6c456ef0439ef0bbbdc48be519327e8b877b4171b41dbc",
       "category": "article"
+    },
+    {
+      "slug": "building-claude-code-with-boris-cherny-the-pragmatic-engineer",
+      "title": "Building Claude Code with Boris Cherny — The Pragmatic Engineer",
+      "publishedAt": "2026-03-04T17:57:56.000Z",
+      "sourcePath": "/tmp/building-claude-code-with-boris-cherny-the-pragmatic-engineer.html",
+      "articlePath": "experimental/building-claude-code-with-boris-cherny-the-pragmatic-engineer.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/julbw1JuAz0/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "6e4f466680a21216a2b16769458641dd1d2696dc201c780cd4eb9b68788ae50b",
+      "category": "article"
     }
   ],
-  "updatedAt": "2026-05-26T23:35:06.700Z"
+  "updatedAt": "2026-05-27T05:12:37.794Z"
 }
