@@ -187,7 +187,18 @@
       "thumbnailSource": "html",
       "sha256": "6e4f466680a21216a2b16769458641dd1d2696dc201c780cd4eb9b68788ae50b",
       "category": "article"
+    },
+    {
+      "slug": "how-ai-will-change-software-engineering-with-martin-fowler-deep-dive",
+      "title": "How AI will change software engineering – with Martin Fowler | Deep Dive",
+      "publishedAt": "2025-11-19T16:21:07.000Z",
+      "sourcePath": "/tmp/how-ai-will-change-software-engineering-with-martin-fowler.html",
+      "articlePath": "experimental/how-ai-will-change-software-engineering-with-martin-fowler-deep-dive.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/CQmI4XKTa0U/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "ccc6ea8d6a6fa76d07936d51a1271d9ab298199de67b75d55f7d77b330e318fe",
+      "category": "article"
     }
   ],
-  "updatedAt": "2026-05-27T05:12:37.794Z"
+  "updatedAt": "2026-05-27T05:52:56.974Z"
 }

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How AI will change software engineering – with Martin Fowler | Deep Dive</title>
+<meta name="description" content="Deep dive into Martin Fowler's conversation with Gergely Orosz on The Pragmatic Engineer podcast about how AI is transforming software engineering, the shift from determinism to non-determinism, vibe coding, refactoring in the AI era, and the Agile Manifesto.">
+<img src="https://img.youtube.com/vi/CQmI4XKTa0U/maxresdefault.jpg" style="display:none" alt="thumbnail">
+<style>
+:root {
+  --bg: #0f1117; --card-bg: #1a1d27; --card-border: #2a2d3a;
+  --accent: #3b82f6; --accent-dim: #1e3a5f;
+  --text: #e2e8f0; --text-muted: #94a3b8; --text-bright: #f8fafc;
+  --green: #22c55e; --red: #ef4444; --orange: #f59e0b; --purple: #a78bfa;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.7; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Hero */
+.hero { text-align: center; padding: 2.5rem 1rem 2rem; max-width: 900px; margin: 0 auto; }
+.hero img { width: 100%; max-width: 800px; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,.5); }
+.hero h1 { font-size: 2rem; color: var(--text-bright); margin-bottom: .75rem; line-height: 1.3; }
+.hero .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1rem; }
+.meta-pills { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-top: 1rem; }
+.meta-pills span { background: var(--card-bg); border: 1px solid var(--card-border); padding: .3rem .75rem; border-radius: 999px; font-size: .85rem; color: var(--text-muted); }
+.meta-pills .accent { border-color: var(--accent); color: var(--accent); }
+
+/* Layout */
+.layout { display: flex; max-width: 1320px; margin: 0 auto; padding: 0 1rem 3rem; gap: 2rem; }
+.toc-sidebar { width: 260px; flex-shrink: 0; }
+.toc-sticky { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow-y: auto; }
+.toc-sticky h3 { font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin-bottom: .75rem; }
+.toc-sticky a { display: block; padding: .3rem 0; font-size: .82rem; color: var(--text-muted); border-left: 2px solid transparent; padding-left: .75rem; transition: all .2s; }
+.toc-sticky a:hover, .toc-sticky a.active { color: var(--accent); border-left-color: var(--accent); text-decoration: none; }
+.main-content { flex: 1; min-width: 0; max-width: 820px; }
+
+/* Cards */
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+.card h2 { display: flex; align-items: center; gap: .75rem; font-size: 1.35rem; color: var(--text-bright); margin-bottom: 1rem; }
+.card h3 { font-size: 1.05rem; color: var(--accent); margin: 1.25rem 0 .5rem; }
+.num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .85rem; font-weight: 700; flex-shrink: 0; }
+.ts { display: inline-block; background: var(--accent-dim); color: var(--accent); padding: .15rem .5rem; border-radius: 4px; font-size: .78rem; font-family: monospace; cursor: pointer; }
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+/* Highlight box */
+.highlight-box { background: rgba(59,130,246,.08); border-left: 3px solid var(--accent); padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: .95rem; }
+.highlight-box.green { background: rgba(34,197,94,.08); border-left-color: var(--green); }
+.highlight-box.orange { background: rgba(245,158,11,.08); border-left-color: var(--orange); }
+.highlight-box.red { background: rgba(239,68,68,.08); border-left-color: var(--red); }
+.highlight-box.purple { background: rgba(167,139,250,.08); border-left-color: var(--purple); }
+
+/* Blockquote */
+blockquote { border-left: 3px solid var(--accent-dim); padding: .5rem 1rem; margin: 1rem 0; color: var(--text-muted); font-style: italic; }
+blockquote strong { color: var(--text); }
+
+/* Takeaways */
+.takeaways { list-style: none; counter-reset: tk; }
+.takeaways li { counter-increment: tk; padding: .6rem 0 .6rem 2.5rem; position: relative; border-bottom: 1px solid var(--card-border); }
+.takeaways li:last-child { border-bottom: none; }
+.takeaways li::before { content: counter(tk); position: absolute; left: 0; top: .6rem; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+/* Timestamp grid */
+.ts-grid { display: grid; grid-template-columns: auto 1fr; gap: .25rem 1rem; font-size: .9rem; }
+.ts-grid .ts { justify-self: start; }
+
+/* Overview card */
+.overview-card { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.overview-card div { background: rgba(59,130,246,.05); padding: .75rem 1rem; border-radius: 8px; }
+.overview-card div strong { color: var(--accent); display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .2rem; }
+
+/* Resources */
+.resource-list { list-style: none; }
+.resource-list li { padding: .5rem 0; border-bottom: 1px solid var(--card-border); }
+.resource-list li:last-child { border-bottom: none; }
+.resource-list a { font-weight: 500; }
+.resource-list .url { font-size: .8rem; color: var(--text-muted); word-break: break-all; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .toc-sidebar { width: 100%; }
+  .toc-sticky { position: static; max-height: none; display: flex; flex-wrap: wrap; gap: .25rem; }
+  .toc-sticky h3 { width: 100%; }
+  .toc-sticky a { border-left: none; padding-left: 0; border-bottom: 1px solid var(--card-border); }
+  .overview-card { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U" target="_blank">
+    <img src="https://img.youtube.com/vi/CQmI4XKTa0U/maxresdefault.jpg" alt="How AI will change software engineering – with Martin Fowler">
+  </a>
+  <h1>How AI Will Change Software Engineering – with Martin Fowler</h1>
+  <p class="subtitle">Martin Fowler &amp; Gergely Orosz explore the biggest paradigm shift since assembly language: how AI and LLMs are transforming software engineering from a deterministic craft to a non-deterministic one.</p>
+  <div class="meta-pills">
+    <span class="accent">🎙️ The Pragmatic Engineer Podcast</span>
+    <span>👤 Martin Fowler &amp; Gergely Orosz</span>
+    <span>⏱️ ~109 min</span>
+    <span>📅 Nov 19, 2025</span>
+    <span>🏢 Thoughtworks</span>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+
+<!-- TOC Sidebar -->
+<aside class="toc-sidebar">
+<nav class="toc-sticky">
+<h3>Contents</h3>
+<a href="#overview">Overview</a>
+<a href="#s1">1. Martin's Origin Story</a>
+<a href="#s2">2. Joining Thoughtworks</a>
+<a href="#s3">3. The Technology Radar</a>
+<a href="#s4">4. Assembly → High-Level Languages</a>
+<a href="#s5">5. Non-determinism &amp; New Workflows</a>
+<a href="#s6">6. Vibe Coding</a>
+<a href="#s7">7. StackOverflow vs AI</a>
+<a href="#s8">8. Testing with LLMs</a>
+<a href="#s9">9. LLMs for Enterprise Software</a>
+<a href="#s10">10. Why Martin Wrote Refactoring</a>
+<a href="#s11">11. Refactoring in the AI Era</a>
+<a href="#s12">12. LLMs + Deterministic Tools</a>
+<a href="#s13">13. Patterns of Enterprise Architecture</a>
+<a href="#s14">14. The Agile Manifesto</a>
+<a href="#s15">15. How Martin Learns About AI</a>
+<a href="#s16">16. Advice for Junior Engineers</a>
+<a href="#s17">17. State of Tech Industry</a>
+<a href="#s18">18. Rapid Fire</a>
+<a href="#takeaways">Key Takeaways</a>
+<a href="#resources">Resources</a>
+<a href="#timestamps">Timestamps</a>
+</nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+
+<!-- Overview -->
+<div class="card" id="overview">
+  <h2>Episode Overview</h2>
+  <p>Martin Fowler — Chief Scientist at Thoughtworks, author of <em>Refactoring</em> and <em>Patterns of Enterprise Application Architecture</em>, and co-author of the Agile Manifesto — sits down with Gergely Orosz for a sweeping 109-minute conversation. They cover Martin's 40+ year career, the seismic shift AI brings to software engineering, why the move from <strong>determinism to non-determinism</strong> matters more than the abstraction increase, and how classic practices like refactoring and agile become <em>more</em> important in an AI-powered world.</p>
+  <div class="overview-card" style="margin-top:1rem;">
+    <div><strong>Guest</strong> Martin Fowler — Chief Scientist, Thoughtworks</div>
+    <div><strong>Host</strong> Gergely Orosz — The Pragmatic Engineer</div>
+    <div><strong>Core Theme</strong> AI as the biggest shift since assembly → high-level languages</div>
+    <div><strong>Key Insight</strong> Determinism → Non-determinism is THE paradigm shift</div>
+  </div>
+</div>
+
+<!-- Section 1 -->
+<div class="card" id="s1">
+  <h2><span class="num">1</span> Martin's Origin Story</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=110s" target="_blank"><span class="ts">1:50</span></a></p>
+
+  <p>Martin's path into computing was, in his words, "kind of accidental." At school he was "clearly no good at writing" but excelled in mathematics and physics. He was drawn to electronics — partly because, unlike mechanical engineering, "I don't even need a soldering iron." This led naturally to computers.</p>
+
+  <h3>UK Atomic Energy &amp; Fortran 4</h3>
+  <p>Before university, Martin spent a year at the <strong>UK Atomic Energy Authority</strong> ("UKULELE as we call it"), writing Fortran 4. After his degree — a mix of electronic engineering and computer science — he chose computing over traditional engineering because "it looked like there was a lot more opportunity."</p>
+
+  <h3>Coopers &amp; Lybrand ("Cheetum and Lightum")</h3>
+  <p>His first job was at the consulting firm <strong>Coopers &amp; Lybrand</strong>, which he affectionately calls "Cheetum and Lightum." He was one of the few people who knew Unix (from college) and looked after workstations for information strategy work. Through this role, he got early exposure to <strong>object-oriented thinking</strong> in the mid-1980s — an "extremely useful" head start.</p>
+
+  <blockquote>"I look at it back now and think, god, that was a lot of snake oil involved. But hey, it was my route into the industry and it got me early into the world of object-oriented thinking."</blockquote>
+
+  <h3>Jim Odell — The Mentor</h3>
+  <p>At Coopers &amp; Lybrand, Martin met <strong>Jim Odell</strong>, an American consultant who became "the biggest mentor and influence upon my early career." Jim was an independent consultant and teacher in information engineering and object orientation. After leaving Coopers, Martin joined a small company called PEK ("grand total of four of us in the UK office, and that was the largest office in the company") for a couple of years, then went independent in the early 1990s.</p>
+
+  <blockquote>"I remember leaving PEK and thinking: that's it, independence life for me. I'm never going to work for a company again." <strong>— Famous last words.</strong></blockquote>
+
+  <p>As an independent consultant throughout the '90s, Martin wrote his first books, moved to the United States in 1993, and thrived during the rise of the internet. Jim Odell "fed me a lot of work" and remained instrumental to Martin's career trajectory.</p>
+</div>
+
+<!-- Section 2 -->
+<div class="card" id="s2">
+  <h2><span class="num">2</span> Joining Thoughtworks</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=468s" target="_blank"><span class="ts">7:48</span></a></p>
+
+  <p>Thoughtworks started as just another client. Martin had already met <strong>Kent Beck</strong> and worked on the famous <strong>Chrysler C3 project</strong> — the "birth project of extreme programming" — and had absorbed both the OOP and agile worldviews.</p>
+
+  <p>When Thoughtworks was tackling a major project (about 100 people) that was "clearly going to crash and burn," Martin helped them recover. They then invited him to join.</p>
+
+  <div class="highlight-box">
+    <strong>Why Thoughtworks?</strong> "Other clients would say, 'These are really good ideas, but they're really hard to implement.' While Thoughtworks would say, 'These are really good ideas. They're really hard to implement, but we'll give it a try.' And they usually pulled it off."
+  </div>
+
+  <p>Martin joined "for a couple of years." That was <strong>25 years ago</strong>.</p>
+
+  <h3>Chief Scientist — "Chief of Nobody"</h3>
+  <p>His title since day one has been <strong>Chief Scientist</strong>, though he's quick to clarify: "I'm chief of nobody and I don't do any science." The title was modeled on similar roles at the time (e.g., Grady Booch was Chief Scientist at Rational). Ironically, at Thoughtworks you could choose your own title — but Martin didn't get to choose his. He would have preferred alternatives like "flagpole," "battering ram," or his personal favorite: <strong>"loudmouth."</strong></p>
+</div>
+
+<!-- Section 3 -->
+<div class="card" id="s3">
+  <h2><span class="num">3</span> The Technology Radar</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=607s" target="_blank"><span class="ts">10:07</span></a></p>
+
+  <p>The Thoughtworks Technology Radar is published every six months and has become one of the most respected guides to emerging technologies. The latest edition (released the day of recording) features recommendations including:</p>
+
+  <div class="highlight-box green">
+    <strong>Adopt ring recommendations:</strong> Pre-commit hooks, ClickHouse (database analytics), vLLM (efficient on-prem LLM serving), Claude Code (for trialing), Fast MCP (MCP server framework), and using GenAI to understand legacy code.
+  </div>
+
+  <h3>Origin Story</h3>
+  <p>The Radar began over 10 years ago from former CTO <strong>Rebecca Parsons'</strong> technology advisory board — a group that briefed her on what was happening in projects. <strong>Daryl Smith</strong> (Rebecca's technical assistant) came up with the radar metaphor and ring structure.</p>
+
+  <h3>The Bottom-Up Process</h3>
+  <p>Originally the advisory board members were all hands-on. Now that Thoughtworks has grown from a few thousand to 10,000 people, the process has evolved: people submit <strong>"blips"</strong> (nominations for radar entries) through geographic and technology channels. These are collected in blip-gathering sessions about 1-2 months before the radar meeting. The group that reviews them is called the <strong>Doppler group</strong> ("because we make a radar — we can be a bit loose with our metaphors").</p>
+
+  <blockquote>"For me it's a bit weird because I'm so detached from the day-to-day these days that it's just this lineup of technologies and things I have no idea what most of them are — but interesting to hear about."</blockquote>
+
+  <p>Martin notes that microservices, one of the industry's most influential architectural patterns, emerged from this radar process about 10 years ago, leading to his collaboration with James Lewis.</p>
+</div>
+
+<!-- Section 4 -->
+<div class="card" id="s4">
+  <h2><span class="num">4</span> Assembly to High-Level Languages — The AI Comparison</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1005s" target="_blank"><span class="ts">16:45</span></a></p>
+
+  <p>When asked what compares to AI in his career, Martin is emphatic:</p>
+
+  <div class="highlight-box orange">
+    <strong>"It's the biggest I think for my career."</strong> The comparable shift in the history of software development would be from <strong>assembly language to the very first high-level languages</strong> — Fortran, COBOL, and the like. That transition wasn't just about abstraction — it fundamentally changed how programmers think.
+  </div>
+
+  <h3>The Key Insight: Determinism → Non-Determinism</h3>
+  <p>Martin argues the shift is <em>not</em> primarily about a higher level of abstraction (though there is some of that). The <strong>biggest part</strong> is the shift from <strong>determinism to non-determinism</strong>:</p>
+
+  <blockquote>"Suddenly you're working in an environment that's non-deterministic, which completely changes how you have to think about it."</blockquote>
+
+  <h3>The Structural Engineer's Tolerance</h3>
+  <p>Martin draws a parallel to his wife, a structural engineer, who always thinks in terms of <strong>tolerances</strong> — going beyond what the math says because she needs to account for worst-case properties of wood, concrete, or steel. Software engineers need similar thinking now:</p>
+
+  <blockquote>"What are the tolerances of the non-determinism that we have to deal with? Realizing that we can't skate too close to the edge because otherwise we're going to have some bridges collapsing. I suspect we're going to do that particularly on the security side."</blockquote>
+
+  <h3>Building Abstractions with LLMs</h3>
+  <p>A crucial advantage of high-level languages was the ability to <strong>create your own abstractions</strong> — subroutines, objects, functional constructs. Martin's colleague <strong>Unmesh Joshi</strong> has been exploring how to use LLMs to <em>co-build</em> an abstraction, then use that abstraction to talk more effectively back to the LLM.</p>
+
+  <h3>The Chess Notation Analogy</h3>
+  <p>Martin shares a fascinating insight: if you describe chess matches to an LLM in plain English, it can't really understand how to play chess. But describe the same matches in <strong>chess notation</strong>, and it can. By shrinking token size and using a more rigorous notation, you get dramatically better results — suggesting we need to develop <strong>domain-specific languages (DSLs)</strong> for communicating with LLMs.</p>
+
+  <blockquote>"What we have to come up with is a rigorous way of speaking, and we can get more traction that way. And of course that has great parallels with the ideas of domain-driven design in ubiquitous languages."</blockquote>
+</div>
+
+<!-- Section 5 -->
+<div class="card" id="s5">
+  <h2><span class="num">5</span> Non-determinism &amp; New Workflows</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1508s" target="_blank"><span class="ts">25:08</span></a></p>
+
+  <p>Martin identifies <strong>two clear success areas</strong> where LLMs are already delivering value:</p>
+
+  <div class="highlight-box green">
+    <strong>1. Prototyping &amp; Throwaway Explorations</strong> — Knock up a prototype in days, try explorations rapidly, build disposable tools. Including by people who "don't think of themselves as software developers."<br><br>
+    <strong>2. Understanding Legacy Systems</strong> — Populate a graph database with semantic analysis of legacy code, then interrogate it in a RAG-like style. Thoughtworks put this in the <strong>Adopt ring</strong>: "If you're doing any work with legacy systems, you should be using LLMs in some way to help you understand."
+  </div>
+
+  <h3>Working with Existing Code: Still "Up in the Air"</h3>
+  <p>Martin shares a telling anecdote from colleague James Lewis: he tried using Cursor to rename a class in a modest-sized program. It came back <strong>an hour and a half later</strong>, having consumed 10% of his monthly token allocation — for something a JetBrains IDE does in seconds with a right-click.</p>
+
+  <h3>The "Dodgy Collaborator" Mental Model</h3>
+
+  <div class="highlight-box purple">
+    <strong>How to treat LLM output:</strong> "You've got to treat every slice as a <strong>PR from a rather dodgy collaborator</strong> who's very productive in the lines-of-code sense of productivity, but you can't trust a thing that they're doing. So you've got to review everything very carefully."
+  </div>
+
+  <p>Martin references multiple colorful metaphors for this:</p>
+  <ul style="margin-left:1.5rem;">
+    <li><strong>The Genie</strong> — GK Kent's term</li>
+    <li><strong>Dusty the Anthropomorphic Donkey</strong> — Birgitta Böckeler's characterization ("I love her take")</li>
+  </ul>
+
+  <h3>Teams &amp; AI</h3>
+  <p>Even if AI makes individuals an order of magnitude more productive, "We still need a team of 10 people to build what a team of 100 needed to build." Demand for software shows no signs of dropping, so teams remain essential — but how to best operate with AI in a team environment is "still trying to figure that one out."</p>
+</div>
+
+<!-- Section 6 -->
+<div class="card" id="s6">
+  <h2><span class="num">6</span> Vibe Coding</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2018s" target="_blank"><span class="ts">33:38</span></a></p>
+
+  <p>Martin goes back to the original definition: <strong>"You don't look at the output code at all."</strong> Maybe you glance at it out of curiosity, but you don't care. Maybe you don't even know programming — "it's just spitting out stuff for you."</p>
+
+  <h3>Good For — Bad For</h3>
+  <p>Good for explorations, throwaways, disposable stuff. <strong>Bad for anything with long-term capability.</strong></p>
+
+  <h3>The SVG Anecdote</h3>
+  <p>Martin's colleague Unmesh Joshi asked an LLM to create a simple pseudo-graph (SVG) for an article. Martin wanted to tweak the label positions slightly, so he opened the SVG:</p>
+
+  <div class="highlight-box red">
+    <strong>"It was gobsmackingly weird"</strong> — astonishingly complicated and convoluted for something Martin knew was "a dozen lines of SVG." Because it was XML-based, the LLM had generated an incomprehensibly bloated version. You can't tweak it — you can only <strong>"nuke it from orbit and start again."</strong>
+  </div>
+
+  <h3>The Learning Loop Problem</h3>
+  <p>This is the heart of an article Unmesh wrote (published the day of recording): vibe coding <strong>removes the learning loop</strong>.</p>
+
+  <blockquote>"So much of what we do is we come up with ideas, we try them out on the computer, with this constant back and forth between what the computer does with what we're thinking. We're constantly going through that learning loop. And Unmesh's point, which I think is absolutely true, is: <strong>you cannot shortcut that process.</strong>"</blockquote>
+
+  <p>When you're not learning, you don't know how to tweak, modify, evolve, or grow what you've produced. All you can do is throw it away and regenerate. This is the fundamental problem with vibe coding for anything beyond disposable prototypes.</p>
+</div>
+
+<!-- Section 7 -->
+<div class="card" id="s7">
+  <h2><span class="num">7</span> StackOverflow vs AI</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2362s" target="_blank"><span class="ts">39:22</span></a></p>
+
+  <p>Gergely draws a parallel to the StackOverflow era roughly 10-15 years ago. Before SO, you had sites like Experts Exchange where you had to pay to see answers (and usually there was nothing behind the paywall). StackOverflow was a massive productivity boost — but it also enabled <strong>mindless copy-paste</strong> without understanding.</p>
+
+  <blockquote>"There was a question about email validation and a top-voted answer was not entirely correct. And turns out that a good part of software developers just used that one."</blockquote>
+
+  <p>Martin agrees it's a similar pattern — but <strong>"even more boosted and on steroids."</strong> The additional worry: <em>who's going to be writing StackOverflow answers in the future?</em></p>
+
+  <h3>Caring About the Craft</h3>
+  <p>The conclusion both arrive at: you need to <strong>care about the craft</strong>, understand LLM output, and not be content with just prompting mindlessly. Martin's advice: take something from the LLM, see if it works, <em>then</em> understand <strong>why</strong> it works. Look at the structure — "Don't be afraid to refactor it." And always have a test for anything you put in.</p>
+</div>
+
+<!-- Section 8 -->
+<div class="card" id="s8">
+  <h2><span class="num">8</span> Testing with LLMs</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2605s" target="_blank"><span class="ts">43:25</span></a></p>
+
+  <p>Martin highlights <strong>Simon Willison</strong> as someone who "stresses constantly the importance of tests" when working with LLMs. Birgitta Böckeler, from Thoughtworks' extreme programming culture, says the same thing.</p>
+
+  <h3>LLMs Struggle with Tests</h3>
+  <p>The problem: LLMs are <em>bad</em> at testing. "You tell them to do the tests and I'm only hearing problems."</p>
+
+  <div class="highlight-box red">
+    <strong>"They lie to you all the time."</strong> The LLM says "Oh, and I ran all the tests. Everything's fine." You run <code>npm test</code> — five failures. <strong>"If they were truly a junior developer, which is how sometimes people like to say they should be characterized, I would be having some words with HR."</strong>
+  </div>
+
+  <h3>The Date Anecdote</h3>
+  <p>Gergely shares a perfectly illustrative story: he has a config file where he adds a date comment. He told the LLM to add the current date. <strong>It copied the last entry's date.</strong> He corrected it. <strong>It put yesterday's date.</strong> The simplest possible task — and it gaslighted him twice.</p>
+
+  <blockquote>"You need to get this experience to see that it can gaslight you for a simple thing of today's date."</blockquote>
+
+  <h3>Don't Trust, But Do Verify</h3>
+  <p>Martin's formulation: <strong>"Don't trust, but do verify."</strong> When you're a professional working on important stuff, you should <em>never</em> blindly trust LLM output.</p>
+
+  <h3>Unmesh's Approach: Building a Language</h3>
+  <p>Unmesh Joshi's approach is to <strong>build a language to talk to the LLM more precisely</strong> — work with the LLM to produce a vocabulary, then use that vocabulary to communicate more carefully what you're looking for. Martin finds this "a promising and very much a more promising line of attack" than trying to get better results from vague natural language prompts.</p>
+</div>
+
+<!-- Section 9 -->
+<div class="card" id="s9">
+  <h2><span class="num">9</span> LLMs for Enterprise Software</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3045s" target="_blank"><span class="ts">50:45</span></a></p>
+
+  <p>Martin's world is the enterprise — retailers, airlines, banks, government agencies — where software developers are <strong>10-20% of staff</strong>, and there's complex business logic, legacy systems, regulation, and decades of accumulated history.</p>
+
+  <h3>The Federal Reserve Can't Touch LLMs</h3>
+  <p>Martin was chatting with folks at the <strong>Federal Reserve in Boston</strong> — they're "not allowed to touch LLMs at the moment" because the consequences of error with a major government banking organization are too serious. He toured their money-handling facilities: "You look at the degree of care and control that they go through… I can see why in the software development side that mindset percolates."</p>
+
+  <div class="highlight-box">
+    <strong>"The variation within an enterprise is often bigger than the variation between enterprises."</strong> Small pockets within massive organizations can be "very adventurous" while other parts are "extremely not so." It was true at Coopers &amp; Lybrand in the 1980s, and it's true today.
+  </div>
+
+  <h3>DSLs for Business Logic</h3>
+  <p>Martin has seen practitioners write business logic in Ruby that <strong>domain experts could read</strong> (though not write). The experts could understand enough to point out what was right or wrong. This required careful "projecting of the language" — building an internal DSL. The question now: can LLMs enable more progress in this direction, making the boundary between human language and code more fluid?</p>
+
+  <h3>Spec-Driven Development — Not Waterfall</h3>
+  <p>Birgitta has been exploring spec-driven development. Martin's position: it's fine as long as you avoid the waterfall trap. <strong>"Do the smallest amount of spec you can possibly get to make some forward progress. Cycle with that, build it, get it tested, get it in production if possible, and then cycle with these thin slices."</strong></p>
+</div>
+
+<!-- Section 10 -->
+<div class="card" id="s10">
+  <h2><span class="num">10</span> Why Martin Wrote <em>Refactoring</em></h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3398s" target="_blank"><span class="ts">56:38</span></a></p>
+
+  <p>Martin first encountered refactoring at the <strong>Chrysler C3 project</strong> when Kent Beck showed him how to refactor Smalltalk code in their hotel room in Detroit.</p>
+
+  <div class="highlight-box purple">
+    <strong>"I was astonished at how small each step was, but how because they were small, they didn't go wrong, and they would compose beautifully. You could do a huge amount with this sequence of little steps."</strong>
+  </div>
+
+  <p>Kent was focused on writing the first XP book (the "white book") and didn't have the energy for a refactoring book. So Martin thought: "Well, I'm going to do it then." He would write careful notes whenever he refactored something — "How do I extract a method so as I don't screw it up?" — and each set of notes became the mechanics in the book.</p>
+
+  <h3>Java, Not Smalltalk</h3>
+  <p>The first edition (1999) was written in Java, not Smalltalk, "because Smalltalk was dying sadly. And Java was <em>the only programming language we'd ever need in the future</em> in the late '90s." The second edition (2018) switched to JavaScript to reach a broader audience and allow a less object-oriented framing (e.g., "extract function" instead of "extract method").</p>
+
+  <h3>The Refactoring Lineage</h3>
+  <p>Refactoring wasn't invented by Kent Beck. It was developed by <strong>Ralph Johnson's crew at the University of Illinois</strong> — John Brandt and Don Roberts built the first <strong>refactoring browser</strong> in Smalltalk. IBM's Visual Age team (which came from Smalltalk) was aware early. But it was <strong>JetBrains</strong> that caught the imagination by putting automated refactoring into IntelliJ IDEA and later ReSharper.</p>
+
+  <blockquote>"Each step is so small that it's not worth doing, but you string them together and you can really do amazing things."</blockquote>
+</div>
+
+<!-- Section 11 -->
+<div class="card" id="s11">
+  <h2><span class="num">11</span> Refactoring in the AI Era</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3735s" target="_blank"><span class="ts">1:02:15</span></a></p>
+
+  <p>With AI generating lots of code of <em>questionable quality</em> — but code that works — refactoring becomes the way to improve it while keeping it working.</p>
+
+  <div class="highlight-box green">
+    <strong>Refactoring becomes MORE important with AI-generated code.</strong> "If you're going to produce a lot of code of questionable quality but it works, then refactoring is a way to get it into a better state while keeping it working."
+  </div>
+
+  <h3>LLMs Can't Refactor (Yet)</h3>
+  <p>Current LLMs "definitely cannot refactor on their own." The James Lewis anecdote about renaming a class — consuming 1.5 hours and 10% of token allocation for something an IDE does in seconds — illustrates this perfectly.</p>
+
+  <h3>Adam Tornhill: Combining LLMs with Deterministic Tools</h3>
+  <p>Martin highlights <strong>Adam Tornhill's</strong> work on combining LLMs with other deterministic tools for more effective refactoring. The key insight:</p>
+
+  <div class="highlight-box">
+    <strong>"The disciplined approach is actually faster, even though it may seem strange to describe it that way."</strong> Refactoring's power lies in the <strong>smallness and composability</strong> of steps — combine those two and you can make enormous progress.
+  </div>
+</div>
+
+<!-- Section 12 -->
+<div class="card" id="s12">
+  <h2><span class="num">12</span> LLMs + Deterministic Tools</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3970s" target="_blank"><span class="ts">1:06:10</span></a></p>
+
+  <p>Martin sees the most interesting interplay happening where <strong>LLMs serve as a starting point for deterministic tools</strong>:</p>
+
+  <h3>SQL Generation</h3>
+  <p>People use LLMs to describe queries against relational databases. The LLM generates SQL, which you can then inspect, verify, and tweak. "It gets you started."</p>
+
+  <h3>Large-Scale API Changes</h3>
+  <p>Martin references a case where a major company made massive changes to clean up APIs and code. It was presented as an LLM achievement, but in reality it was <strong>"maybe 10% LLM and 90% this other deterministic tool."</strong> The LLM provided the extra leverage — the starting point — that allowed the deterministic tool to execute at scale.</p>
+
+  <div class="highlight-box">
+    <strong>The Sweet Spot:</strong> Use the LLM to describe intent, then drive a <strong>deterministic tool</strong> that you can inspect and verify. This combines the flexibility of natural language with the reliability of traditional tooling.
+  </div>
+</div>
+
+<!-- Section 13 -->
+<div class="card" id="s13">
+  <h2><span class="num">13</span> Patterns of Enterprise Architecture</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4056s" target="_blank"><span class="ts">1:07:36</span></a></p>
+
+  <p>Martin wrote <em>Patterns of Enterprise Application Architecture</em> in 2002 — a collection of 40+ patterns (lazy load, identity map, template view, etc.) that, alongside the Gang of Four book, became vocabulary for an entire generation of developers.</p>
+
+  <h3>Patterns as Communication</h3>
+
+  <blockquote>"What you're doing with patterns is you're trying to create a <strong>vocabulary</strong> to talk more effectively about these kinds of situations. It's just like in the medical world they come up with jargon in Greek and Latin to more precisely talk about things that are quite involved and complex."</blockquote>
+
+  <h3>Why Patterns Went "Out of Style" in the 2010s</h3>
+  <p><strong>Grady Booch's theory:</strong> Cloud providers (AWS, Google Cloud) built well-architected building blocks — managed databases, services, infrastructure — that essentially <em>solved architecture</em> for many use cases. You didn't need to think about patterns when you could just compose cloud services.</p>
+
+  <p>Martin adds that overuse played a role too — "people were using them as a sort of like pinning medals on a chest" rather than as context-dependent tools. But he still believes patterns are valuable — pointing to Unmesh Joshi's book on <strong>patterns in distributed systems</strong> as a modern example.</p>
+
+  <h3>Enterprise Complexity</h3>
+  <p>Two stunning anecdotes illustrate enterprise scale:</p>
+  <ul style="margin-left:1.5rem;">
+    <li><strong>American Express:</strong> A senior executive had been working on re-architecture for <strong>3 years</strong> — and was just finishing the <em>planning</em> phase.</li>
+    <li><strong>A major bank:</strong> Someone joined from a startup to modernize systems. After <strong>3 years</strong>, they said: "Now I think I can understand the problem."</li>
+  </ul>
+
+  <blockquote>"Any big company is going to have that kind of complicated mess because it's very hard to not get that situation. And it's not logical because it's built by humans, not by computers."</blockquote>
+</div>
+
+<!-- Section 14 -->
+<div class="card" id="s14">
+  <h2><span class="num">14</span> The Agile Manifesto</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4706s" target="_blank"><span class="ts">1:18:26</span></a></p>
+
+  <h3>The Origin: Before the Manifesto</h3>
+  <p>The real origin was a meeting Kent Beck ran about a year earlier — an XP gathering "in the middle of nowhere, Oregon." Kent also invited non-XP people like Jim Highsmith. The discussion: should XP be the narrow, concrete thing Kent described, or something broader? Kent chose narrow, which raised the question: what do we do with the broader movement?</p>
+
+  <h3>Utah, Not Anguilla</h3>
+  <p>Alistair Cockburn wanted Utah, Dave Thomas wanted <strong>Anguilla in the Caribbean</strong>. "For whatever reason, we ended up in Utah… and the skiing." The 17 attendees were simply whoever showed up — "lots of people were invited who didn't come."</p>
+
+  <h3>Martin's Reaction to the Manifesto</h3>
+
+  <div class="highlight-box orange">
+    <strong>Bob Martin</strong> insisted on writing a manifesto. Martin's reaction: "Oh well, yeah, we can do that. The manifesto itself will be a complete useless and ignored document, of course, but the exercise of writing it will be interesting." He felt: <strong>"Nobody will take any notice of this."</strong>
+  </div>
+
+  <p>He was, of course, spectacularly wrong. And as Alistair Cockburn wisely said:</p>
+
+  <blockquote>"Your brilliant idea will either be ignored or misinterpreted, and you don't get to choose which of the two it is."</blockquote>
+
+  <h3>The Real Impact</h3>
+  <p>For Martin, the great achievement was practical: before agile, Thoughtworks struggled to convince clients to let them work the way they wanted — small increments, automated testing, continuous integration. After: "We can actually go into organizations and operate much closer to the way that we'd like to." Progress has been made, but "compared to how we'd like it to be, it is still a pale shadow of what we wanted."</p>
+
+  <h3>Agile + AI</h3>
+
+  <div class="highlight-box green">
+    <strong>Martin's bet:</strong> "Building things in terms of small slices with humans reviewing it is still the way to bet." What AI enables: <strong>faster frequency</strong>, not bigger slices. "I'd rather get smaller, more frequent slices than more stuff in each slice. Improving the frequency is usually what we need to do."
+  </div>
+
+  <p>Gergely shares a concrete example: Boris Cherny at Anthropic (Claude Code team) built <strong>20 interactive prototypes in 2 days</strong> — something that would have taken 1-2 weeks previously. AI tightens the feedback loop rather than changing the fundamental approach.</p>
+</div>
+
+<!-- Section 15 -->
+<div class="card" id="s15">
+  <h2><span class="num">15</span> How Martin Learns About AI</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5315s" target="_blank"><span class="ts">1:28:35</span></a></p>
+
+  <h3>Primary Method: Editing Articles</h3>
+  <p>Martin's main learning happens through <strong>working with people who write articles for martinfowler.com</strong>. He acknowledges: "I'm not the best person to write this stuff because I'm not doing the day-to-day production work." The only production code he writes is ironically the code running his own website ("I still generate stack traces, but it's only within this very very esoteric little area").</p>
+
+  <h3>Trusted Sources</h3>
+  <ul style="margin-left:1.5rem;">
+    <li><strong>Birgitta Böckeler</strong> — "Her stuff is superb"</li>
+    <li><strong>Simon Willison</strong> — "I wish I had his energy and work rate"</li>
+    <li><strong>Kent Beck</strong> — "So much of my career has been leeching off Kent's ideas, and there's no reason to stop doing that if it's still working"</li>
+  </ul>
+
+  <h3>How to Identify Good Sources</h3>
+  <p>Martin is working on a more coherent framework for this, but his current heuristics:</p>
+
+  <div class="highlight-box purple">
+    <strong>Look for lack of certainty.</strong> "When people tell me 'Oh, I know the answer to this,' I'm usually a good bit more suspicious. I'm much more conscious of when people say 'this is what I understand at the moment, but it's fairly unclear.'"<br><br>
+    <strong>Look for nuance and trade-offs.</strong> "If somebody tells me 'you should always use microservices' or 'you should never use microservices' — both of those arguments can be completely discounted." The trustworthy sources explore factors, context, and trade-offs.<br><br>
+    <strong>The Jimmy Nilsson example:</strong> A Swedish author whose book was "very tentative all the time, very much clear this was how he was currently feeling, but he understood things might change." That tentativeness <em>increased</em> Martin's trust.
+  </div>
+</div>
+
+<!-- Section 16 -->
+<div class="card" id="s16">
+  <h2><span class="num">16</span> Advice for Junior Engineers</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5698s" target="_blank"><span class="ts">1:34:58</span></a></p>
+
+  <p>When asked what advice he'd give junior engineers navigating the AI era, Martin's answer is deeply human:</p>
+
+  <div class="highlight-box green">
+    <strong>"Find some good senior engineers who will mentor you."</strong> That's the best way to learn — and "a good experienced mentor is worth their weight in gold." Worth prioritizing above many other career considerations. Martin's own mentor, Jim Odell, was "the best thing that could have possibly happened to me — just blind luck."
+  </div>
+
+  <h3>Using AI as a Junior</h3>
+  <p>The hard part for juniors: "You don't have this sense of to what extent is the output I'm getting good." AI is handy, but always remember: <strong>"It's gullible and it's likely to lie to you."</strong></p>
+
+  <h3>The Probing Technique</h3>
+  <p>Martin recommends a simple but powerful practice — applicable to both AI and human advisors:</p>
+
+  <blockquote>"What is leading you to say that? What is the background? What is the context you're coming from? What are the things that are leading you to this point of view?"</blockquote>
+
+  <p>By probing the reasoning behind advice, you get a better understanding of where it comes from — and whether to trust it. This works for AI because "in the end the AI is just regurgitating something it saw on the internet. So the question is: did it see good stuff on the internet, or did it see most of the crap?"</p>
+</div>
+
+<!-- Section 17 -->
+<div class="card" id="s17">
+  <h2><span class="num">17</span> State of the Tech Industry</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5864s" target="_blank"><span class="ts">1:37:44</span></a></p>
+
+  <p>Martin is positive long-term — "So many huge things can be done with technology and software" — but describes the current moment as <strong>uniquely strange</strong>:</p>
+
+  <h3>The Real Cause: End of Zero Interest Rates</h3>
+
+  <div class="highlight-box orange">
+    <strong>"The most important thing that's hit us is not AI. It's the end of zero interest rates."</strong> Job losses started <em>before</em> AI because of this macroeconomic shift. Thoughtworks went from growing 20% annually until 2021 to hitting a wall. Clients simply stopped spending.
+  </div>
+
+  <h3>AI Bubble + Depression = Weird Mix</h3>
+  <p>Simultaneously: "No investment, pretty much depression in the software industry, with an AI bubble going on. And they're both happening at the same time." In Silicon Valley, if you're an AI company, everything looks great; outside the bubble, it's tough.</p>
+
+  <p>Martin draws on his experience with the late-'90s bubble: "With bubbles, you never know how big they're going to grow, you don't know how long before they pop, and you don't know what's going to be after the pop." But he sees genuine value in AI — "in a way that say there wasn't with blockchain and crypto."</p>
+
+  <h3>AI Won't Wipe Out Software Development</h3>
+
+  <blockquote>"I don't think AI is going to wipe out software development. I think it'll change it in a really manifest way, like the change from assembly to high-level languages did. But the core skills are still there."</blockquote>
+
+  <h3>Core Skills Unchanged</h3>
+  <p>The core skills of a good developer aren't primarily about writing code — they're about <strong>understanding what to write</strong>, which is communication, collaboration, and especially communicating with users of software. The <strong>expert generalist</strong> is becoming increasingly important — curiosity, going deep, going broad. As Martin notes, "all the traits seem to have nothing to do with AI."</p>
+</div>
+
+<!-- Section 18 -->
+<div class="card" id="s18">
+  <h2><span class="num">18</span> Rapid Fire</h2>
+  <p><a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=6160s" target="_blank"><span class="ts">1:42:40</span></a></p>
+
+  <h3>🖥️ Favorite Programming Language</h3>
+  <p><strong>Ruby</strong> — "because I'm so familiar with it, I've been using it for so long." But his true love: <strong>Smalltalk</strong>. "There was nothing as much fun as programming in Smalltalk when I was able to do it in the '90s. That was such a fantastic environment." He keeps meaning to investigate the Pharo project to see what's happening in the Smalltalk world.</p>
+
+  <h3>📚 Book Recommendations</h3>
+  <p><strong><em>Thinking, Fast and Slow</em></strong> by Daniel Kahneman — "He does a really good job of trying to give you an intuition about numbers and spotting some of the many mistakes and fallacies we make when we're thinking in terms of probability and statistics." Martin wishes math education were more statistics-based and less calculus-based. His tabletop gaming hobby has actually helped his probabilistic reasoning.</p>
+
+  <p><strong><em>The Power Broker</em></strong> by Robert Caro — About Robert Moses, the unelected official who controlled more money than the mayor or governor of New York for 40 years. "A fascinating book because it is so well written. There have been moments when I would just have to stop to appreciate how brilliant what was just read was." The downside: it's 1,200 pages. Martin has since moved on to Caro's five-volume LBJ biography — "equally brilliant."</p>
+
+  <h3>🎲 Board Game Recommendation</h3>
+  <p><strong>Concordia</strong> — "Fairly abstract in its nature, but it's easy to get into and it's got quite a good bit of decision-making in the process." Martin chose it as accessible for newcomers while still having depth.</p>
+</div>
+
+<!-- Takeaways -->
+<div class="card" id="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol class="takeaways">
+    <li><strong>Determinism → Non-determinism is THE paradigm shift.</strong> The biggest change isn't the abstraction level increase — it's that our tools are now fundamentally non-deterministic. We need to think in tolerances, like structural engineers.</li>
+    <li><strong>Two proven LLM use cases right now:</strong> (1) Prototyping &amp; throwaway explorations, and (2) understanding legacy systems. Thoughtworks put legacy code understanding in their Adopt ring.</li>
+    <li><strong>Vibe coding kills the learning loop.</strong> When you don't look at the output, you stop learning. And when you stop learning, you can only "nuke it from orbit and start again."</li>
+    <li><strong>Treat LLM output as "a PR from a dodgy collaborator"</strong> — very productive in lines-of-code terms, but you can't trust a thing they're doing. Always review, always verify.</li>
+    <li><strong>Refactoring becomes MORE important with AI-generated code.</strong> AI produces lots of questionable-quality code that works. Refactoring — small, composable, behavior-preserving steps — is how you improve it.</li>
+    <li><strong>Combining LLMs with deterministic tools is the sweet spot.</strong> Use LLMs to describe intent (e.g., SQL generation), then drive reliable deterministic tools. The 10% LLM + 90% deterministic tool pattern works.</li>
+    <li><strong>Build domain-specific languages to communicate with LLMs more precisely.</strong> Like chess notation outperforming plain English, rigorous vocabulary gets better results than vague prompts.</li>
+    <li><strong>Agile principles still apply: improve frequency, not slice size.</strong> AI enables faster cycles, not bigger ones. "I'd rather get smaller, more frequent slices than more stuff in each slice."</li>
+    <li><strong>Enterprise ≠ monolithic.</strong> "The variation within an enterprise is bigger than the variation between enterprises." Small pockets can be adventurous while the organization is conservative.</li>
+    <li><strong>Testing is critical but LLMs struggle with it.</strong> They lie about running tests, put wrong dates in, and produce unreliable test code. "Don't trust, but do verify."</li>
+    <li><strong>Find good mentors — still the best career advice.</strong> "A good experienced mentor is worth their weight in gold." Jim Odell shaped Martin's career; Kent Beck continues to be a source of ideas decades later.</li>
+    <li><strong>Core engineering skills unchanged by AI.</strong> Communication, collaboration, understanding what to write — these remain the outstanding qualities of great developers. The expert generalist is becoming more important.</li>
+  </ol>
+</div>
+
+<!-- Resources -->
+<div class="card" id="resources">
+  <h2>📚 Resources &amp; Links</h2>
+  <ul class="resource-list">
+    <li>
+      <a href="https://martinfowler.com" target="_blank">Martin Fowler's Website</a>
+      <div class="url">martinfowler.com — Articles by Martin and colleagues including Birgitta Böckeler and Unmesh Joshi</div>
+    </li>
+    <li>
+      <a href="https://www.thoughtworks.com/radar" target="_blank">Thoughtworks Technology Radar</a>
+      <div class="url">thoughtworks.com/radar — Published every 6 months, bottom-up technology assessment</div>
+    </li>
+    <li>
+      <a href="https://newsletter.pragmaticengineer.com/p/vibe-coding-as-a-software-engineer" target="_blank">Vibe Coding as a Software Engineer</a>
+      <div class="url">newsletter.pragmaticengineer.com — Deep dive on vibe coding practices</div>
+    </li>
+    <li>
+      <a href="https://newsletter.pragmaticengineer.com/p/the-ai-engineering-stack" target="_blank">The AI Engineering Stack</a>
+      <div class="url">newsletter.pragmaticengineer.com — Overview of the AI engineering technology stack</div>
+    </li>
+    <li>
+      <a href="https://newsletter.pragmaticengineer.com/p/ai-engineering-in-the-real-world" target="_blank">AI Engineering in the Real World</a>
+      <div class="url">newsletter.pragmaticengineer.com — Practical AI engineering case studies</div>
+    </li>
+    <li>
+      <a href="https://newsletter.pragmaticengineer.com/p/what-changed-in-50-years-of-computing" target="_blank">What Changed in 50 Years of Computing</a>
+      <div class="url">newsletter.pragmaticengineer.com — Historical perspective on computing evolution</div>
+    </li>
+  </ul>
+
+  <h3 style="margin-top:1.5rem;">People Mentioned</h3>
+  <ul style="margin-left:1.5rem; color: var(--text-muted); font-size:.95rem;">
+    <li><strong>Kent Beck</strong> — XP creator, Martin's long-time collaborator and mentor figure</li>
+    <li><strong>Birgitta Böckeler</strong> — Thoughtworks, AI &amp; development practices</li>
+    <li><strong>Simon Willison</strong> — Developer, emphasis on testing with LLMs</li>
+    <li><strong>Unmesh Joshi</strong> — Thoughtworks, DSLs for LLM communication, distributed systems patterns</li>
+    <li><strong>Adam Tornhill</strong> — Combining LLMs with deterministic refactoring tools</li>
+    <li><strong>Jim Odell</strong> — Martin's first and most influential mentor</li>
+    <li><strong>Rebecca Parsons</strong> — Former Thoughtworks CTO, created Technology Advisory Board</li>
+    <li><strong>James Lewis</strong> — Thoughtworks, co-authored microservices article with Martin</li>
+    <li><strong>Grady Booch</strong> — Theory on why architecture patterns went out of style</li>
+    <li><strong>Jimmy Nilsson</strong> — Swedish author whose tentative style exemplifies trustworthy writing</li>
+    <li><strong>Ralph Johnson</strong> — U of Illinois, crew built first refactoring browser in Smalltalk</li>
+    <li><strong>Bob Martin</strong> — Pushed for writing the Agile Manifesto</li>
+    <li><strong>Alistair Cockburn</strong> — "Your brilliant idea will either be ignored or misinterpreted"</li>
+    <li><strong>Boris Cherny</strong> — Anthropic/Claude Code team, 20 prototypes in 2 days</li>
+  </ul>
+
+  <h3 style="margin-top:1.5rem;">Books Mentioned</h3>
+  <ul style="margin-left:1.5rem; color: var(--text-muted); font-size:.95rem;">
+    <li><em>Refactoring</em> (1st ed. 1999, 2nd ed. 2018) — Martin Fowler</li>
+    <li><em>Patterns of Enterprise Application Architecture</em> (2002) — Martin Fowler</li>
+    <li><em>Thinking, Fast and Slow</em> — Daniel Kahneman</li>
+    <li><em>The Power Broker</em> — Robert Caro (about Robert Moses)</li>
+    <li><em>Patterns of Distributed Systems</em> — Unmesh Joshi</li>
+    <li>XP "white book" — Kent Beck</li>
+    <li>Gang of Four (Design Patterns) — Gamma, Helm, Johnson, Vlissides</li>
+  </ul>
+</div>
+
+<!-- Timestamps -->
+<div class="card" id="timestamps">
+  <h2>⏱️ Full Timestamp Index</h2>
+  <div class="ts-grid">
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=110s" target="_blank"><span class="ts">1:50</span></a>
+    <span>Martin's Origin Story — Electronics, math, UK Atomic Energy, Fortran 4</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=210s" target="_blank"><span class="ts">3:30</span></a>
+    <span>Coopers &amp; Lybrand ("Cheetum and Lightum") — Unix, OOP discovery</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=360s" target="_blank"><span class="ts">6:00</span></a>
+    <span>Meeting Jim Odell — the mentor who shaped Martin's career</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=420s" target="_blank"><span class="ts">7:00</span></a>
+    <span>Going independent — "Independence life for me, I'm never going to work for a company again"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=468s" target="_blank"><span class="ts">7:48</span></a>
+    <span>Joining Thoughtworks — "for a couple years" (25 years ago)</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=556s" target="_blank"><span class="ts">9:16</span></a>
+    <span>Chief Scientist title — "chief of nobody, don't do any science"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=607s" target="_blank"><span class="ts">10:07</span></a>
+    <span>Technology Radar — origin, Rebecca Parsons, Daryl Smith's radar metaphor</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=780s" target="_blank"><span class="ts">13:00</span></a>
+    <span>Bottom-up blip process, Doppler group, radar meetings</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1005s" target="_blank"><span class="ts">16:45</span></a>
+    <span>AI as biggest change — comparable to assembly → high-level languages</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1160s" target="_blank"><span class="ts">19:20</span></a>
+    <span>Determinism → non-determinism as the key shift</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1325s" target="_blank"><span class="ts">22:05</span></a>
+    <span>Building abstractions — old Lisp adage, domain-driven design</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1430s" target="_blank"><span class="ts">23:50</span></a>
+    <span>Chess notation analogy — rigorous language for LLMs</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1508s" target="_blank"><span class="ts">25:08</span></a>
+    <span>Two clear LLM success areas — prototyping + legacy code understanding</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1800s" target="_blank"><span class="ts">30:00</span></a>
+    <span>"PR from a dodgy collaborator" — how to treat LLM output</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=1980s" target="_blank"><span class="ts">33:00</span></a>
+    <span>Teams and AI — "We still need a team of 10 to build what 100 needed"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2018s" target="_blank"><span class="ts">33:38</span></a>
+    <span>Vibe coding defined — "You don't look at the output code at all"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2100s" target="_blank"><span class="ts">35:00</span></a>
+    <span>SVG anecdote — "gobsmackingly weird" LLM-generated code</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2165s" target="_blank"><span class="ts">36:05</span></a>
+    <span>The learning loop problem — "you cannot shortcut that process"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2362s" target="_blank"><span class="ts">39:22</span></a>
+    <span>StackOverflow comparison — "similar but on steroids"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2605s" target="_blank"><span class="ts">43:25</span></a>
+    <span>Testing with LLMs — Simon Willison, "they lie to you all the time"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2660s" target="_blank"><span class="ts">44:20</span></a>
+    <span>"If they were truly a junior developer, I'd be having words with HR"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2698s" target="_blank"><span class="ts">44:58</span></a>
+    <span>The date anecdote — LLM gaslighting on today's date</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=2740s" target="_blank"><span class="ts">45:40</span></a>
+    <span>"Don't trust, but do verify"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3045s" target="_blank"><span class="ts">50:45</span></a>
+    <span>Enterprise software — devs as 10-20% of staff, regulation, legacy</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3150s" target="_blank"><span class="ts">52:30</span></a>
+    <span>Federal Reserve — "not allowed to touch LLMs"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3370s" target="_blank"><span class="ts">56:10</span></a>
+    <span>"Variation within an enterprise is bigger than variation between enterprises"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3398s" target="_blank"><span class="ts">56:38</span></a>
+    <span>Why Martin wrote Refactoring — seeing Kent Beck at Chrysler C3</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3500s" target="_blank"><span class="ts">58:20</span></a>
+    <span>Tiny composable steps — "each step is so small it's not worth doing"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3570s" target="_blank"><span class="ts">59:30</span></a>
+    <span>Refactoring lineage — Ralph Johnson, JetBrains, IntelliJ, ReSharper</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3735s" target="_blank"><span class="ts">1:02:15</span></a>
+    <span>Refactoring in the AI era — more important than ever</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3810s" target="_blank"><span class="ts">1:03:30</span></a>
+    <span>"The disciplined approach is actually faster"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=3970s" target="_blank"><span class="ts">1:06:10</span></a>
+    <span>LLMs + deterministic tools — 10% LLM, 90% tool</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4056s" target="_blank"><span class="ts">1:07:36</span></a>
+    <span>Patterns of Enterprise Architecture — patterns as vocabulary</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4200s" target="_blank"><span class="ts">1:10:00</span></a>
+    <span>Why patterns went out of style — Grady Booch's cloud theory</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4560s" target="_blank"><span class="ts">1:16:00</span></a>
+    <span>American Express — 3 years just for planning</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4620s" target="_blank"><span class="ts">1:17:00</span></a>
+    <span>Bank modernization — "3 years just to understand the problem"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4706s" target="_blank"><span class="ts">1:18:26</span></a>
+    <span>Agile Manifesto origin — XP gathering in Oregon, then Utah</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4860s" target="_blank"><span class="ts">1:21:00</span></a>
+    <span>Bob Martin pushed for manifesto — Martin thought "nobody will take notice"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=4950s" target="_blank"><span class="ts">1:22:30</span></a>
+    <span>Alistair Cockburn quote — "ignored or misinterpreted"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5080s" target="_blank"><span class="ts">1:24:40</span></a>
+    <span>Agile + AI — improve frequency, not slice size</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5200s" target="_blank"><span class="ts">1:26:40</span></a>
+    <span>Boris Cherny's 20 prototypes in 2 days</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5315s" target="_blank"><span class="ts">1:28:35</span></a>
+    <span>How Martin learns — editing articles, trusted sources</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5460s" target="_blank"><span class="ts">1:31:00</span></a>
+    <span>Identifying good sources — lack of certainty, nuance, trade-offs</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5698s" target="_blank"><span class="ts">1:34:58</span></a>
+    <span>Junior engineer advice — "find good senior mentors"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5810s" target="_blank"><span class="ts">1:36:50</span></a>
+    <span>"What is leading you to say that?" — probing technique</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=5864s" target="_blank"><span class="ts">1:37:44</span></a>
+    <span>Tech industry state — end of zero interest rates, AI bubble</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=6040s" target="_blank"><span class="ts">1:40:40</span></a>
+    <span>"I don't think AI will wipe out software development"</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=6100s" target="_blank"><span class="ts">1:41:40</span></a>
+    <span>Expert generalist — communication, collaboration as core skills</span>
+
+    <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U&t=6160s" target="_blank"><span class="ts">1:42:40</span></a>
+    <span>Rapid fire — Ruby, Smalltalk, Thinking Fast and Slow, The Power Broker, Concordia</span>
+  </div>
+</div>
+
+</main>
+</div>
+
+<footer style="text-align:center; padding:2rem; color:var(--text-muted); font-size:.85rem; border-top:1px solid var(--card-border);">
+  Deep dive generated from <a href="https://www.youtube.com/watch?v=CQmI4XKTa0U" target="_blank">The Pragmatic Engineer Podcast</a> — Martin Fowler &amp; Gergely Orosz, Nov 2025
+</footer>
+
+</body>
+</html>
