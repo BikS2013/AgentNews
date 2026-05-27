@@ -84,6 +84,7 @@ Options:
                               tools               — tools / utilities
                                                     (EXPERIMENTAL-only category;
                                                     rejected by publish-article).
+                              article             — curated articles / interviews.
   --help                    Show this help and exit 0.
 
 Required environment variables (no defaults — missing = fatal):
