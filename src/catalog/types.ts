@@ -66,6 +66,7 @@ export const EXPERIMENTAL_CATALOG_CATEGORIES: readonly ExperimentalCatalogCatego
   'deep-dive',
   'ai-news',
   'tools',
+  'article',
 ];
 
 export interface CatalogFile {
