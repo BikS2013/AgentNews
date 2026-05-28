@@ -209,7 +209,18 @@
       "thumbnailSource": "html",
       "sha256": "b250f6a5cfae23a8871ee1fcc8f0c0a3eaac1fd0cff794b1b7e321fd246ba1de",
       "category": "deep-dive"
+    },
+    {
+      "slug": "finally-a-good-benchmark-deepswe",
+      "title": "Finally a Good Benchmark — DeepSWE",
+      "publishedAt": "2026-05-27T12:00:00.000Z",
+      "sourcePath": "/tmp/deepswe-benchmark-berman.html",
+      "articlePath": "experimental/finally-a-good-benchmark-deepswe.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/6LwQ8RbU9as/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "08b5ad415421d3c38d79e47307f8b04c5a60834ca05dbe49e01e212fe9aa6974",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-28T03:27:20.381Z"
+  "updatedAt": "2026-05-28T03:49:47.252Z"
 }
