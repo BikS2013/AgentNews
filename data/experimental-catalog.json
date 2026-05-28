@@ -198,7 +198,18 @@
       "thumbnailSource": "html",
       "sha256": "ccc6ea8d6a6fa76d07936d51a1271d9ab298199de67b75d55f7d77b330e318fe",
       "category": "article"
+    },
+    {
+      "slug": "harness-engineering-what-separates-top-agentic-engineers-right-now",
+      "title": "Harness Engineering: What Separates Top Agentic Engineers Right Now",
+      "publishedAt": "2026-05-27T12:00:00.000Z",
+      "sourcePath": "/tmp/harness-engineering-cole-medin.html",
+      "articlePath": "experimental/harness-engineering-what-separates-top-agentic-engineers-right-now.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/ulNsa0sD8N0/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "c38c5da15986323409fd4d8561a01b563dfd9f747785411d30fd8b3ffc374ee2",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-27T05:52:56.974Z"
+  "updatedAt": "2026-05-28T03:14:37.845Z"
 }
