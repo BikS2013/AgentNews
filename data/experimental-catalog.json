@@ -264,7 +264,18 @@
       "thumbnailSource": "html",
       "sha256": "c4c64c8fa17499630bad88b7a9157003d1049d396ab7ae0076c9ef88cf1c2e71",
       "category": "deep-dive"
+    },
+    {
+      "slug": "nvidia-s-new-voice-ai-is-absolutely-wild-personaplex",
+      "title": "NVIDIA's New Voice AI Is Absolutely WILD — PersonaPlex",
+      "publishedAt": "2026-01-25T12:00:00.000Z",
+      "sourcePath": "/tmp/nvidia-personaplex-voice-ai.html",
+      "articlePath": "experimental/nvidia-s-new-voice-ai-is-absolutely-wild-personaplex.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/n_m0fqp8xwQ/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "e1fb345185b9ce4f2d8d6da174de909c9bea708c239d6764fb17ec1b3e51bb7d",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-29T18:37:23.659Z"
+  "updatedAt": "2026-05-29T18:53:33.571Z"
 }
