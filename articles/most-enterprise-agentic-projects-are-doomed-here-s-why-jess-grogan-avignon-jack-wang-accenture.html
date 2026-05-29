@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Most Enterprise Agentic Projects Are Doomed, Here's Why — Jess Grogan-Avignon &amp; Jack Wang, Accenture</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 { font-size: 1.8rem; color: var(--text-bright); margin-bottom: 0.5rem; }
+.hero .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; }
+.thumb-link {
+  display: inline-block; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: transform 0.2s;
+  max-width: 560px; width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 20px; padding: 0.3rem 0.9rem; font-size: 0.82rem; color: var(--text-muted);
+}
+
+.container { display: flex; max-width: 1200px; margin: 0 auto; gap: 2rem; padding: 2rem 1rem; }
+
+.toc {
+  position: sticky; top: 1rem; width: 260px; min-width: 220px;
+  max-height: calc(100vh - 2rem); overflow-y: auto;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 1.2rem; font-size: 0.85rem; flex-shrink: 0;
+}
+.toc h3 { color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.8rem; }
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a { color: var(--text-muted); display: block; padding: 4px 0; transition: color 0.2s; }
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before { content: counter(toc) ". "; color: var(--accent); font-weight: 600; }
+.toc li.no-counter a::before { content: ""; }
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 1.8rem; margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright); font-size: 1.3rem; margin-bottom: 1rem;
+  padding-bottom: 0.6rem; border-bottom: 2px solid var(--accent-dim);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent); color: #fff; width: 28px; height: 28px;
+  border-radius: 50%; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 0.85rem; flex-shrink: 0;
+}
+.card h3 { color: var(--purple); font-size: 1rem; margin: 1rem 0 0.5rem; }
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block; background: var(--accent-dim); color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.78rem;
+  padding: 2px 10px; border-radius: 999px; margin: 2px 4px 2px 0;
+  white-space: nowrap; transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim); border-radius: 10px;
+  padding: 1.2rem 1.5rem; margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08); border-left: 3px solid var(--accent);
+  padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
+  font-size: 0.9rem; color: var(--text);
+}
+
+.stat-box {
+  background: rgba(59,130,246,0.06); border: 1px solid var(--accent-dim);
+  border-radius: 10px; padding: 1rem 1.4rem; margin: 12px 0;
+  display: flex; align-items: center; gap: 1rem;
+}
+.stat-box .stat-num {
+  font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1;
+  flex-shrink: 0;
+}
+.stat-box .stat-label { font-size: 0.9rem; color: var(--text-muted); }
+
+.ts-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 0.6rem;
+}
+.ts-row {
+  display: flex; align-items: center; gap: 0.7rem; padding: 6px 10px;
+  border-radius: 8px; background: rgba(26,29,39,0.6); transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+footer {
+  text-align: center; color: #444; font-size: 12px;
+  margin-top: 40px; padding: 20px 1rem; border-top: 1px solid #1e2028;
+}
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+  .ts-grid { grid-template-columns: 1fr; }
+  .stat-box { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/AGkzpxMdPn8/maxresdefault.jpg" alt="Most Enterprise Agentic Projects Are Doomed" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>Most Enterprise Agentic Projects Are Doomed, Here's Why</h1>
+  <div class="meta">Jess Grogan-Avignon &amp; Jack Wang (Accenture) · ~20 min · AI Engineer Conference · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=AGkzpxMdPn8" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/AGkzpxMdPn8/maxresdefault.jpg"
+         alt="Video thumbnail — Most Enterprise Agentic Projects Are Doomed">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~20 min</span>
+    <span class="meta-pill">🎤 Jess Grogan-Avignon &amp; Jack Wang</span>
+    <span class="meta-pill">🏢 Accenture</span>
+    <span class="meta-pill">🏷 Enterprise AI · Agentic Delivery · Trust · Governance · AI Strategy</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">The Enterprise Reality</a></li>
+      <li><a href="#s2">Tension 1 — Speed</a></li>
+      <li><a href="#s3">Tension 2 — Value</a></li>
+      <li><a href="#s4">Tension 3 — Delivery</a></li>
+      <li><a href="#s5">Tension 4 — Trust</a></li>
+      <li><a href="#s6">Tension 5 — Moat</a></li>
+      <li><a href="#s7">The Prescription</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">🔗 Resources &amp; Links</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>Jess Grogan-Avignon and Jack Wang from Accenture deliver a brutally honest talk at the AI Engineer Conference about <strong>why most enterprise agentic projects fail before they even start</strong> — and it has nothing to do with the technology. They built an agentic application in 2 weeks; getting it to production took another 12 months. The bottleneck wasn't code quality — it was the enterprise itself: infrastructure teams, security reviews, AI gateway teams, data governance, and application teams all needing to align through human-speed processes. They present <strong>five enterprise tensions</strong> — Speed, Value, Delivery, Trust, and Moat — that predict the success or failure of any enterprise AI project, and offer concrete prescriptions for each.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> The Enterprise Reality</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=15s" target="_blank">▶ 0:15</a>
+      </p>
+      <p>Jess opens by painting the picture of their world: <strong>enormous enterprises</strong> — telecoms, utilities serving entire nations, government, healthcare, consumer products. At this scale, actions have consequences: a bad deployment can take down critical national infrastructure.</p>
+      <p>Over decades, these organizations built structures to manage that risk: <strong>control, process, repeatability, governance — layers and layers of it</strong>. And it worked. These companies saw massive success and growth. But always at <strong>human pace</strong>.</p>
+
+      <div class="stat-box">
+        <span class="stat-num">12%</span>
+        <span class="stat-label">of companies reach "AI Achiever" status according to Accenture research — the rest are stuck piloting, spending millions with little return</span>
+      </div>
+
+      <p>The tragedy isn't just wasted spend — it's <strong>falling behind in a world accelerating beyond what they can compute</strong>. Startups like Octopus, Klarna, and Shein look at enterprise timelines (6 months for a decision that takes an afternoon) and think it's insane — then go and redefine the games themselves.</p>
+
+      <div class="highlight-box">💡 "Others studied the games, crafted the playbooks, and then ran the workshop. But they went home. We stayed. We shipped through the reality. And that is our mode."</div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Tension 1 — Speed: Human OS vs Machine Speed</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=193s" target="_blank">▶ 3:13</a>
+      </p>
+      <p>Jack takes over with a stark observation: 18 months ago, you still needed to explain to executives why AI mattered. <strong>That battle is over.</strong> CEOs are now terrified of being left behind. But enterprise speed hasn't shifted — and it's not because AI can't write good code or engineers can't solve the context problem.</p>
+      <p>The bottleneck is <strong>the enterprise scaffolding itself — a human operating system designed for humans running at human speed</strong>. Data access, security reviews, deployment processes — most enterprises never needed to invest in engineering automation like a tech company would.</p>
+
+      <h3>The 2 weeks → 12 months story</h3>
+      <p>Jack shares their concrete experience: they built an agentic solution for a large corporation and integrated their centralized AI gateway. Every configuration change required manual review before tests could run. <strong>The application took 2 weeks to build. It took 12 months to get to production</strong> because the infrastructure team, security team, AI gateway team, data governance team, and application team all needed to align.</p>
+      <p>His analogy: imagine if Google Search required three teams to review results, a legal sign-off, and then a 2-week change freeze because it's quarter-end. <strong>That is how AI in enterprise delivery works today.</strong></p>
+
+      <h3>The code explosion</h3>
+      <p>Making it worse: AI coding agents are turning everyone into a builder — PMs, designers, domain experts. The supply of deployable code is exploding:</p>
+
+      <div class="stat-box">
+        <span class="stat-num">275M</span>
+        <span class="stat-label">commits per week on GitHub in 2026 so far — on track for 14 billion by year end (up from 1 billion total in 2025)</span>
+      </div>
+
+      <p>But approval infrastructure and deployment infrastructure haven't changed because they were designed for human speed. <strong>The real tech debt isn't legacy code — it's years of underinvestment in engineering automation (CI/CD)</strong> that allows companies to move faster while maintaining control.</p>
+
+      <h3>The pathway</h3>
+      <p>Every human process needs to become <strong>adaptable, executable code</strong> — not another meeting, not a sign-off chain. Code. AI can help build this faster and cheaper, but it requires a fundamental mindset shift.</p>
+
+      <div class="highlight-box">💡 "Make the governance speed your CTO's top engineering problem. The ultimate technical debt you want to rectify."</div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Tension 2 — Value: Your CFO Needs to Think Like a VC</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=414s" target="_blank">▶ 6:54</a>
+      </p>
+      <p>Jess addresses the universal enterprise ritual: <strong>the business case to unlock internal funding</strong>. Business cases aren't wrong — they raise the right questions, create oversight, ensure someone has thought about ROI. But they assume three things are knowable up front:</p>
+      <ol>
+        <li>The scope and solution</li>
+        <li>The expected value</li>
+        <li>The cost and time to deliver</li>
+      </ol>
+      <p>With AI, <strong>this is often backwards</strong> — you learn the solution and the business case by doing the work. And when execution cost for prototyping drops to near zero, it's no longer just about efficiency — it unlocks <strong>entirely new categories of things that weren't previously possible</strong>.</p>
+
+      <h3>Evidence from AI Achievers</h3>
+      <div class="stat-box">
+        <span class="stat-num">50%</span>
+        <span class="stat-label">higher revenue growth for "AI Achievers" vs peers — not from cost cutting, but from doing entirely new things</span>
+      </div>
+      <p>Real-world examples of emergent AI success:</p>
+      <ul>
+        <li><strong>Cursor's user base</strong> of live coders didn't exist when they started building the product</li>
+        <li><strong>Claude Code</strong> wasn't planned out on a product roadmap months in advance</li>
+        <li><strong>Walmart</strong> built a social media trend scanner + generative designer to compete with Shein and Temu</li>
+        <li><strong>JP Morgan</strong> started building an internal productivity tool that they productized into an entirely new revenue stream</li>
+      </ul>
+
+      <h3>The VC mindset</h3>
+      <p>Enterprise finance is wired for certainty — projects start life justifying committed benefits and predictable cost phasing. That framing kills projects before they begin because it asks <em>"can we justify this specific thing?"</em> instead of <em>"what now becomes possible?"</em></p>
+      <p><strong>The right question: what is the cost of NOT doing this?</strong></p>
+      <p>A VC doesn't bet on one project and demand 3-year guaranteed payback. They back a <strong>portfolio</strong>, knowing most bets won't pay off, but looking for the ones that compound. Enterprise AI investment should work the same way.</p>
+
+      <div class="highlight-box">💡 "If your finance function cannot think like a VC, that is where your transformation should start — because everything else is downstream."</div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Tension 3 — Delivery: Hypothesis-Driven, Not Milestone Programs</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=633s" target="_blank">▶ 10:33</a>
+      </p>
+      <p>Jack addresses data scientists and ML engineers directly: <strong>"You've been doing something different from everyone else — hypothesize and experiment, statistical confidence."</strong> He argues most enterprises treated them like "the modern IT crowd" — brilliant, quietly right, and kindly ignored, kept in the basement while the upstairs did the "real work" through Jira boards at PI planning.</p>
+      <p>But agentic delivery is <strong>their world</strong>, not traditional software delivery's world:</p>
+      <ul>
+        <li><strong>Models are non-deterministic</strong> — you can't scope it like a feature build</li>
+        <li><strong>Agent behavior is emergent</strong> — you can't milestone it like a fixed program</li>
+        <li>Yet that's exactly what entire enterprises are trying to do</li>
+      </ul>
+
+      <h3>Where the energy goes</h3>
+      <p>Jack observes that in the delivery trenches, enormous effort goes <strong>not to building things</strong>, but to bridging the gap between how agentic systems actually work and what stakeholders expect:</p>
+      <ul>
+        <li>Never-ending "utopian design up front"</li>
+        <li>Constant conversations about guaranteed performance</li>
+        <li>Endless status updates for decisions that never get made</li>
+      </ul>
+
+      <h3>The pathway</h3>
+      <p><strong>The organization needs to learn the data scientist's language</strong> — it's the only language that matters for agentic delivery:</p>
+      <ul>
+        <li>Reshape programs around one goal: <strong>building statistical confidence</strong></li>
+        <li>Small loops: build → evaluate → iterate → fast evidence</li>
+        <li>Hire people comfortable with ambiguity who can <strong>articulate what they've learned, not just what they've delivered</strong></li>
+        <li>Translate statistical numbers into stakeholder confidence</li>
+      </ul>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Tension 4 — Trust: The Progressive Autonomy Ladder</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=793s" target="_blank">▶ 13:13</a>
+      </p>
+      <p>Jess addresses the trust gap. No one cross-checks their Google results anymore. Most engineers in the room don't review every single code output from AI tools. <strong>AI trust is on the same trajectory — but it's not there yet for enterprises</strong>, and it's the AI engineer's job to bridge that gap.</p>
+      <p>The key insight: <strong>the completion of individual features is not the most valuable thing you ship. The trust in the outputs you build over time is.</strong> Trust means content accuracy, responsible use, privacy — everything that collectively allows end users to trust an AI system.</p>
+
+      <h3>The trust account metaphor</h3>
+      <p>Every agentic delivery is either a <strong>deposit or a withdrawal</strong> into a trust account with stakeholders, leadership, and end customers. What survives over time isn't a specific feature — it's the trust you've built as things evolve.</p>
+
+      <h3>The exposure ladder — progressive autonomy</h3>
+      <p>Many companies still treat agents like traditional automation: build, deploy, run. But agents aren't just turned on — their behavior is emergent and can't be fully tested up front. The solution is <strong>progressive autonomy</strong>:</p>
+      <ol>
+        <li><strong>Shadow mode</strong> — agent runs alongside human processes but can't affect outcomes. Compare human decisions to agent recommendations. Use the delta as a signal to iterate</li>
+        <li><strong>Advisory mode</strong> — agent runs live but only recommends. Humans approve or reject. The accept/reject signal feeds back into improvement</li>
+        <li><strong>Controlled autonomy</strong> — agent can trigger actions in narrow, low-risk scenarios with clear limits and kill switches</li>
+        <li><strong>Wider autonomy</strong> — gradually extend scope based on achieving confidence targets in specific behaviors</li>
+      </ol>
+      <p>The critical principle: <strong>each step is gated by evidence in outcomes</strong> — not by completion of activities in a project plan, not by pass/fail testing. It's entirely about confidence and trust in outcomes.</p>
+
+      <div class="highlight-box">💡 "Engineer for trust, not just for completion."</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Tension 5 — Moat: Transactional Memory vs Living Memory</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=1009s" target="_blank">▶ 16:49</a>
+      </p>
+      <p>Jack poses the existential question: in a recursive world where <strong>AI codes AI, anything you ship can be cloned the minute it goes viral</strong>. So what is unique only to you?</p>
+
+      <h3>Transactional memory (the floor)</h3>
+      <p>Your existing enterprise knowledge — CRM, ERP, SOPs — got you to the table. But every competitor has their own version. <strong>It's a floor, not a fortress.</strong></p>
+
+      <h3>Living memory (the moat)</h3>
+      <p>The real moat is what happens <strong>when your customer touches your product</strong>: edge cases, corrections, emotional intent, actual behavior at your specific scale in your specific context. <strong>Those signals belong to you.</strong></p>
+      <p>The day you ship is not the finish line — it's when the race begins. How quickly you can compound and iterate, how fast you can turn a signal into value. It's a race against yourself to engineer your own competitive edge recursively and constantly.</p>
+
+      <h3>The engineering principle</h3>
+      <p>Every feature you ship should either:</p>
+      <ol>
+        <li><strong>Generate a feedback signal</strong>, or</li>
+        <li><strong>Deliver on what a signal has already taught you</strong></li>
+      </ol>
+      <p>If it does neither, you're building something anyone can copy.</p>
+
+      <div class="highlight-box">💡 "Feedback is not the option. Feedback is the only moat."</div>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> The Prescription — How to Apply This</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=1102s" target="_blank">▶ 18:22</a>
+      </p>
+      <p>Jess and Jack close with four concrete prescriptions:</p>
+      <ol>
+        <li><strong>Start now. Deliver differently.</strong> Measure in terms of confidence, shape projects around hypotheses (not requirements or features), run delivery in small loops of experimentation, iteration, and evaluation</li>
+        <li><strong>Make finance a transformation partner, not a gatekeeper.</strong> Create a portfolio of AI bets across the organization rather than justifying each project in isolation. See value beyond the certainty of cost-out</li>
+        <li><strong>Make governance speed your CTO's top engineering problem.</strong> This is the ultimate technical debt to rectify</li>
+        <li><strong>For CEOs: your moat is not what you hold from yesterday.</strong> It's what you are learning and compounding every day. The winners won't be the earliest adopters — they'll be the ones that learn to learn</li>
+      </ol>
+
+      <div class="highlight-box">💡 "Bet like a VC, upgrade for machine speed, and engineer for trust with a feedback loop from day one."</div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>2 weeks to build, 12 months to deploy</strong> — the enterprise scaffolding (governance, security reviews, team alignment) is the bottleneck, not the technology</li>
+          <li><strong>Only 12% of companies reach "AI Achiever" status</strong> — the rest are stuck piloting, spending millions with minimal return</li>
+          <li><strong>275M commits/week on GitHub in 2026</strong> — approval infrastructure designed for human speed can't handle this throughput. Every human process needs to become executable code</li>
+          <li><strong>Your CFO should think like a VC</strong> — back a portfolio of AI bets, not individual projects with guaranteed ROI. The value is beyond certainty, in power-law compounding</li>
+          <li><strong>You learn the business case by doing the work</strong> — with near-zero prototyping costs, the right question is "what becomes possible?" not "can we justify this?"</li>
+          <li><strong>Hypothesis-driven delivery replaces milestone programs</strong> — agentic systems are non-deterministic and emergent. Scope them like experiments, not feature builds</li>
+          <li><strong>Progressive autonomy builds trust at speed</strong> — shadow mode → advisory mode → controlled autonomy → wider autonomy, each step gated by outcome evidence</li>
+          <li><strong>Trust is the product, not features</strong> — every delivery is a deposit or withdrawal from a trust account with stakeholders and customers</li>
+          <li><strong>Your data is a floor, not a fortress</strong> — CRM/ERP/SOPs are transactional memory that every competitor has. Your real moat is living memory: customer signals, edge cases, behavioral data at your specific scale</li>
+          <li><strong>Feedback is the only moat</strong> — every feature should either generate a signal or deliver on what a signal taught you. If it does neither, anyone can clone it</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Resources & Links -->
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://www.linkedin.com/in/jessicaannbiggs" target="_blank">Jess Grogan-Avignon on LinkedIn</a></li>
+        <li><a href="https://www.linkedin.com/in/jackxwang" target="_blank">Jack Wang on LinkedIn</a></li>
+      </ul>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=15s" target="_blank">▶ 0:15</a>
+          <span class="label">Introduction — the enterprise world</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=73s" target="_blank">▶ 1:13</a>
+          <span class="label">Human pace vs machine speed</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=156s" target="_blank">▶ 2:36</a>
+          <span class="label">Five enterprise tensions — preview</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=193s" target="_blank">▶ 3:13</a>
+          <span class="label">Tension 1 — Speed: the enterprise scaffolding problem</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=283s" target="_blank">▶ 4:43</a>
+          <span class="label">2 weeks to build, 12 months to production</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=347s" target="_blank">▶ 5:47</a>
+          <span class="label">275M commits/week — code explosion</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=414s" target="_blank">▶ 6:54</a>
+          <span class="label">Tension 2 — Value: business cases are backwards</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=551s" target="_blank">▶ 9:11</a>
+          <span class="label">CFO needs to think like a VC</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=633s" target="_blank">▶ 10:33</a>
+          <span class="label">Tension 3 — Delivery: hypothesis-driven loops</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=793s" target="_blank">▶ 13:13</a>
+          <span class="label">Tension 4 — Trust: progressive autonomy ladder</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=926s" target="_blank">▶ 15:26</a>
+          <span class="label">Shadow → advisory → controlled → wider autonomy</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=1009s" target="_blank">▶ 16:49</a>
+          <span class="label">Tension 5 — Moat: living memory vs transactional memory</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=1102s" target="_blank">▶ 18:22</a>
+          <span class="label">The prescription — four concrete steps</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=AGkzpxMdPn8&t=1216s" target="_blank">▶ 20:16</a>
+          <span class="label">Closing</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video AGkzpxMdPn8 · Jess Grogan-Avignon &amp; Jack Wang (Accenture) · AI Engineer Conference</footer>
+
+</body>
+</html>
