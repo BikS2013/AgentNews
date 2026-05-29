@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>State of the Art Meeting Transcription with Overlapping Speakers and Speaker-Identification</title>
+<style>
+:root{--bg:#0f1117;--card-bg:#1a1d27;--card-border:#2a2d3a;--accent:#3b82f6;--accent-dim:#1e3a5f;--text:#e2e8f0;--text-muted:#94a3b8;--text-bright:#f8fafc;--green:#22c55e;--purple:#a78bfa;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;padding:0;}
+a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#1a1d27 50%,#0f1117 100%);border-bottom:1px solid var(--card-border);padding:2rem 1rem;text-align:center;}
+.hero h1{font-size:1.8rem;color:var(--text-bright);margin-bottom:.5rem;}
+.hero .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:1.2rem;}
+.thumb-link{display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .2s;max-width:560px;width:100%;}
+.thumb-link:hover{transform:scale(1.02);}.thumb-link img{width:100%;display:block;}
+.meta-pills{margin-top:1.2rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+.meta-pill{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:.3rem .9rem;font-size:.82rem;color:var(--text-muted);}
+.container{display:flex;max-width:1200px;margin:0 auto;gap:2rem;padding:2rem 1rem;}
+.toc{position:sticky;top:1rem;width:260px;min-width:220px;max-height:calc(100vh - 2rem);overflow-y:auto;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.2rem;font-size:.85rem;flex-shrink:0;}
+.toc h3{color:var(--accent);font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.8rem;}
+.toc ol{list-style:none;counter-reset:toc;}.toc li{counter-increment:toc;margin-bottom:.5rem;}
+.toc li a{color:var(--text-muted);display:block;padding:4px 0;transition:color .2s;}
+.toc li a:hover{color:var(--text-bright);text-decoration:none;}
+.toc li a::before{content:counter(toc) ". ";color:var(--accent);font-weight:600;}
+.toc li.no-counter a::before{content:"";}
+.content{flex:1;min-width:0;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.8rem;margin-bottom:1.5rem;}
+.card h2{color:var(--text-bright);font-size:1.3rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--accent-dim);display:flex;align-items:center;gap:.5rem;}
+.card h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.card h3{color:var(--purple);font-size:1rem;margin:1rem 0 .5rem;}
+.card p,.card li{margin-bottom:.6rem;}.card ul,.card ol{padding-left:1.5rem;}.card ul li::marker{color:var(--accent);}
+.ts{display:inline-block;background:var(--accent-dim);color:var(--accent);font-family:'JetBrains Mono','Fira Code',monospace;font-size:.78rem;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0;white-space:nowrap;transition:background .2s;}
+.ts:hover{background:var(--accent);color:#fff;text-decoration:none;}
+.takeaways{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(167,139,250,.08));border:1px solid var(--accent-dim);border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0;}
+.takeaways h3{color:var(--green);margin-top:0;}.takeaways li{color:var(--text);}
+.highlight-box{background:rgba(59,130,246,.08);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem;color:var(--text);}
+code{background:rgba(59,130,246,.12);color:var(--accent);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.88em;}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:.6rem;}
+.ts-row{display:flex;align-items:center;gap:.7rem;padding:6px 10px;border-radius:8px;background:rgba(26,29,39,.6);transition:background .15s;}
+.ts-row:hover{background:var(--card-bg);}.ts-row .label{color:var(--text-muted);font-size:.85rem;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding:20px 1rem;border-top:1px solid #1e2028;}
+@media(max-width:800px){.container{flex-direction:column;}.toc{position:static;width:100%;max-height:none;}.ts-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<img src="https://img.youtube.com/vi/jpPuPOAyaAk/maxresdefault.jpg" alt="Meeting Transcription with Overlapping Speakers" style="display:none;">
+
+<div class="hero">
+  <h1>State of the Art Meeting Transcription with Overlapping Speakers</h1>
+  <div class="meta">Trelis Research · ~7 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=jpPuPOAyaAk" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/jpPuPOAyaAk/maxresdefault.jpg" alt="Video thumbnail">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~7 min</span>
+    <span class="meta-pill">🎤 Trelis Research</span>
+    <span class="meta-pill">🏷 Chorus Pro · Speaker Diarization · cpWER · Gemini · ASR · Overlapping Speech</span>
+  </div>
+</div>
+
+<div class="container">
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">The Overlapping Speaker Problem</a></li>
+      <li><a href="#s2">cpWER Metric Explained</a></li>
+      <li><a href="#s3">Chorus Pro vs Gemini — Benchmarks</a></li>
+      <li><a href="#s4">AMI Transcript Comparison</a></li>
+      <li><a href="#s5">ICSI Results &amp; Gemini's Failures</a></li>
+      <li><a href="#s6">Timestamp Accuracy &amp; Overlap</a></li>
+      <li><a href="#s7">Live Demo &amp; API Access</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">🔗 Resources &amp; Links</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>Trelis Research presents <strong>Chorus Pro</strong>, a dedicated multi-speaker transcription model that outperforms <strong>Gemini Pro 3.1</strong> on meetings with overlapping speakers — especially when there are 4+ participants. The video benchmarks both systems on the AMI and ICSI meeting datasets using the <strong>cpWER (concatenated permutation Word Error Rate)</strong> metric, walks through actual transcript comparisons showing Chorus Pro's overlap detection and timestamping advantages, and demonstrates Gemini's failure modes: collapsing to 4 speakers maximum, failing to return valid JSON on longer audio, and producing incorrect timestamps on multi-speaker content.</p>
+    </div>
+
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> The Overlapping Speaker Problem</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=0s" target="_blank">▶ 0:00</a></p>
+      <p>Meeting transcription remains a hard problem for two reasons:</p>
+      <ul>
+        <li><strong>Overlapping speakers</strong> — multiple people talking simultaneously (backchanneling, interruptions, side conversations)</li>
+        <li><strong>Speaker identity across long audio</strong> — matching the same speaker consistently across tens of minutes or hours</li>
+      </ul>
+      <p>General-purpose models like Gemini handle this as a side task; <strong>Chorus Pro is a dedicated, smaller model</strong> built specifically for multi-speaker transcription — and because it's purpose-built, it can compete with and often beat Gemini on this narrow application.</p>
+    </div>
+
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> cpWER Metric Explained</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=32s" target="_blank">▶ 0:32</a></p>
+      <p>Standard transcription uses <strong>WER (Word Error Rate)</strong> — percentage of incorrect words vs ground truth. For multi-speaker scenarios, the metric becomes <strong>cpWER</strong>:</p>
+      <ul>
+        <li><strong>P = Permutation</strong> — find the permutation of speaker tracks that most closely matches the ground truth (since speaker labels are arbitrary)</li>
+        <li><strong>C = Concatenated</strong> — border the best-matched chunks together and score as one long sequence</li>
+      </ul>
+      <p>The cpWER values in the benchmarks are notably <strong>high (bad)</strong> — reflecting how genuinely difficult this task is, even for state-of-the-art systems. Note: cpWER penalizes wrong words and wrong speaker attribution, but <strong>does not penalize timestamp errors</strong>.</p>
+    </div>
+
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Chorus Pro vs Gemini — Benchmark Results</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=66s" target="_blank">▶ 1:06</a></p>
+      <p>Benchmarked on two standard meeting datasets:</p>
+
+      <h3>AMI dataset (up to 4 speakers, &lt;1 hour meetings)</h3>
+      <ul>
+        <li>Performance is <strong>fairly similar</strong> between Chorus Pro and Gemini</li>
+        <li>Chorus Pro scores appear slightly inflated because it correctly transcribes audio that's missing from the ground truth reference</li>
+      </ul>
+
+      <h3>ICSI dataset (up to 8 speakers, longer meetings)</h3>
+      <ul>
+        <li>Chorus Pro <strong>significantly outperforms</strong> Gemini</li>
+        <li>Gemini struggles once you go beyond 4 speakers — "it will typically just predict four speakers"</li>
+        <li>Gemini is <strong>unreliable</strong> — sometimes fails to respond in correct JSON format, especially on longer audio</li>
+        <li>When Gemini does succeed on 5+ speakers, it <strong>collapses timestamps into incorrect values</strong></li>
+      </ul>
+
+      <div class="highlight-box">💡 "Keep in mind Gemini is a general purpose model… Chorus is a dedicated model for transcribing multiple speakers, it's a much smaller model — this is not to denigrate Gemini, but because this is a narrow application and Chorus Pro focuses on it, it's able to compete."</div>
+    </div>
+
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> AMI Transcript Comparison</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=173s" target="_blank">▶ 2:53</a></p>
+      <p>Side-by-side comparison of reference transcript, Gemini output, and Chorus Pro output on an AMI meeting:</p>
+      <ul>
+        <li>Chorus Pro appears to have some early mistakes, but <strong>it's actually correctly picking up audible audio</strong> that the reference ground truth missed entirely</li>
+        <li>Both AMI and ICSI test sets have <strong>ground truth errors</strong> — segments with audible speech that aren't in the reference transcript</li>
+        <li>Chorus Pro catches <strong>overlapping speech</strong> and marks it as such; Gemini transcribes the same segments as non-overlapping</li>
+      </ul>
+      <p>The host acknowledges this inflates Chorus Pro's cpWER score and commits to making a fairer comparison by removing these reference gaps in a future video.</p>
+    </div>
+
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> ICSI Results — Gemini's JSON &amp; Speaker Failures</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=274s" target="_blank">▶ 4:34</a></p>
+      <p>On ICSI meetings (5-8 speakers), Gemini shows critical failure modes:</p>
+      <ul>
+        <li><strong>JSON format failures</strong> — when asked to transcribe with timestamps, Gemini often fails to return valid JSON, especially on longer audio</li>
+        <li><strong>4-speaker ceiling</strong> — Gemini appears to have been trained on at most 4 speakers. It collapses 5-8 speakers into 4 tracks</li>
+        <li><strong>Timestamp collapse</strong> — even when scoring 66% cpWER (which doesn't penalize timestamps), Gemini produces incorrect timestamp values</li>
+      </ul>
+      <p>Chorus Pro maintains performance consistently across the full meeting duration and handles 5-8 speakers correctly, though it occasionally attributes speech to phantom extra speakers (speaker 6 or 7). These phantom speakers have minimal text, so the cpWER impact is small.</p>
+    </div>
+
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Timestamp Accuracy &amp; Overlap Detection</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=316s" target="_blank">▶ 5:16</a></p>
+      <p>Chorus Pro's key differentiators beyond raw transcription accuracy:</p>
+      <ul>
+        <li><strong>Accurate timestamps</strong> — including for overlapping segments. Gemini cannot timestamp multi-speaker audio reliably</li>
+        <li><strong>Overlap detection</strong> — backchannel filler ("yeah," "uh-huh") is correctly identified as overlapping with the main speech, with accurate time positioning</li>
+        <li><strong>Visual shape preservation</strong> — the transcript structure visually matches the reference, showing that speaker attribution and timing are consistently correct across long meetings</li>
+      </ul>
+      <p>Export options include <strong>VTT and SRT</strong> subtitle formats, which reveal the precise timing of overlapping speech that's invisible in plain text view.</p>
+    </div>
+
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Live Demo &amp; API Access</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=376s" target="_blank">▶ 6:16</a></p>
+      <p>The model is available at <strong>router.trelis.com</strong>:</p>
+      <ul>
+        <li><strong>Login:</strong> GitHub account (Google login coming soon)</li>
+        <li><strong>Upload any audio file</strong> and click transcribe</li>
+        <li><strong>API access</strong> available for programmatic use</li>
+        <li><strong>Export formats:</strong> plain text, VTT, SRT</li>
+        <li><strong>Language support:</strong> primarily English, other major languages in development</li>
+        <li><strong>Enterprise services:</strong> custom performance tuning for specific use cases</li>
+      </ul>
+    </div>
+
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Dedicated beats general-purpose for multi-speaker transcription</strong> — Chorus Pro (a smaller, focused model) outperforms Gemini Pro 3.1 on meetings with overlapping speakers</li>
+          <li><strong>Gemini has a 4-speaker ceiling</strong> — it collapses 5-8 speakers into 4 tracks, likely a training data limitation. Chorus Pro handles 8+ speakers correctly</li>
+          <li><strong>cpWER is the right metric</strong> — standard WER doesn't account for speaker attribution. cpWER finds the best speaker permutation match, then scores concatenated chunks</li>
+          <li><strong>Gemini's JSON output is unreliable on long audio</strong> — it fails to return valid structured output and produces incorrect timestamps for multi-speaker content</li>
+          <li><strong>Overlap detection is critical for accuracy</strong> — backchannels ("yeah," "uh-huh") need to be recognized as overlapping speech, not forced into a linear transcript</li>
+          <li><strong>Ground truth datasets have errors</strong> — both AMI and ICSI have missing speech segments, which can inflate scores for models that correctly transcribe those gaps</li>
+          <li><strong>Timestamps matter for downstream use</strong> — cpWER doesn't penalize timestamps, but real applications (meeting summaries, search, navigation) depend on accurate time alignment</li>
+          <li><strong>VTT/SRT export reveals overlap</strong> — plain text hides the temporal relationship between overlapping utterances; subtitle formats expose the true timing</li>
+          <li><strong>Meeting transcription is still hard</strong> — even state-of-the-art systems show high error rates, reflecting the genuine difficulty of overlapping multi-speaker audio</li>
+          <li><strong>Available now</strong> — Chorus Pro is accessible at router.trelis.com with both UI and API access, English-first with more languages coming</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://router.trelis.com" target="_blank">Chorus Pro — router.trelis.com</a> — try the model, upload audio, export transcripts</li>
+        <li><a href="https://trelis.com/voice-ai-services" target="_blank">Trelis Voice AI Services</a> — enterprise ASR, TTS, and agent services</li>
+      </ul>
+    </div>
+
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=0s" target="_blank">▶ 0:00</a> <span class="label">Speaker diarization challenge</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=4s" target="_blank">▶ 0:04</a> <span class="label">Gemini Pro vs Chorus Pro intro</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=66s" target="_blank">▶ 1:06</a> <span class="label">cpWER metric &amp; benchmark datasets</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=128s" target="_blank">▶ 2:08</a> <span class="label">Performance summary — 4+ speakers</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=193s" target="_blank">▶ 3:13</a> <span class="label">AMI transcript comparison</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=254s" target="_blank">▶ 4:14</a> <span class="label">ICSI results — Gemini JSON failure</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=316s" target="_blank">▶ 5:16</a> <span class="label">Chorus Pro timestamp &amp; overlap accuracy</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=376s" target="_blank">▶ 6:16</a> <span class="label">Demo at router.trelis.com</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=jpPuPOAyaAk&t=409s" target="_blank">▶ 6:49</a> <span class="label">Closing</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video jpPuPOAyaAk · Trelis Research</footer>
+</body>
+</html>
