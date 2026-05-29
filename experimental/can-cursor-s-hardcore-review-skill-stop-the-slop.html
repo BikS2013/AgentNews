@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can Cursor's HARDCORE Review Skill Stop The Slop?</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.hero .meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+.thumb-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  max-width: 560px;
+  width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.toc {
+  position: sticky;
+  top: 1rem;
+  width: 260px;
+  min-width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.toc h3 {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a {
+  color: var(--text-muted);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before {
+  content: counter(toc) ". ";
+  color: var(--accent);
+  font-weight: 600;
+}
+.toc li.no-counter a::before { content: ""; }
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.card h3 {
+  color: var(--purple);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.6rem;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(26,29,39,0.6);
+  transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+footer {
+  text-align: center;
+  color: #444;
+  font-size: 12px;
+  margin-top: 40px;
+  padding: 20px 1rem;
+  border-top: 1px solid #1e2028;
+}
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+  .ts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/mh5XZ-L5SFQ/maxresdefault.jpg" alt="Can Cursor's HARDCORE Review Skill Stop The Slop?" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>Can Cursor's HARDCORE Review Skill Stop The Slop?</h1>
+  <div class="meta">Matt Pocock · ~13 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/mh5XZ-L5SFQ/maxresdefault.jpg"
+         alt="Video thumbnail — Can Cursor's HARDCORE Review Skill Stop The Slop?">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~13 min</span>
+    <span class="meta-pill">🎤 Matt Pocock</span>
+    <span class="meta-pill">🏷 Code Review · AI Agents · Cursor Skills · Code Quality · TypeScript</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Why Automated Code Review Matters</a></li>
+      <li><a href="#s2">The Thermonuclear Skill</a></li>
+      <li><a href="#s3">Testing on Sandcastle</a></li>
+      <li><a href="#s4">Non-Negotiable Standards</a></li>
+      <li><a href="#s5">Type &amp; Boundary Cleanliness</a></li>
+      <li><a href="#s6">Code Judo &amp; Review Questions</a></li>
+      <li><a href="#s7">Output &amp; Approval Rules</a></li>
+      <li><a href="#s8">Review Results — Blocker Issues</a></li>
+      <li><a href="#s9">Strong Quality Issues</a></li>
+      <li><a href="#s10">Lessons Learned</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">🔗 Resources &amp; Links</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>Matt Pocock examines the <strong>thermonuclear code quality review</strong> skill from Cursor's official plugins repo — an aggressively ambitious automated code review prompt that pushes AI agents to suggest structural improvements, not just surface-level style fixes. He tests it against his own open-source project <strong>Sandcastle</strong> (a software factory), walks through the skill's instructions line by line, and evaluates the quality of its feedback: 5 out of 7 suggestions hit the mark, proving that high-ambition prompts with some false positives are better than conservative reviews that miss real opportunities for improvement.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Why Automated Code Review Matters</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=0s" target="_blank">▶ 0:00</a>
+      </p>
+      <p>Matt opens by stating that <strong>automated code review is one of the most impactful ways to improve code quality</strong> coming out of AI agents. He has been working on his own review skill in his skills repo (which has reached 109,000 stars), but considers it still a work in progress — marked as "in progress" and not something he's entirely happy with.</p>
+      <p>Rather than building from scratch, he's been looking for inspiration from other people's skills that he can borrow ideas from. This leads him to a particular skill from the Cursor team that caught his attention.</p>
+      <div class="highlight-box">💡 "Automated code review is one of the most impactful ways that you can improve the code quality coming out of your agent."</div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Discovering the Thermonuclear Code Quality Review</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=39s" target="_blank">▶ 0:39</a>
+      </p>
+      <p>The skill in question comes from the <strong>Cursor team's official plugins repository</strong> — specifically the <code>cursor-team-kit/skills</code> directory. It's called the <strong>thermonuclear code quality review</strong>, and its stated purpose is:</p>
+      <ul>
+        <li><strong>Unusually strict review</strong> — focused on implementation quality, maintainability, abstraction quality, and code base health</li>
+        <li><strong>Ambitious by design</strong> — it explicitly asks the reviewer agent to be very ambitious and look for "code judo moves" throughout the review</li>
+        <li><strong>Single file</strong> — the entire skill is one <code>SKILL.md</code> file, making it easy to copy and experiment with</li>
+      </ul>
+      <p>Matt notes the ambition aspect as particularly notable — most review skills are too conservative, but this one pushes the agent to think beyond the immediate diff.</p>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Testing on Sandcastle</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=72s" target="_blank">▶ 1:12</a>
+      </p>
+      <p>To evaluate the skill, Matt copies it to his local system and runs it against <strong>Sandcastle</strong>, his open-source software factory project. His prompt is deliberately loose:</p>
+      <div class="highlight-box">"Thermonuclear code quality review — review the last five PRs that made it to main."</div>
+      <p>He puts the agent in <strong>auto mode</strong> and lets it run while he reads through the skill's source code. This approach tests the skill against real production code changes he made the day before, giving him ground truth to evaluate the suggestions against.</p>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Breaking Down the Non-Negotiable Standards</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=96s" target="_blank">▶ 1:36</a>
+      </p>
+      <p>The skill begins with a baseline instruction: <em>"Perform a deep code quality audit of the current branch's changes. Rethink how to structure and implement the changes to meaningfully improve code quality without impacting behavior."</em> Matt highlights the key directives:</p>
+      <ul>
+        <li><strong>Be ambitious</strong> — if there's a clear path to improvement involving restructuring, go for it. This goes beyond treating the diff as the bounds of the review</li>
+        <li><strong>Structural simplification</strong> — the skill repeatedly pushes for ambitious structural changes</li>
+        <li><strong>1,000 line limit</strong> — "Do not let a PR push a file from under 1K lines to over 1K lines without a very strong reason." Matt finds this particularly interesting because he's reached the same conclusion independently</li>
+        <li><strong>No spaghetti growth</strong> — if a change adds weird if statements in random places, treat that as a design problem, not a stylistic nit</li>
+      </ul>
+
+      <h3>Why large files are bad for agents</h3>
+      <p>Matt elaborates on the 1K line rule: large files are hard for agents to navigate because they need to ingest the entire file into their context window to find the useful part. A better structure is <strong>splitting into multiple files where the file name acts as a context pointer</strong> — telling the agent what's inside without having to open it. This is much more context-efficient. Matt personally splits files at 5K tokens, while this skill uses 1K lines as its rubric.</p>
+
+      <h3>Abstraction over nesting</h3>
+      <p>The skill instructs: <em>"Prefer pushing the logic into a dedicated abstraction, helper, state machine, policy object, or separate module instead of tangling an existing path."</em> Matt notes this is another way of telling the agent to be aggressive about abstracting nested conditionals into cleaner patterns, though he admits he sometimes agrees and sometimes doesn't.</p>
+
+      <div class="highlight-box">💡 "Large files are just quite hard for agents to navigate because they need to ingest the entire file into their context window. A much better way is to split them into multiple files and let the file name be the context pointer."</div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Type &amp; Boundary Cleanliness</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=251s" target="_blank">▶ 4:11</a>
+      </p>
+      <p>Matt highlights a TypeScript-specific instruction he particularly likes: <strong>"Push hard on type and boundary cleanliness when they affect maintainability."</strong> The skill calls out:</p>
+      <ul>
+        <li><strong>Unnecessary optionality</strong> — question optional params when they should be required. Matt calls this a chronic agent behavior: "Whenever an agent adds a prop onto a React component, it always adds it as optional. I don't know why. Even when it's always required."</li>
+        <li><strong><code>unknown</code> and <code>any</code></strong> — question cast-heavy code when a clearer type boundary could exist</li>
+        <li><strong>Existing helpers</strong> — prefer canonical utilities over bespoke one-offs. The skill tells the agent to look for places where the problem has already been solved in the codebase</li>
+      </ul>
+
+      <h3>Parallelism over sequential execution</h3>
+      <p>The skill also includes a performance-oriented rule: <em>"Treat unnecessary sequential orchestration and non-atomic updates as design smells when the cleaner structure is obvious. If independent work is serialized for no good reason, ask whether the flow should run in parallel instead."</em></p>
+      <p>Matt's reaction is mixed — he agrees with the concept (independent tasks should run in parallel for speed) but criticizes the wording: <strong>"Treat unnecessary sequential orchestration and non-atomic updates as design smells — that's just word salad to me."</strong> He says if this were his skill, he'd rewrite this section to be far more direct.</p>
+
+      <div class="highlight-box">💡 "Whenever an agent adds a prop onto a React component, it always adds it as optional. I don't know why. Even when it's always required, it will add it as optional just to lessen the blast radius of the change."</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Code Judo &amp; Primary Review Questions</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=351s" target="_blank">▶ 5:51</a>
+      </p>
+      <p>The skill defines <strong>primary review questions</strong> the agent should ask for every meaningful change:</p>
+      <ol>
+        <li><strong>"Is there a code judo move that would make this dramatically simpler?"</strong> — Matt loves this framing</li>
+        <li><strong>"Can this be reframed so that fewer concepts, branches, or helper layers are needed?"</strong> — also praised</li>
+        <li><strong>"Does this improve or worsen the local architecture?"</strong> — Matt is less impressed: "You've got to say exactly what good and bad looks like to an agent in order for 'improve or worsen' to mean anything"</li>
+      </ol>
+
+      <h3>Escalation triggers</h3>
+      <p>The skill defines when to escalate findings to blocker-level:</p>
+      <ul>
+        <li>A complicated implementation where a cleaner reframing could <strong>delete whole categories of complexity</strong></li>
+        <li>Refactors that move code around but fail to <strong>reduce the number of concepts a reader must hold in their head</strong></li>
+        <li>Unnecessary casts, <code>any</code>, <code>unknown</code>, or optional params</li>
+      </ul>
+
+      <h3>Matt's concern about prompt density</h3>
+      <p>Matt expresses a key worry: <strong>"What sort of scares me about these big review-based prompts is that this is a huge ball of mud for the agent to read. There's a lot of instructions and it's hard to know what to prioritize."</strong> He notes significant repetition throughout the skill — the ambition message is stated in at least 4-5 different ways. He also finds the "Review tone" section ("Be direct, serious, and demanding about quality. Do not be rude.") an odd inclusion.</p>
+
+      <h3>Suggested improvements</h3>
+      <p>The skill instructs the agent to suggest bold actions: <em>"Delete a whole layer of indirection rather than polishing it. Split a large file into smaller focused modules. Make type boundaries more explicit so the control flow gets simpler."</em> Matt sees this as mostly duplication of earlier points.</p>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Output Expectations &amp; Approval Bar</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=454s" target="_blank">▶ 7:34</a>
+      </p>
+      <p>The final section of the skill defines how the agent should structure its output:</p>
+      <ul>
+        <li><strong>Priority ordering</strong> — float the important stuff to the top. Structural code quality regressions rank highest, while legibility and maintainability concerns are at the bottom</li>
+        <li><strong>Approval/rejection</strong> — the agent should approve or reject the PR based on defined conditions</li>
+      </ul>
+
+      <h3>What's missing</h3>
+      <p>Matt identifies critical gaps in the skill:</p>
+      <ul>
+        <li><strong>No mention of testing</strong> — the entire skill focuses on source code with zero attention to test quality or coverage</li>
+        <li><strong>No mention of seams</strong> — architectural seams that enable testability and modularity are ignored</li>
+        <li><strong>No feedback loop improvement</strong> — nothing about making future agent runs better through better code structure</li>
+      </ul>
+      <div class="highlight-box">💡 "All of this appears to be focused on actual source code, none of it on tests. In my view, the entire point of having a code base that's easy to change and modular is about improving the feedback loops to make future runs better."</div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Review Results — Blocker-Class Issues</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=519s" target="_blank">▶ 8:39</a>
+      </p>
+      <p>With the review complete, Matt walks through the agent's findings on his last 5 PRs to main:</p>
+
+      <h3>Blocker #1: Init service file over 1,000 lines ✅</h3>
+      <p>The agent found that an init service file had grown past the 1K line threshold, mixing multiple responsibilities. It recommended <strong>splitting the file</strong> and proposed a concrete decomposition. Additionally, it suggested a <strong>generic <code>makeRegistry</code> function</strong> that would "delete 20 lines of duplicated boilerplate." Matt agrees: <strong>"Feels good. That's nice."</strong></p>
+
+      <h3>Blocker #2: Feature-specific conditionals scattered across layers ✅</h3>
+      <p>The agent identified that <code>if (issueTrackerName === 'custom')</code> checks were scattered across three different layers. Its code judo suggestion: <strong>push the custom tracker variations into the type itself</strong> so it can be read later without special-case if statements. Matt confirms this is a legitimate improvement: <strong>"I happen to know this code quite well. Two out of two."</strong></p>
+
+      <h3>Blocker #3: Inconsistent contract template args ❌</h3>
+      <p>The agent flagged that template args carried both shell commands and prose markers, suggesting a discriminated union to separate them. Matt disagrees: <strong>"I think that this comes from an inaccurate understanding of the whole system."</strong> He considers this a false positive — the kind of thing he'd dismiss in a real PR review with "this is fine, don't worry about it."</p>
+
+      <p>Score so far: <strong>2 out of 3</strong> — "not bad."</p>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Strong Quality Issues &amp; Final Score</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=566s" target="_blank">▶ 9:26</a>
+      </p>
+      <p>Moving to the "strong code quality issues" tier:</p>
+
+      <h3>Issue #4: Hard-coded Zod dependency path ✅</h3>
+      <p>The agent spotted a weird code path where Zod was hard-coded as a dependency despite templates having a system for declaring their own dependencies. Matt confirms: <strong>"It's definitely pulled up something weird here."</strong> Score: 3 out of 4.</p>
+
+      <h3>Issue #5: Swallowed errors in exec sync ✅</h3>
+      <p>Found an <code>execSync</code> call wrapped in a try-catch that silently returns <code>false</code> on failure. The error is swallowed completely. Matt agrees this should be flagged. Score: 4 out of 5.</p>
+
+      <h3>Issue #6: Half-finished file decomposition ✅</h3>
+      <p>The agent noticed that a large file had been started to be decomposed into smaller files, but the work was only half-done. Matt confirms: <strong>"This again is a good one."</strong> Score: 5 out of 6.</p>
+
+      <h3>Issue #7: Prompt duplication ❌</h3>
+      <p>The agent flagged byte-identical content between two different prompts and suggested refactoring them into a shared preamble. Matt disagrees: <strong>"I think the prompts should just be independently changeable."</strong> Score: 5 out of 7.</p>
+
+      <h3>The verdict</h3>
+      <p>The agent's final approval assessment: <em>"Under the skill's stated bar, a couple of the PRs should not have landed in their current shape. The behavior is correct in all three substantive PRs, but the code base is meaningfully messier than it was a week ago."</em></p>
+      <div class="highlight-box">💡 Matt laughs at the harsh verdict but appreciates the honesty — the skill delivered exactly the kind of ambitious, structural feedback it promised.</div>
+    </div>
+
+    <!-- Section 10 -->
+    <div class="card" id="s10">
+      <h2><span class="num">10</span> Lessons Learned &amp; Improvements</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=725s" target="_blank">▶ 12:05</a>
+      </p>
+      <p>Matt distills the experience into actionable insights:</p>
+
+      <h3>The ambition tradeoff</h3>
+      <p><strong>High ambition produces more false positives, but those are easy to dismiss.</strong> The dangerous ones are the opportunities you never see — the improvements the agent never suggests because it wasn't pushed to look for them. A 5-out-of-7 hit rate with ambitious suggestions is far better than a 7-out-of-7 rate on trivial style nits.</p>
+
+      <h3>What Matt would change</h3>
+      <ul>
+        <li><strong>Reduce duplication</strong> — the skill repeats its core messages (ambition, structural simplification) in 4-5 different ways. It could be significantly shorter and more DRY</li>
+        <li><strong>Add testing focus</strong> — the biggest gap is the complete absence of test-related review criteria. Think about the seams in the codebase</li>
+        <li><strong>Clearer language</strong> — rewrite "word salad" instructions like "unnecessary sequential orchestration" into direct, concrete guidance</li>
+        <li><strong>Integrate with his own "improved code base architecture" approach</strong> — focusing on testability seams and feedback loops for future agent runs</li>
+      </ul>
+
+      <div class="highlight-box">💡 "It's the ones that you miss, that you never know about, the opportunity for improvement that you never see — those are the dangerous ones."</div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Automated code review is high-impact</strong> — it's one of the most effective ways to maintain code quality when working with AI coding agents</li>
+          <li><strong>Ambition beats conservatism</strong> — pushing the reviewer agent to suggest structural changes produces more false positives, but catches improvements you'd otherwise miss entirely</li>
+          <li><strong>5 out of 7 hit rate</strong> — the thermonuclear skill produced 5 genuinely useful suggestions out of 7 total across 5 PRs reviewed on the Sandcastle project</li>
+          <li><strong>1,000 line file limit</strong> — enforcing maximum file sizes improves agent navigability by keeping context windows manageable and using file names as natural context pointers</li>
+          <li><strong>Type boundary cleanliness matters</strong> — questioning unnecessary optionality, <code>any</code>/<code>unknown</code> types, and cast-heavy code catches a chronic agent behavior of making everything optional</li>
+          <li><strong>Code judo framing works</strong> — asking "is there a move that makes this dramatically simpler?" gives agents a productive mindset for structural review</li>
+          <li><strong>The skill has too much repetition</strong> — the core messages about ambition and structural simplification are repeated 4-5 times and could be significantly condensed</li>
+          <li><strong>Testing is completely absent</strong> — the biggest gap in the skill is zero attention to test quality, coverage, seams, or feedback loops for future runs</li>
+          <li><strong>Word salad instructions harm clarity</strong> — vague phrases like "unnecessary sequential orchestration and non-atomic updates" should be replaced with direct, concrete guidance</li>
+          <li><strong>False positives are easy to dismiss</strong> — saying "this is fine" to a false positive costs seconds; missing a real structural improvement costs technical debt forever</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Resources & Links -->
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://github.com/cursor/plugins/blob/3347cbab5b54136f6fba0994c3a01a56f7fb7fca/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md" target="_blank">Thermonuclear Code Quality Review SKILL.md</a> — the full skill from Cursor's official plugins repository</li>
+      </ul>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=0s" target="_blank">▶ 0:00</a>
+          <span class="label">Why automated code review matters</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=39s" target="_blank">▶ 0:39</a>
+          <span class="label">Discovering thermonuclear code quality skill</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=72s" target="_blank">▶ 1:12</a>
+          <span class="label">Testing the skill on Sandcastle</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=96s" target="_blank">▶ 1:36</a>
+          <span class="label">Breaking down the skill's instructions</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=160s" target="_blank">▶ 2:40</a>
+          <span class="label">1,000 line limit and file splitting</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=251s" target="_blank">▶ 4:11</a>
+          <span class="label">Type and boundary cleanliness</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=351s" target="_blank">▶ 5:51</a>
+          <span class="label">Code judo and primary review questions</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=454s" target="_blank">▶ 7:34</a>
+          <span class="label">Output expectations and approval rules</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=519s" target="_blank">▶ 8:39</a>
+          <span class="label">Reviewing feedback — blocker issues</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=566s" target="_blank">▶ 9:26</a>
+          <span class="label">Strong quality issues and final score</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=mh5XZ-L5SFQ&t=725s" target="_blank">▶ 12:05</a>
+          <span class="label">Lessons learned and next steps</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video mh5XZ-L5SFQ · Matt Pocock</footer>
+
+</body>
+</html>

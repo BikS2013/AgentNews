@@ -220,7 +220,18 @@
       "thumbnailSource": "html",
       "sha256": "08b5ad415421d3c38d79e47307f8b04c5a60834ca05dbe49e01e212fe9aa6974",
       "category": "ai-news"
+    },
+    {
+      "slug": "can-cursor-s-hardcore-review-skill-stop-the-slop",
+      "title": "Can Cursor's HARDCORE Review Skill Stop The Slop?",
+      "publishedAt": "2026-05-28T12:00:00.000Z",
+      "sourcePath": "/tmp/cursor-hardcore-review-skill.html",
+      "articlePath": "experimental/can-cursor-s-hardcore-review-skill-stop-the-slop.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/mh5XZ-L5SFQ/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "2a3792c86b4d59faaa79fd31854743c3cc4bf08a22ead1ea2f0a96acb824b1eb",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-28T03:49:47.252Z"
+  "updatedAt": "2026-05-29T04:19:35.354Z"
 }
