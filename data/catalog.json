@@ -229,7 +229,18 @@
       "thumbnailSource": "html",
       "sha256": "e0924a955521697a18093dcc96309bdee497a71812b9ac51340f2c9afefc5759",
       "category": "ai-news"
+    },
+    {
+      "slug": "the-pope-is-into-ai-matthew-berman",
+      "title": "The Pope Is Into AI — Matthew Berman",
+      "publishedAt": "2026-05-29T12:00:00.000Z",
+      "sourcePath": "/tmp/pope-ai-encyclical-berman.html",
+      "articlePath": "articles/the-pope-is-into-ai-matthew-berman.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/HoMvCjnpAJ8/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "51d3ccbd80395e1bef756cd103cc8e317b8a4b9e517f663922cf8d13071f8533",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-29T15:32:59.778Z"
+  "updatedAt": "2026-05-29T18:32:33.818Z"
 }
