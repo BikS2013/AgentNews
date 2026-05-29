@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheap Software Made Your PM Job Harder, Not Easier — Here's the New Job</title>
+<style>
+:root{--bg:#0f1117;--card-bg:#1a1d27;--card-border:#2a2d3a;--accent:#3b82f6;--accent-dim:#1e3a5f;--text:#e2e8f0;--text-muted:#94a3b8;--text-bright:#f8fafc;--green:#22c55e;--purple:#a78bfa;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;padding:0;}
+a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#1a1d27 50%,#0f1117 100%);border-bottom:1px solid var(--card-border);padding:2rem 1rem;text-align:center;}
+.hero h1{font-size:1.8rem;color:var(--text-bright);margin-bottom:.5rem;}
+.hero .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:1.2rem;}
+.thumb-link{display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .2s;max-width:560px;width:100%;}
+.thumb-link:hover{transform:scale(1.02);}.thumb-link img{width:100%;display:block;}
+.meta-pills{margin-top:1.2rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+.meta-pill{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:.3rem .9rem;font-size:.82rem;color:var(--text-muted);}
+.container{display:flex;max-width:1200px;margin:0 auto;gap:2rem;padding:2rem 1rem;}
+.toc{position:sticky;top:1rem;width:260px;min-width:220px;max-height:calc(100vh - 2rem);overflow-y:auto;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.2rem;font-size:.85rem;flex-shrink:0;}
+.toc h3{color:var(--accent);font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.8rem;}
+.toc ol{list-style:none;counter-reset:toc;}.toc li{counter-increment:toc;margin-bottom:.5rem;}
+.toc li a{color:var(--text-muted);display:block;padding:4px 0;transition:color .2s;}
+.toc li a:hover{color:var(--text-bright);text-decoration:none;}
+.toc li a::before{content:counter(toc) ". ";color:var(--accent);font-weight:600;}
+.toc li.no-counter a::before{content:"";}
+.content{flex:1;min-width:0;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.8rem;margin-bottom:1.5rem;}
+.card h2{color:var(--text-bright);font-size:1.3rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--accent-dim);display:flex;align-items:center;gap:.5rem;}
+.card h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.card h3{color:var(--purple);font-size:1rem;margin:1rem 0 .5rem;}
+.card p,.card li{margin-bottom:.6rem;}.card ul,.card ol{padding-left:1.5rem;}.card ul li::marker{color:var(--accent);}
+.ts{display:inline-block;background:var(--accent-dim);color:var(--accent);font-family:'JetBrains Mono','Fira Code',monospace;font-size:.78rem;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0;white-space:nowrap;transition:background .2s;}
+.ts:hover{background:var(--accent);color:#fff;text-decoration:none;}
+.takeaways{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(167,139,250,.08));border:1px solid var(--accent-dim);border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0;}
+.takeaways h3{color:var(--green);margin-top:0;}.takeaways li{color:var(--text);}
+.highlight-box{background:rgba(59,130,246,.08);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem;color:var(--text);}
+.ladder{margin:14px 0;}
+.ladder-rung{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border-radius:8px;margin-bottom:8px;border:1px solid var(--card-border);background:rgba(26,29,39,.5);}
+.ladder-rung .rung-num{background:var(--accent);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:2px;}
+.ladder-rung .rung-body{flex:1;}
+.ladder-rung .rung-title{color:var(--text-bright);font-weight:700;font-size:.95rem;}
+.ladder-rung .rung-desc{color:var(--text-muted);font-size:.85rem;margin-top:2px;}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:.6rem;}
+.ts-row{display:flex;align-items:center;gap:.7rem;padding:6px 10px;border-radius:8px;background:rgba(26,29,39,.6);transition:background .15s;}
+.ts-row:hover{background:var(--card-bg);}.ts-row .label{color:var(--text-muted);font-size:.85rem;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding:20px 1rem;border-top:1px solid #1e2028;}
+@media(max-width:800px){.container{flex-direction:column;}.toc{position:static;width:100%;max-height:none;}.ts-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<img src="https://img.youtube.com/vi/b6J387xJvHg/maxresdefault.jpg" alt="PM Job in the Age of Cheap Software" style="display:none;">
+
+<div class="hero">
+  <h1>Cheap Software Made Your PM Job Harder, Not Easier — Here's the New Job</h1>
+  <div class="meta">Nate B Jones · ~13 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=b6J387xJvHg" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/b6J387xJvHg/maxresdefault.jpg" alt="Video thumbnail">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~13 min</span>
+    <span class="meta-pill">🎤 Nate B Jones</span>
+    <span class="meta-pill">🏷 Product Management · Software Abundance · Governance · Prototype Commons · AI Strategy</span>
+  </div>
+</div>
+
+<div class="container">
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Prototyping Is Table Stakes</a></li>
+      <li><a href="#s2">Microsoft's Million-Asset Reality</a></li>
+      <li><a href="#s3">The Non-Technical PM Is Finished</a></li>
+      <li><a href="#s4">Where the Old PM Filter Breaks</a></li>
+      <li><a href="#s5">Broad Building Meets Governance</a></li>
+      <li><a href="#s6">Market Judgment Is the Scarce Thing</a></li>
+      <li><a href="#s7">The Prototype Commons</a></li>
+      <li><a href="#s8">The Production Class Ladder</a></li>
+      <li><a href="#s9">Demotion Matters as Much as Promotion</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">🔗 Resources &amp; Links</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>Nate B Jones argues that the PM conversation about AI has been stuck on prototyping — PMs using Lovable, Claude Code, or Codex to build faster. That's table stakes now. The real shift is that <strong>AI collapsed the cost of creating software, which moved the bottleneck from "can we build this?" to "should the company rely on this?"</strong> Product management is becoming the discipline that classifies software abundance into market value — or decides to delete it. He introduces two frameworks: the <strong>Prototype Commons</strong> (the messy informal space where employee-built tools sprout before anyone classifies them) and the <strong>Production Class Ladder</strong> (a 4-rung system from personal tools to customer-facing products, where demotion matters as much as promotion).</p>
+    </div>
+
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Prototyping Is Table Stakes</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=0s" target="_blank">▶ 0:00</a></p>
+      <p>Nate opens by pushing back on the dominant PM narrative: "PMs are becoming prototypers." Yes, PMs are using Lovable, Claude Code, Codex — <strong>but that's not the heart of where product is going</strong>. That's just table stakes.</p>
+      <p>The deeper truth: <strong>AI makes generation easier, so it moves the bottleneck</strong>. The question is no longer about building capacity. It's about where to point scarce human judgment in a world of software abundance.</p>
+      <div class="highlight-box">💡 "The prototyping advice is oversold. AI makes generation easier — so it moves the bottleneck, and we need to be intentional about how we leverage scarce human intelligence."</div>
+    </div>
+
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Microsoft's Million-Asset Reality Check</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=74s" target="_blank">▶ 1:14</a></p>
+      <p>Microsoft has built <strong>over 1 million Power Platform assets</strong> internally:</p>
+      <ul>
+        <li><strong>18,000+</strong> robot/agent environments</li>
+        <li><strong>170,000</strong> Power Apps</li>
+        <li><strong>50,000</strong> Power Automate flows</li>
+        <li><strong>1,200</strong> chatbots</li>
+      </ul>
+      <p>The obvious story: low-code + AI let more people build. The real story: <strong>product management is moving from rationing scarce engineering to classifying software abundance</strong>.</p>
+      <p>What arrives in the product conversation is no longer just a request — it's often a <strong>working artifact</strong>: a dashboard, a workflow, a lightweight app, an agent that already touches the system of record. So the old question ("should I build this?") is replaced by: <strong>"Somebody already built something — should the company rely on it?"</strong></p>
+    </div>
+
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> The Non-Technical PM Is Finished</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=150s" target="_blank">▶ 2:30</a></p>
+      <p>Nate is direct: <strong>there's not much room left for the non-technical PM</strong>. Not that every PM needs to become an engineer, but AI products are technical systems where technical aspects are "profoundly determinative of overall behavior."</p>
+      <p>Product decisions now involve:</p>
+      <ul>
+        <li>Model behavior and agent loops</li>
+        <li>Data access and workflow boundaries</li>
+        <li>Retrieval and evaluation strategies</li>
+        <li>Latency, cost, and permissions</li>
+        <li>Failure modes</li>
+      </ul>
+      <p>A PM who cannot reason about these things is <strong>missing the product</strong>.</p>
+      <p>However: AI doesn't empty human value from product work — it shifts the bottleneck. When software production gets cheaper, <strong>the scarcest thing is great judgment about what ought to exist, what ought to be deleted, who the product is for, and what standard it needs to meet</strong>.</p>
+    </div>
+
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Where the Old PM Filter Breaks Down</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=225s" target="_blank">▶ 3:45</a></p>
+      <p>The old PM job was built around <strong>scarcity</strong>. When software is expensive, the company needs a filter: PRDs, roadmap reviews, planning cycles, launch checklists, prioritization meetings. All designed so engineering time is consumed deliberately. <strong>The PM was the filter.</strong></p>
+      <p>AI destroys that filter because it changes what people can produce <em>before they ever reach product and engineering</em>. The top of the funnel used to be words, mockups, spreadsheets, and persuasion. Now it's:</p>
+      <ul>
+        <li>Working tools and dashboards</li>
+        <li>Automations and agents</li>
+        <li>"Half real products" — zombie products</li>
+      </ul>
+      <p>A PM can no longer passively wait for polished business cases. <strong>The useful signal may already be running inside a team, along with a lot of noise that isn't useful.</strong></p>
+      <p>The instinct some PMs have — "prototyping is now our job and nobody else's" — is wrong. <strong>Everybody's job is to prototype now.</strong> A customer service rep might build an agent that reveals customer demand the official product doesn't support. The PM's job isn't to gate who builds — it's to find where the good ideas are emerging as artifacts.</p>
+    </div>
+
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Broad Building Meets Governance Risk</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=320s" target="_blank">▶ 5:20</a></p>
+      <p>The company needs broad building because <strong>that's where new demand becomes visible</strong>. But broad building without judgment becomes sprawl — useful work stays hidden, risky work spreads without support, nobody knows which tools the business depends on.</p>
+      <p>Microsoft's approach: governance built around inventory, telemetry, permission review, environment controls, and data policy — not to stop employees from building, but to <strong>let them build while protecting the company</strong>.</p>
+      <p>The risk is real: GitGuardian's 2026 report found <strong>1.2 million AI service secrets exposed on public GitHub in 2025</strong> (up 81% year-over-year). Faster creation means more credentials, more local workflows, more integrations, more places for access to leak.</p>
+      <p><strong>Product leaders inherit that problem</strong> when useful tools spread before anyone decides what class of thing they are. "What data does it touch? What systems does it write to? Who owns it?" — these are now product questions, not just engineering questions.</p>
+    </div>
+
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Market Judgment Is the New Scarce Thing</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=400s" target="_blank">▶ 6:40</a></p>
+      <p>Now that first versions are cheap, the PM's questions become razor-sharp:</p>
+      <ul>
+        <li>Why are we building this at all?</li>
+        <li>Which customer problem is really worth solving?</li>
+        <li>Which workflow is close enough to money, retention, and trust to form a good habit?</li>
+        <li>Which competitor feature is just noise?</li>
+        <li>Which customer request is a symptom of a deeper issue?</li>
+        <li>Which internal prototype reveals real demand vs local convenience for one team?</li>
+      </ul>
+      <div class="highlight-box">💡 "That's not product management. That is product judgment."</div>
+    </div>
+
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> The Prototype Commons</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=469s" target="_blank">▶ 7:49</a></p>
+      <p>The <strong>Prototype Commons</strong> is Nate's term for the informal space where new tools appear before the company has classified them — scripts, dashboards, agents, automations, half-real products built because employees can finally solve problems that never made it onto a roadmap.</p>
+      <p>It's messy but <strong>extremely valuable</strong> — it reveals:</p>
+      <ul>
+        <li>Hidden demand</li>
+        <li>Missing platform primitives</li>
+        <li>Customer pain</li>
+        <li>Internal workflows the official product process hasn't understood</li>
+      </ul>
+      <p>But a commons needs stewardship. If nobody owns it, useful work stays invisible and risky work spreads. If product shows up only to say no, <strong>employees will start hiding useful tools until something breaks</strong>.</p>
+      <p>The better PM posture: <strong>open discovery</strong> — "Show us what you made. What problem does it solve? Who uses it? What data does it touch? What did you learn?"</p>
+    </div>
+
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> The Production Class Ladder</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=570s" target="_blank">▶ 9:30</a></p>
+      <p>A 4-rung framework for classifying software in the age of abundance:</p>
+
+      <div class="ladder">
+        <div class="ladder-rung">
+          <span class="rung-num">1</span>
+          <div class="rung-body">
+            <div class="rung-title">Personal Tool</div>
+            <div class="rung-desc">For one person. Can be scrappy. Stay away from sensitive data unless the company has rules for local handling. Minimal standards required.</div>
+          </div>
+        </div>
+        <div class="ladder-rung">
+          <span class="rung-num">2</span>
+          <div class="rung-body">
+            <div class="rung-title">Team Beta</div>
+            <div class="rung-desc">Used by a small group. Needs an owner + backup owner, a short description, systems it touches, why it benefits the team, and a failure plan.</div>
+          </div>
+        </div>
+        <div class="ladder-rung">
+          <span class="rung-num">3</span>
+          <div class="rung-body">
+            <div class="rung-title">Supported Internal Product</div>
+            <div class="rung-desc">Software the company depends on. Needs product ownership, platform partnership, access management, monitoring, documentation, support, auditability, and a change process.</div>
+          </div>
+        </div>
+        <div class="ladder-rung">
+          <span class="rung-num">4</span>
+          <div class="rung-body">
+            <div class="rung-title">Customer-Facing Product / Feature</div>
+            <div class="rung-desc">Part of the company's external offering. Needs the usual product standards plus AI-specific evals and governance where the surface requires it.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The key insight: <strong>these are fundamentally different classes</strong> and shouldn't be mixed. The first version and the supported version don't have to be the same thing. In the old model, PMs decided what entered engineering → that became supported → that became official software. In the new model, <strong>PMs also decide what gets promoted out of the Prototype Commons</strong>.</p>
+    </div>
+
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Demotion Matters as Much as Promotion</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=660s" target="_blank">▶ 11:00</a></p>
+      <p>A ladder that only moves upward becomes a <strong>junk drawer</strong> — everything eventually gets to production, becoming a pile of old obligations nobody wants to own. <strong>Intentional demotion is critical.</strong></p>
+      <p>Nate's decision rule for PMs:</p>
+      <ul>
+        <li><strong>Stop asking</strong> only whether your team can build faster</li>
+        <li><strong>Ask what class</strong> of software you're looking at (personal / team beta / supported / customer-facing)</li>
+        <li><strong>Ask the harder question:</strong> Should this exist? Who is it for? What standard does it need to meet? What are we willing to rely on?</li>
+      </ul>
+      <p>Three failure modes if you don't have a ladder:</p>
+      <ul>
+        <li><strong>"We don't know"</strong> → graveyard of demos</li>
+        <li><strong>"Everything goes to production"</strong> → chaos</li>
+        <li><strong>"Only central product may build"</strong> → waste the creative capacity AI just unlocked</li>
+      </ul>
+      <p>The right answer: <strong>default-allow for experimentation + very intentional promotion path governed by product for work the business will rely on</strong>.</p>
+      <div class="highlight-box">💡 "For so long, we've had to say 'we can't build everything.' Now we finally get to play the other side of the game board: 'we can build everything — what should we build?'"</div>
+    </div>
+
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Prototyping is table stakes, not the job</strong> — every PM can use AI to prototype now. The real shift is classifying software abundance into market value or deleting it</li>
+          <li><strong>Microsoft's 1M+ Power Platform assets show the future</strong> — the artifact arrives before the request. The PM question moves from "should I build this?" to "should the company rely on this?"</li>
+          <li><strong>The non-technical PM is running out of room</strong> — product decisions now require understanding model behavior, agent loops, data access, evals, permissions, and failure modes</li>
+          <li><strong>AI moved the bottleneck, not emptied the role</strong> — the scarcest thing is now great judgment about what ought to exist, what to delete, and what standard to demand</li>
+          <li><strong>The old PM filter is broken</strong> — PRDs and prioritization meetings were built for scarce engineering. Now the top of the funnel is working artifacts, not words</li>
+          <li><strong>Everyone prototypes now — that's good</strong> — a customer service rep's agent might reveal demand the official product missed. The PM discovers, not gates</li>
+          <li><strong>The Prototype Commons needs stewardship</strong> — the messy space where employee tools sprout is valuable, but without stewardship useful work stays hidden and risky work spreads</li>
+          <li><strong>The Production Class Ladder is the framework</strong> — personal tool → team beta → supported internal product → customer-facing. Each rung has explicit requirements</li>
+          <li><strong>Demotion matters as much as promotion</strong> — a ladder that only moves up becomes a junk drawer of dead obligations. Intentional demotion prevents new tech debt</li>
+          <li><strong>The decision rule: default-allow + intentional promotion</strong> — let experimentation flourish, but apply rigorous product judgment to what the business will rely on</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://natesnewsletter.substack.com/p/product-management-cheap-software-governance" target="_blank">Full written post with prompts</a> — Nate's detailed Substack essay on PM governance in the age of software abundance</li>
+      </ul>
+    </div>
+
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=0s" target="_blank">▶ 0:00</a> <span class="label">Product management in the age of AI</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=74s" target="_blank">▶ 1:14</a> <span class="label">Microsoft's million-asset reality check</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=150s" target="_blank">▶ 2:30</a> <span class="label">Why the non-technical PM is finished</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=225s" target="_blank">▶ 3:45</a> <span class="label">Where the old PM filter breaks down</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=320s" target="_blank">▶ 5:20</a> <span class="label">Broad building meets governance risk</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=400s" target="_blank">▶ 6:40</a> <span class="label">Market judgment is the new scarce thing</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=464s" target="_blank">▶ 7:44</a> <span class="label">What's the new job?</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=510s" target="_blank">▶ 8:30</a> <span class="label">The prototype commons</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=570s" target="_blank">▶ 9:30</a> <span class="label">The production class ladder (4 rungs)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=660s" target="_blank">▶ 11:00</a> <span class="label">Why demotion matters as much as promotion</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=b6J387xJvHg&t=710s" target="_blank">▶ 11:50</a> <span class="label">The decision rule for post-prototype PMs</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video b6J387xJvHg · Nate B Jones</footer>
+</body>
+</html>

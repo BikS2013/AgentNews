@@ -286,7 +286,18 @@
       "thumbnailSource": "html",
       "sha256": "e5403b66eb96f07ece64c3aea902fddb70a8a39281747936dd3045a96207aa19",
       "category": "deep-dive"
+    },
+    {
+      "slug": "cheap-software-made-your-pm-job-harder-not-easier-here-s-the-new-job",
+      "title": "Cheap Software Made Your PM Job Harder, Not Easier — Here's the New Job",
+      "publishedAt": "2026-05-29T12:00:00.000Z",
+      "sourcePath": "/tmp/cheap-software-pm-job-nate.html",
+      "articlePath": "experimental/cheap-software-made-your-pm-job-harder-not-easier-here-s-the-new-job.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/b6J387xJvHg/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "5f5d2a56b204fc67eb171ea3981ade4293416234eb507aefecd077a75994d3d3",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-29T18:59:34.648Z"
+  "updatedAt": "2026-05-29T19:12:47.644Z"
 }
