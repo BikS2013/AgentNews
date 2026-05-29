@@ -297,7 +297,18 @@
       "thumbnailSource": "html",
       "sha256": "5f5d2a56b204fc67eb171ea3981ade4293416234eb507aefecd077a75994d3d3",
       "category": "ai-news"
+    },
+    {
+      "slug": "claude-code-just-dropped-workflows-an-actual-game-changer",
+      "title": "Claude Code Just Dropped Workflows — An Actual Game Changer",
+      "publishedAt": "2026-05-29T12:00:00.000Z",
+      "sourcePath": "/tmp/claude-code-workflows-mansel.html",
+      "articlePath": "experimental/claude-code-just-dropped-workflows-an-actual-game-changer.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/ua2YA7TiLEk/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "75b34a398788eabf3a7ba3ae1b215a48fd3d39565f395a07a6e31ed4aba1a39e",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-29T19:12:47.644Z"
+  "updatedAt": "2026-05-29T21:17:13.122Z"
 }

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Just Dropped Workflows — An Actual Game Changer</title>
+<style>
+:root{--bg:#0f1117;--card-bg:#1a1d27;--card-border:#2a2d3a;--accent:#3b82f6;--accent-dim:#1e3a5f;--text:#e2e8f0;--text-muted:#94a3b8;--text-bright:#f8fafc;--green:#22c55e;--purple:#a78bfa;--orange:#f59e0b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;padding:0;}
+a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#1a1d27 50%,#0f1117 100%);border-bottom:1px solid var(--card-border);padding:2rem 1rem;text-align:center;}
+.hero h1{font-size:1.8rem;color:var(--text-bright);margin-bottom:.5rem;}
+.hero .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:1.2rem;}
+.thumb-link{display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .2s;max-width:560px;width:100%;}
+.thumb-link:hover{transform:scale(1.02);}.thumb-link img{width:100%;display:block;}
+.meta-pills{margin-top:1.2rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+.meta-pill{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:.3rem .9rem;font-size:.82rem;color:var(--text-muted);}
+.container{display:flex;max-width:1200px;margin:0 auto;gap:2rem;padding:2rem 1rem;}
+.toc{position:sticky;top:1rem;width:260px;min-width:220px;max-height:calc(100vh - 2rem);overflow-y:auto;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.2rem;font-size:.85rem;flex-shrink:0;}
+.toc h3{color:var(--accent);font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.8rem;}
+.toc ol{list-style:none;counter-reset:toc;}.toc li{counter-increment:toc;margin-bottom:.5rem;}
+.toc li a{color:var(--text-muted);display:block;padding:4px 0;transition:color .2s;}
+.toc li a:hover{color:var(--text-bright);text-decoration:none;}
+.toc li a::before{content:counter(toc) ". ";color:var(--accent);font-weight:600;}
+.toc li.no-counter a::before{content:"";}
+.content{flex:1;min-width:0;}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.8rem;margin-bottom:1.5rem;}
+.card h2{color:var(--text-bright);font-size:1.3rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--accent-dim);display:flex;align-items:center;gap:.5rem;}
+.card h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.card h3{color:var(--purple);font-size:1rem;margin:1rem 0 .5rem;}
+.card p,.card li{margin-bottom:.6rem;}.card ul,.card ol{padding-left:1.5rem;}.card ul li::marker{color:var(--accent);}
+.ts{display:inline-block;background:var(--accent-dim);color:var(--accent);font-family:'JetBrains Mono','Fira Code',monospace;font-size:.78rem;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0;white-space:nowrap;transition:background .2s;}
+.ts:hover{background:var(--accent);color:#fff;text-decoration:none;}
+.takeaways{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(167,139,250,.08));border:1px solid var(--accent-dim);border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0;}
+.takeaways h3{color:var(--green);margin-top:0;}.takeaways li{color:var(--text);}
+.highlight-box{background:rgba(59,130,246,.08);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem;color:var(--text);}
+.warn-box{background:rgba(245,158,11,.08);border-left:3px solid var(--orange);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem;color:var(--text);}
+code{background:rgba(59,130,246,.12);color:var(--accent);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.88em;}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:.6rem;}
+.ts-row{display:flex;align-items:center;gap:.7rem;padding:6px 10px;border-radius:8px;background:rgba(26,29,39,.6);transition:background .15s;}
+.ts-row:hover{background:var(--card-bg);}.ts-row .label{color:var(--text-muted);font-size:.85rem;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding:20px 1rem;border-top:1px solid #1e2028;}
+@media(max-width:800px){.container{flex-direction:column;}.toc{position:static;width:100%;max-height:none;}.ts-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<img src="https://img.youtube.com/vi/ua2YA7TiLEk/maxresdefault.jpg" alt="Claude Code Workflows" style="display:none;">
+
+<div class="hero">
+  <h1>Claude Code Just Dropped Workflows — An Actual Game Changer</h1>
+  <div class="meta">Mansel Scheffel · ~16 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=ua2YA7TiLEk" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/ua2YA7TiLEk/maxresdefault.jpg" alt="Video thumbnail">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~16 min</span>
+    <span class="meta-pill">🎤 Mansel Scheffel</span>
+    <span class="meta-pill">🏷 Claude Code · Workflows · Sub-Agents · Deep Research · Token Cost · JavaScript Orchestration</span>
+  </div>
+</div>
+
+<div class="container">
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">Sub-Agents &amp; Context Bloat</a></li>
+      <li><a href="#s2">The Script-Based Orchestrator</a></li>
+      <li><a href="#s3">Runtime Architecture</a></li>
+      <li><a href="#s4">Deep Research Demo</a></li>
+      <li><a href="#s5">Startup Forge Demo</a></li>
+      <li><a href="#s6">Inside the Script &amp; Model Mixing</a></li>
+      <li><a href="#s7">Token Cost Reality Check</a></li>
+      <li><a href="#s8">Control &amp; Configuration</a></li>
+      <li><a href="#s9">When To Use Workflows</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>Claude Code's new <strong>Dynamic Workflows</strong> feature moves the sub-agent orchestration layer from the LLM's context window into a <strong>deterministic JavaScript script</strong>. Instead of Claude managing dozens of agents while holding intermediate state in its context (causing bloat, lost track, and compaction), a <code>workflow.js</code> file handles state in variables, runs deterministic loops, and returns only final answers to the main session. The result: you can spawn up to <strong>1,000 agents per run</strong> (16 concurrent max), mix models per phase (Haiku for discovery, Sonnet for critique, Opus for synthesis), and pause/resume mid-run via a journal. Mansel demos two workflows — deep research (105 agents, 3M tokens, 15 min for vitamin C research) and Startup Forge (adversarial idea validation with VC judges) — and is refreshingly honest about the token cost.</p>
+    </div>
+
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> Sub-Agents &amp; The Context Bloat Problem</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=17s" target="_blank">▶ 0:17</a></p>
+      <p>Mansel starts with the problem workflows solve. In a normal Claude Code session, most people just keep chatting until the context is exhausted. The context window fills with tool calls, MCP results, long reasoning, and conversation history — <strong>all bloat</strong>.</p>
+      <p><strong>Sub-agents</strong> were the first solution: spawn a fresh Claude Code session with its own isolated context for a specific task, then return only the answer (~500 tokens) to the main session instead of the full 6,000-60,000 tokens of work. No bloat, no compaction needed.</p>
+      <p>But the problem with sub-agents was that <strong>Claude itself was the orchestrator</strong>. It had to keep track of what agents were doing, manage requests and results, reason about ordering — all inside its own context. At scale (6+ agents), it starts losing track.</p>
+      <div class="highlight-box">💡 "We have our manager over here who loses track of everything because it has to hold intermediate states within its context."</div>
+    </div>
+
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> The Script-Based Orchestrator</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=154s" target="_blank">▶ 2:34</a></p>
+      <p>The solution: <strong>move the manager to a script</strong>. A <code>workflow.js</code> file replaces the overburdened main context window as the orchestrator:</p>
+      <ul>
+        <li><strong>State held in variables</strong> — not in the LLM's context</li>
+        <li><strong>Deterministic loops</strong> — the script runs until conditions are met, not until Claude "feels" done</li>
+        <li><strong>Only final answers</strong> return to the main Claude session</li>
+        <li><strong>Massive scale</strong> — up to 1,000 agents total per run, 16 concurrent max</li>
+      </ul>
+      <p>The script includes a <strong>journal</strong> that tracks execution state, enabling pause and resume mid-run.</p>
+    </div>
+
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Runtime Architecture &amp; Limits</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=191s" target="_blank">▶ 3:11</a></p>
+      <p>At runtime, the <code>workflow.js</code> runs as a <strong>separate process</strong> that spawns agents to do the work. Key technical details:</p>
+      <ul>
+        <li><strong>No direct file system or shell access from the script</strong> — only the agents have that capability</li>
+        <li><strong>16 concurrent agents max</strong> — but 1,000 total per run (sequential batching)</li>
+        <li><strong>Requires</strong> Claude Code desktop app or terminal-based IDE — not VS Code extension (yet)</li>
+        <li><strong>Journal-based resumability</strong> — pause mid-run and resume later</li>
+        <li><strong>Default permissions:</strong> edit-accept mode — won't bypass permissions unless told to</li>
+      </ul>
+    </div>
+
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Live Demo: Deep Research on Vitamin C</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=262s" target="_blank">▶ 4:22</a></p>
+      <p>Mansel triggers the <code>/deep-research</code> skill (built on workflows) by asking about vitamin C benefits. The workflow runs through <strong>5 stages</strong>:</p>
+      <ol>
+        <li><strong>Scope</strong> — breaks the question into 5 research angles (1 agent, 31K tokens, 17 seconds)</li>
+        <li><strong>Search</strong> — 5 parallel web searches, one per angle</li>
+        <li><strong>Fetch</strong> — dedupes URLs, pulls top 15 sources, extracts falsifiable claims</li>
+        <li><strong>Verify</strong> — <strong>adversarial three-vote fact-checking</strong> on each claim. Each claim needs 2-out-of-3 refutes killed before proceeding. This is where ~75 of the 105 agents ran</li>
+        <li><strong>Synthesize</strong> — produces the final research document</li>
+      </ol>
+      <div class="warn-box">⚠️ <strong>Cost reality:</strong> After 1 minute — 22 agents, 550K tokens. After 12 minutes — 3.1M tokens. Final: <strong>105 agents, 3M+ tokens, 15 minutes</strong>. The output was "not as much information as one would think after that amount of time."</div>
+      <p>Mansel suggests reserving deep research for very specific, high-stakes problems — not everyday research. Examples: medical blood work analysis, competitor research for a critical decision.</p>
+    </div>
+
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Startup Forge — Beyond Software Dev</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=382s" target="_blank">▶ 6:22</a></p>
+      <p>To show workflows aren't just for developers, Mansel asked Claude to create a demo workflow on its own. It built <strong>Startup Forge</strong>:</p>
+      <ol>
+        <li><strong>Ideation</strong> — 4 agents each invent a startup from a different angle (consumer, B2B, climate, AI-native)</li>
+        <li><strong>Judging</strong> — each idea is scored by a VC judge the moment it's ready (idea #1 gets judged while idea #4 is still being written). Judges must return validated novelty, market size, feasibility, and total scores</li>
+        <li><strong>Stress testing</strong> — the top-ranked idea is attacked by <strong>3 skeptics in parallel</strong>, each with a distinct lens (persona prompting), trying to find fatal flaws</li>
+        <li><strong>Synthesis</strong> — writes an honest investor pitch that must confront every objection head-on</li>
+      </ol>
+      <p>Use cases beyond software: business idea validation, audits, competitive analysis, lead generation.</p>
+    </div>
+
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Inside the Script &amp; Model Mixing</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=540s" target="_blank">▶ 9:00</a></p>
+      <p>The workflow script is saved as a <code>.js</code> file with clear structure:</p>
+      <ul>
+        <li><strong>Name and description</strong> — reusable metadata</li>
+        <li><strong>Phases</strong> — each with a defined model, agent count, and prompt</li>
+        <li><strong>Per-phase model selection</strong> — the killer feature</li>
+      </ul>
+      <p>Example configuration:</p>
+      <ul>
+        <li><strong>Generate phase:</strong> 6 Haiku agents brainstorm name/tagline candidates (cheap, fast)</li>
+        <li><strong>Critique phase:</strong> Sonnet scores each candidate (balanced reasoning)</li>
+        <li><strong>Synthesis phase:</strong> Opus writes the final brand brief (highest quality)</li>
+      </ul>
+      <p>You can edit the script directly or ask Claude to modify it via natural language. The script is <strong>reusable</strong> — saved for future runs with the same parameters.</p>
+      <div class="highlight-box">💡 "You can use different models per phase. Some phases run in Haiku for discovery, Sonnet for critique, Opus for synthesis — you choose the cost/quality tradeoff at each step."</div>
+    </div>
+
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Token Cost Reality Check</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=710s" target="_blank">▶ 11:50</a></p>
+      <p>Mansel is refreshingly direct about costs:</p>
+      <ul>
+        <li>Deep research: <strong>105 agents → 3M+ tokens → 15 minutes</strong> for a single vitamin C query</li>
+        <li>Sub-agents don't magically reduce token usage — each agent still consumes its own tokens</li>
+        <li>The deterministic loop means it <strong>will keep running until done</strong> — set budget guards to prevent death spirals</li>
+        <li><strong>Max/Team users:</strong> workflows enabled by default</li>
+        <li><strong>Pro users:</strong> NOT enabled by default — "It will probably nuke your entire budget and you won't be able to feed your family for a week"</li>
+        <li><strong>Organizations:</strong> off by default, admin must enable</li>
+      </ul>
+      <p>Enable/disable via <code>/config</code> in Claude Code settings.</p>
+    </div>
+
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Three Levels of Control</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=786s" target="_blank">▶ 13:06</a></p>
+      <p>Mansel outlines three levels of workflow control:</p>
+      <ul>
+        <li><strong>Level 1 — Prompt design:</strong> be very specific up front. Research your use case before prompting. The more clarity you provide, the better the workflow script</li>
+        <li><strong>Level 2 — Pre-run inspection:</strong> inspect the generated script before execution. Change agent counts, parallelism, prompts, models, and budget guards</li>
+        <li><strong>Level 3 — Direct script editing:</strong> open the <code>.js</code> file and edit it manually, or ask Claude to modify it via natural language</li>
+      </ul>
+      <p>Workflows trigger automatically when you use the word "workflow" in chat. There's also an "ultra code" effort mode that auto-creates workflows for every substantive task (not recommended for most users).</p>
+    </div>
+
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> When To Actually Use Workflows</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=899s" target="_blank">▶ 14:59</a></p>
+      <p>Mansel's guidance on workflows vs skills:</p>
+      <ul>
+        <li><strong>Skills for daily work</strong> — determinism, reliability, same thing every day (lead gen, replies, routine tasks)</li>
+        <li><strong>Workflows for specific high-value tasks:</strong>
+          <ul>
+            <li>Task fans out across many similar items</li>
+            <li>You need deterministic loops (relentlessly achieve a complex goal)</li>
+            <li>You want resumability mid-run</li>
+            <li>Massive bug sweeps, code reviews, codebase audits</li>
+            <li>Deep research on critical decisions</li>
+          </ul>
+        </li>
+        <li><strong>Not for everything</strong> — the token cost makes daily use impractical. Reserve for when the stakes justify 3M+ tokens</li>
+      </ul>
+      <div class="highlight-box">💡 "Skills for the majority of my workflows. Workflows are for when the task fans out across many similar items or you want those deterministic loops — relentlessly trying to achieve a complex goal."</div>
+    </div>
+
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Workflows move orchestration from LLM context to a JS script</strong> — state in variables, deterministic loops, only final answers returned. Solves the "manager loses track" problem at scale</li>
+          <li><strong>1,000 agents per run, 16 concurrent max</strong> — massive parallelism for research, audits, code reviews, and multi-angle analysis</li>
+          <li><strong>Mix models per phase</strong> — Haiku for cheap discovery, Sonnet for reasoning, Opus for synthesis. Optimize cost/quality at each step</li>
+          <li><strong>Deep research = 105 agents, 3M tokens, 15 minutes</strong> — adversarial 3-vote fact-checking is the biggest token consumer (~75 of 105 agents)</li>
+          <li><strong>Journal enables pause/resume</strong> — state persisted to disk, resume mid-run later. Critical for expensive long-running workflows</li>
+          <li><strong>Not a daily tool</strong> — reserve for high-stakes decisions where the cost of 3M+ tokens is justified. Skills are for daily deterministic work</li>
+          <li><strong>Three levels of control</strong> — specific prompts, pre-run inspection, direct script editing. Always inspect before running</li>
+          <li><strong>Pro users: not enabled by default</strong> — for good reason. Max/Team users get it automatically. Organizations must opt in via admin</li>
+          <li><strong>Scripts are reusable</strong> — saved as .js files, re-runnable, editable via natural language or direct code editing</li>
+          <li><strong>Beyond software dev</strong> — Startup Forge demo shows business idea validation with VC judges and adversarial skeptics. Also useful for audits, competitor research, lead gen</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=0s" target="_blank">▶ 0:00</a> <span class="label">Intro — workflows are the best feature</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=17s" target="_blank">▶ 0:17</a> <span class="label">Sub-agents explained — context bloat problem</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=154s" target="_blank">▶ 2:34</a> <span class="label">Script-based orchestrator solution</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=191s" target="_blank">▶ 3:11</a> <span class="label">Runtime architecture — journal, limits</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=262s" target="_blank">▶ 4:22</a> <span class="label">Deep research demo — vitamin C</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=382s" target="_blank">▶ 6:22</a> <span class="label">Startup Forge demo — adversarial validation</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=540s" target="_blank">▶ 9:00</a> <span class="label">Inside the script — model mixing per phase</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=710s" target="_blank">▶ 11:50</a> <span class="label">Token cost reality — 3M+ tokens per run</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=786s" target="_blank">▶ 13:06</a> <span class="label">Three levels of control</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=858s" target="_blank">▶ 14:18</a> <span class="label">Saved workflows — VS Code support</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=ua2YA7TiLEk&t=899s" target="_blank">▶ 14:59</a> <span class="label">When to use workflows vs skills</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video ua2YA7TiLEk · Mansel Scheffel</footer>
+</body>
+</html>
