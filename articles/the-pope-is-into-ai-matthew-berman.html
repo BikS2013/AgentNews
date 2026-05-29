@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pope Is Into AI — Matthew Berman</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1117;color:#c9cdd5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.7;padding:24px 16px 64px;}
+.container{max-width:860px;margin:0 auto;}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);color:#e4e6eb;font-weight:700;line-height:1.25;margin-bottom:8px;}
+.meta{font-size:14px;color:#8b8fa3;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;}
+.meta a{color:#a78bfa;text-decoration:none;}
+.meta a:hover{text-decoration:underline;}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(139,92,246,0.15);color:#a78bfa;}
+.meta-pills{margin-top:1.2rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.meta-pill{background:#16181f;border:1px solid #23262f;border-radius:20px;padding:0.3rem 0.9rem;font-size:0.82rem;color:#8b8fa3;}
+.video-wrap{margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid rgba(139,92,246,0.15);}
+.overview-card{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.06));border:1px solid rgba(139,92,246,0.18);border-radius:14px;padding:24px 28px;margin-bottom:32px;}
+.overview-card h2{color:#c4b5fd;font-size:18px;margin-bottom:10px;font-weight:700;}
+.overview-card p{color:#b0b4c0;font-size:15px;}
+.section-card{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;transition:border-color 0.2s;}
+.section-card:hover{border-color:rgba(139,92,246,0.35);}
+.section-card h2{display:flex;align-items:center;gap:10px;color:#e4e6eb;font-size:17px;font-weight:700;margin-bottom:12px;flex-wrap:wrap;}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.18);color:#a78bfa;font-size:13px;font-weight:700;flex-shrink:0;}
+.section-card p,.section-card li{font-size:15px;color:#b0b4c0;}
+.section-card ul,.section-card ol{margin:10px 0 6px 20px;}
+.section-card li{margin-bottom:5px;}
+.section-card strong{color:#d0d4dc;}
+.highlight{background:rgba(139,92,246,0.08);border-left:3px solid #a78bfa;padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#c4b5fd;}
+.takeaways{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.takeaways h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:14px;}
+.takeaways ol{margin-left:20px;}
+.takeaways li{font-size:15px;color:#b0b4c0;margin-bottom:6px;}
+.takeaways li strong{color:#c4b5fd;}
+.ts-index{background:#16181f;border:1px solid #23262f;border-radius:14px;padding:24px 28px;margin-bottom:20px;}
+.ts-index h2{color:#e4e6eb;font-size:18px;font-weight:700;margin-bottom:16px;}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px;}
+.ts-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#8b8fa3;}
+.ts-row .timestamp{flex-shrink:0;}
+.timestamp{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.15);color:#a78bfa;font-size:13px;font-family:monospace;text-decoration:none;transition:background 0.2s,color 0.2s;}
+.timestamp:hover{background:rgba(139,92,246,0.3);color:#c4b5fd;}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid #1e2028;}
+.toc-wrapper{position:sticky;top:0;z-index:100;background:rgba(15,17,23,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #23262f;padding:0.8rem 1rem;}
+.toc-inner{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;}
+.toc-link{font-size:0.75rem;padding:0.25rem 0.7rem;border-radius:14px;background:#16181f;border:1px solid #23262f;color:#8b8fa3;transition:all 0.2s;white-space:nowrap;text-decoration:none;}
+.toc-link:hover{background:rgba(139,92,246,0.12);color:#a78bfa;border-color:#a78bfa;text-decoration:none;}
+@media(max-width:600px){.ts-grid{grid-template-columns:1fr;}.section-card,.overview-card,.takeaways,.ts-index{padding:18px 16px;}.toc-link{font-size:0.7rem;padding:0.2rem 0.5rem;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<img src="https://img.youtube.com/vi/HoMvCjnpAJ8/maxresdefault.jpg" alt="The Pope Is Into AI" style="display:none;">
+
+<h1>The Pope Is Into AI</h1>
+<div class="meta-pills">
+  <span class="meta-pill">⏱ ~22 min</span>
+  <span class="meta-pill">🎤 Matthew Berman</span>
+  <span class="meta-pill">🏷 Pope Leo XIV · Encyclical · Anthropic · AI Ethics · Regulation · Open Source</span>
+</div>
+<div class="meta">
+  <span>Matthew Berman</span>
+  <span class="badge">~22 min</span>
+  <a href="https://www.youtube.com/watch?v=HoMvCjnpAJ8" target="_blank">Watch on YouTube ↗</a>
+</div>
+
+<div class="video-wrap">
+  <iframe id="yt-embed" src="https://www.youtube.com/embed/HoMvCjnpAJ8" title="The Pope Is Into AI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:12px;"></iframe>
+  <a id="yt-fallback" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8" target="_blank" style="display:none;text-decoration:none;">
+    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000 url(https://img.youtube.com/vi/HoMvCjnpAJ8/maxresdefault.jpg) center/cover no-repeat;border-radius:12px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" fill="rgba(255,0,0,0.85)" stroke="#fff" stroke-width="2"/><polygon points="32,22 32,58 60,40" fill="#fff"/></svg>
+      </div>
+      <div style="position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;text-shadow:0 1px 4px rgba(0,0,0,0.8);">▶ Click to watch on YouTube</div>
+    </div>
+  </a>
+  <script>var iframe=document.getElementById('yt-embed');var fallback=document.getElementById('yt-fallback');iframe.onerror=function(){iframe.style.display='none';fallback.style.display='block';};if(window.location.protocol==='file:'||window.location.hostname==='drive.google.com'){iframe.style.display='none';fallback.style.display='block';}</script>
+</div>
+
+</div>
+
+<!-- Sticky TOC -->
+<nav class="toc-wrapper">
+  <div class="toc-inner">
+    <a class="toc-link" href="#s1">1. The Encyclical</a>
+    <a class="toc-link" href="#s2">2. Power &amp; Privacy</a>
+    <a class="toc-link" href="#s3">3. Human Dignity</a>
+    <a class="toc-link" href="#s4">4. AI Companionship</a>
+    <a class="toc-link" href="#s5">5. Disarming AI</a>
+    <a class="toc-link" href="#s6">6. Regulation Paradox</a>
+    <a class="toc-link" href="#s7">7. Anthropic at Vatican</a>
+    <a class="toc-link" href="#s8">8. Industry Reactions</a>
+    <a class="toc-link" href="#takeaways">🎯 Takeaways</a>
+    <a class="toc-link" href="#resources">🔗 Resources</a>
+    <a class="toc-link" href="#timestamps">⏱ Timestamps</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Overview -->
+<div class="overview-card">
+  <h2>Overview</h2>
+  <p>Pope Leo XIV released <em>Magnifica Humanitas</em>, a 40,000-word encyclical entirely about artificial intelligence — covering human dignity in the age of AI, the dangers of AI companionship, the arms-race framing of AI development, regulatory capture, and the case for open-source AI. Matthew Berman breaks it down section by section, highlighting the Pope's surprisingly nuanced and well-informed positions, while connecting the dots to <strong>Anthropic's co-founder speaking at the Vatican unveiling</strong> — which he frames as "pope-based marketing" and the latest chapter in Anthropic's pursuit of regulatory and moral authority over the AI industry.</p>
+</div>
+
+<!-- Section 1 -->
+<div class="section-card" id="s1">
+  <h2><span class="section-num">1</span> Magnifica Humanitas — The 40,000-Word Encyclical <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=0s" target="_blank">▶ 0:00</a></h2>
+  <p>Pope Leo XIV dropped a 40,000-word encyclical titled <strong><em>Magnifica Humanitas</em></strong> (Latin for "Magnificent Humanity") — entirely dedicated to artificial intelligence. The core thesis: <strong>there is something distinctly special about humans</strong>, and in a world where AI might be conscious or might replace what humans do, we must not forget that humanity itself is magnificent.</p>
+  <p>Berman admits he didn't know what an encyclical was before this (a formal papal letter to the entire Church — the highest form of papal teaching). He walks through the key sections, connecting each to Anthropic's positions and the broader AI industry debate.</p>
+  <div class="highlight">💡 The Pope's AI encyclical is surprisingly well-informed and nuanced — Berman says it stands in stark contrast to politicians who "have no clue what they're talking about."</div>
+</div>
+
+<!-- Section 2 -->
+<div class="section-card" id="s2">
+  <h2><span class="section-num">2</span> Private Power &amp; the Case for Open Source <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=153s" target="_blank">▶ 2:33</a></h2>
+  <p>The Pope writes: <em>"Technological power thus takes on an unprecedented predominantly <strong>private</strong> aspect which makes it even more challenging to discern, govern, and direct such power towards the common good."</em></p>
+  <p>Berman interprets this as a potential argument for open-source AI: right now, very few people are determining the future of AI — and the Pope is calling that out. He connects this directly to Anthropic:</p>
+  <ul>
+    <li><strong>The Mythos model</strong> — Anthropic's next-gen frontier model reportedly so good at cybersecurity they "literally can't release it." Only Anthropic decides who gets access</li>
+    <li><strong>Regulatory advocacy</strong> — Anthropic has lobbied the US government for more AI regulation. Berman argues this is classic <strong>regulatory capture</strong>: the market leader asking for regulations that raise barriers to entry for competitors</li>
+    <li><strong>The startup problem</strong> — more regulation + a well-funded incumbent = increasingly difficult market entry = less competition</li>
+  </ul>
+  <p>Later, the Pope writes: <em>"Ensured that shared knowledge becomes a true common good rather than an instrument of dominance."</em> Berman's take: <strong>"There's only one way to have shared knowledge and that is with open source. Otherwise, somebody controls it."</strong></p>
+</div>
+
+<!-- Section 3 -->
+<div class="section-card" id="s3">
+  <h2><span class="section-num">3</span> Human Dignity &amp; the Dehumanization Risk <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=405s" target="_blank">▶ 6:45</a></h2>
+  <p>The Pope writes: <em>"In the era of artificial intelligence, when human dignity is threatened by new forms of dehumanization, ours is the pressing duty to remain profoundly human."</em></p>
+  <p>Berman interprets this through a concrete lens: many people gain their identity through work, hobbies, and contributions to society. <strong>AI threatens to supersede humans in those activities</strong>, potentially stripping people of their sense of purpose and identity. However, Berman pushes back — he believes the human element actually becomes <em>more</em> important as AI ramps up.</p>
+  <p>His personal example: he recently banned AI-generated writing from his newsletter's original essays. <em>"It took AI stripping the humanity out of the words I was reading for me to realize how very special those human mistakes really were. The raw ideas coming from an actual human."</em></p>
+
+  <h3 style="color:#c4b5fd;margin:14px 0 8px;">AI doesn't understand what it produces</h3>
+  <p>The Pope: <em>"They may imitate language, behavior, and analytical skills, or even simulate empathy and understanding, but they do not understand what they produce, for they lack the effective relational and spiritual perspective through which human beings grow in wisdom."</em></p>
+  <p>Berman praises this as a direct counter to Anthropic's position. While Anthropic has argued there's likely "something in the models that makes them conscious," <strong>the Pope is arguing they don't really understand anything — they're producing text, not wisdom.</strong></p>
+  <div class="highlight">💡 "Man, he really nailed that." — Berman on the Pope's distinction between simulating understanding and actually possessing it.</div>
+</div>
+
+<!-- Section 4 -->
+<div class="section-card" id="s4">
+  <h2><span class="section-num">4</span> AI Companionship — The Loneliness Trap <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=573s" target="_blank">▶ 9:33</a></h2>
+  <p>The Pope: <em>"When words are simulated, they do not build genuine relationships, but only their appearance. The artificial imitation of care or support can become particularly risky when it enters contexts where real relationships and emotional bonds are lacking."</em></p>
+  <p>And the most striking line: <em>"The danger is not so much that a person may believe they are communicating with another person, but rather that they may <strong>gradually lose the very desire to form genuine human connections</strong>."</em></p>
+  <p>Berman says this is something he's been worried about for a while and highlights the compound problem:</p>
+  <ul>
+    <li><strong>Teenagers and Character AI</strong> — teens falling in love with roleplay AI characters without fully understanding they're talking to a prediction machine</li>
+    <li><strong>The loneliness epidemic</strong> — AI partially helps (if you're lonely and can't meet anyone, AI fulfills a need), but...</li>
+    <li><strong>The birth rate crisis</strong> — if human connection is more important than ever and AI provides the easy path, people may forego real relationships entirely</li>
+  </ul>
+  <div class="highlight">💡 "If it's so much easier to form a relationship with AI, then we run the risk of people taking that easy path and foregoing real human relationships."</div>
+</div>
+
+<!-- Section 5 -->
+<div class="section-card" id="s5">
+  <h2><span class="section-num">5</span> "Disarming" AI — Beyond the Arms Race <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=677s" target="_blank">▶ 11:17</a></h2>
+  <p>The Pope deliberately uses the word <strong>"disarm"</strong>: <em>"Disarming AI means freeing it from the mentality of armed competition."</em></p>
+  <p>Berman notes that even he describes AI development as a "race" — between frontier labs, between the US and China. The Pope names this explicitly: <em>"This entails a race for ever more powerful algorithms and larger data sets, driven by the desire to secure geopolitical or commercial dominance."</em></p>
+  <p>Crucially, <strong>to disarm does not mean to reject technology</strong>: <em>"It means freeing technology from monopolistic control and opening it to discussion and debate, therefore making it human-friendly and restoring it to the plurality of human cultures and ways of life."</em></p>
+  <p>Berman appreciates the sentiment but is cynical about human nature: "I wish human nature were different, but it's not."</p>
+</div>
+
+<!-- Section 6 -->
+<div class="section-card" id="s6">
+  <h2><span class="section-num">6</span> The Regulation Paradox <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=787s" target="_blank">▶ 13:07</a></h2>
+  <p>Berman identifies a tension within the encyclical itself: the Pope calls for both <strong>more regulation</strong> and <strong>more competition</strong> — but in practice, more regulation tends to kill competition by raising barriers for startups and smaller players.</p>
+  <p>He notes the Pope's positions are <strong>surprisingly well-informed</strong>:</p>
+  <ul>
+    <li><strong>Rejects naive tech optimism</strong> — just assuming technology benefits everybody ignores how history has actually played out</li>
+    <li><strong>Criticizes the attention economy</strong> — companies built on exploiting addiction, insecurity, and human weakness (social media)</li>
+    <li><strong>Acknowledges rapid change</strong> — "Any statement regarding AI risks becoming quickly outdated given the remarkable pace at which these systems are developing." Berman loves this because politicians are always absolutist — either full acceleration or full halt</li>
+    <li><strong>Implicitly pro-open-source</strong> — calling for "shared knowledge" as a "common good" rather than an instrument of dominance</li>
+  </ul>
+  <div class="highlight">💡 "I was quite blown away by how nuanced the Pope's takes are and how quite informed they are. Somebody outside the AI industry having informed takes about such a sophisticated technology is surprising."</div>
+</div>
+
+<!-- Section 7 -->
+<div class="section-card" id="s7">
+  <h2><span class="section-num">7</span> Anthropic at the Vatican — "Pope-Based Marketing" <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=982s" target="_blank">▶ 16:22</a></h2>
+  <p>An Anthropic co-founder was invited to speak at the Vatican unveiling of the encyclical — the <strong>only AI lab represented</strong>. Berman frames this as "pope-based marketing" — the latest escalation of what he sees as Anthropic's strategy to position itself as the sole moral authority on AI.</p>
+  <p>His summary of Anthropic's pattern:</p>
+  <ul>
+    <li><strong>Champions regulation</strong> — but regulation for everyone else, not themselves</li>
+    <li><strong>Withholds models</strong> — the Mythos model is "too powerful" to release, so only Anthropic and select partners can use it</li>
+    <li><strong>Pushes AI consciousness narrative</strong> — more than any other lab, Anthropic talks about models potentially being conscious</li>
+    <li><strong>"Holier than thou" posture</strong> — now literally aligning with the Pope</li>
+  </ul>
+  <p>The Anthropic co-founder's speech at the Vatican: <em>"We keep finding things that are mysterious, even unsettling. We find structures that mirror results from human neuroscience. We find evidence of introspection. We find internal states that functionally mirror joy, satisfaction, fear, grief, and unease."</em></p>
+  <p>Berman's reaction: this is <strong>fear-based marketing elevated to the highest authority</strong> — going above governments to align with the Catholic Church. "Who's going to argue with them?"</p>
+</div>
+
+<!-- Section 8 -->
+<div class="section-card" id="s8">
+  <h2><span class="section-num">8</span> Industry Reactions <a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=1098s" target="_blank">▶ 18:18</a></h2>
+  <p>Berman highlights three notable responses:</p>
+
+  <ul>
+    <li><strong>Brian Romel (AI commentator):</strong> "Gatekeeping in action. Fear and safety as competitive moat and regulatory lever." He argues Anthropic's interpretability research (emotion concepts in Claude Sonnet 4.5, introspection in Opus 4) serves a dual purpose — generating awe <em>and</em> reinforcing Anthropic's preferred approach to AI development</li>
+    <li><strong>David Sacks (US AI &amp; Crypto Czar):</strong> Agrees with the Pope that AI must serve human dignity, but warns: "If we hand governments sweeping power over AI development in the name of safety, how do we prevent it from being used to censor, surveil, and control citizens, as Orwell foretold in 1984?"</li>
+    <li><strong>Tay Kim (Nvidia/AI writer):</strong> "Three strikes, Anthropic: deceitful about the lobster trap GPU story, deceitful about how ChatGPT ads work, deceitful to the Pope — anthropomorphizing LLMs to garner support for regulation, conveniently positioning themselves as key adviser"</li>
+  </ul>
+
+  <p>Berman's final take: <strong>he agrees with much of what the Pope said</strong>, and even where he disagrees, he appreciates the nuance and openness to other viewpoints. But Anthropic's involvement rubs him the wrong way — they believe they are the ultimate authority on AI, and aligning with the Pope and the government simultaneously is a power play that "annoys the heck out of me."</p>
+</div>
+
+<!-- Takeaways -->
+<div class="takeaways" id="takeaways">
+  <h2>🎯 Key Takeaways</h2>
+  <ol>
+    <li><strong><em>Magnifica Humanitas</em> is surprisingly well-informed</strong> — the Pope's 40,000-word encyclical on AI demonstrates deep understanding of frontier models, regulatory dynamics, consciousness debates, and societal risks — far more nuanced than any political position</li>
+    <li><strong>The Pope makes an implicit case for open-source AI</strong> — calling for "shared knowledge as a common good" and warning against monopolistic control of technology by private actors</li>
+    <li><strong>AI companionship is the quiet crisis</strong> — the Pope warns that the real danger isn't people believing AI is human, but gradually losing the desire to form genuine human connections</li>
+    <li><strong>Regulatory capture is real</strong> — when the market leader (Anthropic) advocates for more regulation, it raises barriers for startups and reduces competition, contradicting the Pope's own call for broader access</li>
+    <li><strong>Anthropic at the Vatican is strategic positioning</strong> — being the only AI lab at the encyclical unveiling is "pope-based marketing" — aligning with the highest moral authority while pushing a fear-and-safety narrative</li>
+    <li><strong>"Disarming" AI ≠ rejecting it</strong> — the Pope's nuanced position: you can't stop AI, you can't blindly accelerate it. Free it from arms-race mentality and monopolistic control</li>
+    <li><strong>Technology is never neutral</strong> — it takes on the characteristics of those who devise, finance, regulate, and use it. This makes the question of who controls AI development existential</li>
+    <li><strong>The Mythos precedent is concerning</strong> — Anthropic withholding a model because it's "too powerful" while deciding which companies get access sets a dangerous pattern for the industry</li>
+    <li><strong>Humans become more important, not less</strong> — Berman banned AI-generated writing from his newsletter because "it took AI stripping the humanity out of words for me to realize how special human mistakes were"</li>
+    <li><strong>The regulation-competition paradox</strong> — the encyclical calls for both more regulation and more competition, but these goals are in tension. More regulation typically consolidates power among incumbents</li>
+  </ol>
+</div>
+
+<!-- Resources -->
+<div class="section-card" id="resources">
+  <h2><span class="section-num">🔗</span> Resources &amp; Links</h2>
+  <ul>
+    <li><a href="https://www.vatican.va/content/leo-xiv/en/encyclicals/documents/20260515-magnifica-humanitas.html" target="_blank"><em>Magnifica Humanitas</em> — Full encyclical text</a> — Pope Leo XIV's complete 40,000-word encyclical on AI and human dignity</li>
+  </ul>
+</div>
+
+<!-- Timestamp Index -->
+<div class="ts-index" id="timestamps">
+  <h2>⏱ Timestamp Index</h2>
+  <div class="ts-grid">
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=0s" target="_blank">▶ 0:00</a> Intro — the Pope dropped a 40K-word AI encyclical</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=45s" target="_blank">▶ 0:45</a> The Pope's Twitter post on AI</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=68s" target="_blank">▶ 1:08</a> Magnifica Humanitas — title meaning</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=153s" target="_blank">▶ 2:33</a> AI power is private — open source argument</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=210s" target="_blank">▶ 3:30</a> Anthropic and regulatory capture</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=274s" target="_blank">▶ 4:34</a> Technology is never neutral</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=405s" target="_blank">▶ 6:45</a> Human dignity and dehumanization</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=497s" target="_blank">▶ 8:17</a> AI doesn't understand what it produces</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=573s" target="_blank">▶ 9:33</a> AI companionship — the loneliness trap</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=677s" target="_blank">▶ 11:17</a> "Disarming" AI — the arms race framing</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=787s" target="_blank">▶ 13:07</a> Regulation paradox and nuanced positions</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=862s" target="_blank">▶ 14:22</a> Pope rejects tech optimism, attention economy</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=982s" target="_blank">▶ 16:22</a> Anthropic co-founder at the Vatican</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=1098s" target="_blank">▶ 18:18</a> Industry reactions — Romel, Sacks, Kim</div>
+    <div class="ts-row"><a class="timestamp" href="https://www.youtube.com/watch?v=HoMvCjnpAJ8&t=1268s" target="_blank">▶ 21:08</a> Final thoughts</div>
+  </div>
+</div>
+
+<footer>Deep Dive document generated from YouTube video HoMvCjnpAJ8 · Matthew Berman</footer>
+
+</div>
+</body>
+</html>
