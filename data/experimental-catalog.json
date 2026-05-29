@@ -253,7 +253,18 @@
       "thumbnailSource": "html",
       "sha256": "18fcb3230dda81800a9ceb713ca228a315376f4863449a723dcb2b7e195ea21d",
       "category": "deep-dive"
+    },
+    {
+      "slug": "this-open-source-is-quietly-eliminating-agent-hallucinations",
+      "title": "This Open Source Is Quietly Eliminating Agent Hallucinations",
+      "publishedAt": "2026-05-29T12:00:00.000Z",
+      "sourcePath": "/tmp/babysitter-agent-hallucinations.html",
+      "articlePath": "experimental/this-open-source-is-quietly-eliminating-agent-hallucinations.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/xNDxh35Dva4/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "c4c64c8fa17499630bad88b7a9157003d1049d396ab7ae0076c9ef88cf1c2e71",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-29T15:27:19.765Z"
+  "updatedAt": "2026-05-29T18:37:23.659Z"
 }

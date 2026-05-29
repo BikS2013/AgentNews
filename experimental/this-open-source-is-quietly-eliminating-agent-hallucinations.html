@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This Open Source Is Quietly Eliminating Agent Hallucinations</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 { font-size: 1.8rem; color: var(--text-bright); margin-bottom: 0.5rem; }
+.hero .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; }
+.thumb-link {
+  display: inline-block; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: transform 0.2s;
+  max-width: 560px; width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 20px; padding: 0.3rem 0.9rem; font-size: 0.82rem; color: var(--text-muted);
+}
+
+.container { display: flex; max-width: 1200px; margin: 0 auto; gap: 2rem; padding: 2rem 1rem; }
+
+.toc {
+  position: sticky; top: 1rem; width: 260px; min-width: 220px;
+  max-height: calc(100vh - 2rem); overflow-y: auto;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 1.2rem; font-size: 0.85rem; flex-shrink: 0;
+}
+.toc h3 { color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.8rem; }
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a { color: var(--text-muted); display: block; padding: 4px 0; transition: color 0.2s; }
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before { content: counter(toc) ". "; color: var(--accent); font-weight: 600; }
+.toc li.no-counter a::before { content: ""; }
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 1.8rem; margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright); font-size: 1.3rem; margin-bottom: 1rem;
+  padding-bottom: 0.6rem; border-bottom: 2px solid var(--accent-dim);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent); color: #fff; width: 28px; height: 28px;
+  border-radius: 50%; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 0.85rem; flex-shrink: 0;
+}
+.card h3 { color: var(--purple); font-size: 1rem; margin: 1rem 0 0.5rem; }
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block; background: var(--accent-dim); color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.78rem;
+  padding: 2px 10px; border-radius: 999px; margin: 2px 4px 2px 0;
+  white-space: nowrap; transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim); border-radius: 10px;
+  padding: 1.2rem 1.5rem; margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08); border-left: 3px solid var(--accent);
+  padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
+  font-size: 0.9rem; color: var(--text);
+}
+
+code {
+  background: rgba(59,130,246,0.12); color: var(--accent);
+  padding: 2px 6px; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.88em;
+}
+
+pre {
+  background: #13151c; border: 1px solid var(--card-border);
+  border-radius: 8px; padding: 14px 18px; overflow-x: auto;
+  margin: 10px 0; font-size: 0.85rem; line-height: 1.5;
+}
+pre code { background: none; padding: 0; color: var(--text); }
+
+.ts-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 0.6rem;
+}
+.ts-row {
+  display: flex; align-items: center; gap: 0.7rem; padding: 6px 10px;
+  border-radius: 8px; background: rgba(26,29,39,0.6); transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+footer {
+  text-align: center; color: #444; font-size: 12px;
+  margin-top: 40px; padding: 20px 1rem; border-top: 1px solid #1e2028;
+}
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+  .ts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/xNDxh35Dva4/maxresdefault.jpg" alt="This Open Source Is Quietly Eliminating Agent Hallucinations" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>This Open Source Is Quietly Eliminating Agent Hallucinations</h1>
+  <div class="meta">DevOps Toolbox · ~12 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=xNDxh35Dva4" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/xNDxh35Dva4/maxresdefault.jpg"
+         alt="Video thumbnail — This Open Source Is Quietly Eliminating Agent Hallucinations">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~12 min</span>
+    <span class="meta-pill">🎤 DevOps Toolbox (Omerxx)</span>
+    <span class="meta-pill">🏷 Babysitter · A5C AI · Agent Orchestration · TDD · Quality Gates · Open Source</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">The Hallucination Problem</a></li>
+      <li><a href="#s2">What Is Babysitter?</a></li>
+      <li><a href="#s3">Installation &amp; Modes</a></li>
+      <li><a href="#s4">User &amp; Project Onboarding</a></li>
+      <li><a href="#s5">The TDD Workflow in Action</a></li>
+      <li><a href="#s6">YOLO Mode &amp; Results</a></li>
+      <li><a href="#s7">Verdict &amp; Philosophy</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">🔗 Resources &amp; Links</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>DevOps Toolbox reviews <strong>Babysitter</strong>, an open-source agent orchestration framework by A5C AI that aims to eliminate hallucinations not through magic, but through <strong>deterministic quality gates, enforced TDD workflows, and approval loops</strong>. The tool wraps around existing AI coding agents (Codex, Cursor, Pi, Gemini, Copilot, OpenCode) and enforces obedience — making sure the agent does exactly what you asked, with tests first, quality gates at each step, and a clear definition of done. The trade-off: it's slower, but the results are dramatically more precise and reliable.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> The Hallucination Problem</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=0s" target="_blank">▶ 0:00</a>
+      </p>
+      <p>The host opens with a blunt admission: as a $200/month OpenAI subscriber who has tried every model (Anthropic, OpenRouter, Quirks, OpenCode, Zen, Go, Black) — <strong>AI hallucinates all the time regardless of your tier or spend</strong>.</p>
+      <p>The standard approach — guardrails and rules — doesn't really work because <strong>AIs don't follow rules reliably</strong>. What if instead of rules, you had an actual system that orchestrates tasks with deterministic outcomes?</p>
+      <ul>
+        <li>Not a magic wand, not a trick</li>
+        <li>An actual orchestration layer that <strong>enforces obedience</strong></li>
+        <li>Open source — nobody's selling it</li>
+        <li>Aims for hallucination-free output</li>
+      </ul>
+      <div class="highlight-box">💡 "What if you had a system? Not a magic wand, not a trick, an actual way to orchestrate tasks with deterministic outcomes."</div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> What Is Babysitter?</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=60s" target="_blank">▶ 1:00</a>
+      </p>
+      <p><strong>Babysitter</strong> by <a href="https://github.com/a5c-ai/babysitter" target="_blank">A5C AI</a> is an open-source framework built "by developers for developers." The core premise identifies three problems with current AI agents:</p>
+      <ol>
+        <li><strong>Everything is a black box</strong> — no real audit of what the agent is doing or why</li>
+        <li><strong>Context window is strangling you</strong> — agents lose track of what matters as context fills up</li>
+        <li><strong>The agent decides when something is "done"</strong> — not you</li>
+      </ol>
+      <p>Babysitter's solution: <strong>quality gates + loops until criteria are met + a real definition of done</strong> that isn't a metaphor.</p>
+
+      <h3>Key properties</h3>
+      <ul>
+        <li><strong>Open source</strong> — no data sent anywhere, fully inspectable</li>
+        <li><strong>Model agnostic</strong> — works with any LLM provider</li>
+        <li><strong>Agent wrapper or standalone harness</strong> — can wrap Codex, Cursor, Pi, Gemini, Copilot, OpenCode, OR run independently in CI/ephemeral environments</li>
+        <li><strong>Four execution modes:</strong> call (standard), plan-only, yolo (autonomous), and forever mode</li>
+      </ul>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Installation &amp; Execution Modes</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=163s" target="_blank">▶ 2:43</a>
+      </p>
+      <p>Babysitter can be installed as an npm package or as an extension for your existing agent:</p>
+      <pre><code>npm install @a5c-ai/babysitter-sdk</code></pre>
+      <p>For Pi users, it's even simpler — Babysitter is listed as an optional extension:</p>
+      <pre><code>pi install</code></pre>
+
+      <h3>The four modes</h3>
+      <ul>
+        <li><strong>Call</strong> — standard mode: you provide a prompt, Babysitter orchestrates the agent through quality gates with approval checkpoints</li>
+        <li><strong>Plan-only</strong> — generates a plan without executing, useful for reviewing the approach first</li>
+        <li><strong>YOLO</strong> — autonomous mode: the agent runs with minimal human intervention. "Let's see what happens"</li>
+        <li><strong>Forever</strong> — continuous mode for long-running processes</li>
+      </ul>
+      <p>The orchestrator can be set to <code>internal</code> (Babysitter's own harness), <code>claude</code>, or other options. You specify a workspace directory and a process (actual JavaScript/TypeScript code, not markdown).</p>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> User &amp; Project Onboarding</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=305s" target="_blank">▶ 5:05</a>
+      </p>
+      <p>Before any work begins, Babysitter goes through a <strong>two-phase onboarding</strong>: first it learns about you, then about your project.</p>
+
+      <h3>Phase 1: User profile</h3>
+      <p>Run <code>babysitter user install</code> to create a markdown profile with:</p>
+      <ul>
+        <li>Name, specialties, experience level</li>
+        <li>Preferences (verbosity, style — "for the love of God, emoji free")</li>
+        <li>GitHub scan to detect language preferences (e.g., Go and Shell vs JavaScript)</li>
+      </ul>
+      <p>The host keeps the context short and specific — more detail isn't always better for agent context.</p>
+
+      <h3>Phase 2: Project onboarding</h3>
+      <p>Run <code>babysitter project install</code> and let it explore on its own. It reads:</p>
+      <ul>
+        <li>Source code, dependencies, git history</li>
+        <li>Asks what you're optimizing for: security, production reliability, or specific concerns it detected (e.g., data integrations)</li>
+        <li>Asks about your workflow: PR-based? Trunk-based development?</li>
+      </ul>
+      <p>This takes about <strong>15 minutes</strong>. The context window fills up significantly. Afterward, you can run <code>babysitter doctor</code> to get a report of what needs attention.</p>
+
+      <h3>Built-in methodologies</h3>
+      <p>During setup, Babysitter reveals the <strong>methodologies cemented into its brain</strong> — including debugging, testing, and GSD (Getting Stuff Done, a productivity method). The docs list processes for TDD, web/mobile apps, DevOps, security, and even business and science domains.</p>
+
+      <div class="highlight-box">💡 "Babysitter gets to know you, then the project, then and only then it starts working."</div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> The TDD Workflow in Action</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=486s" target="_blank">▶ 8:06</a>
+      </p>
+      <p>The host builds a small REST API to demonstrate Babysitter's workflow. The prompt requests a task API with all CRUD methods, using <strong>TDD (Test-Driven Development)</strong> with a quality target to pass.</p>
+
+      <h3>Why TDD matters for agents</h3>
+      <p>The host makes a strong observation: <strong>whenever he asks any agent with any model to use TDD, he gets better results</strong>. It's an N=1 observation, but he's not alone in noticing it. His personal irony: "I was always taught to use TDD but never actually done it properly. But now we have little coding minions and they can't refuse yet."</p>
+
+      <h3>The execution sequence</h3>
+      <ol>
+        <li><strong>Orchestrator loads</strong> — calls skill instructions</li>
+        <li><strong>Plan printed</strong> — lists endpoints and quality gates</li>
+        <li><strong>Process code generated</strong> — Babysitter produces its own TypeScript orchestration code (not markdown instructions)</li>
+        <li><strong>Approval gate</strong> — asks for human approval before proceeding</li>
+        <li><strong>Tests first</strong> — literally the first piece of generated code is the test file</li>
+        <li><strong>Implementation follows</strong> — code written to pass the tests</li>
+        <li><strong>Report</strong> — endpoints in place, tests run with coverage, spec code verified</li>
+      </ol>
+
+      <h3>The precision factor</h3>
+      <p>The result is <strong>extremely precise</strong> — almost to a fault. The API has zero logs because they weren't requested. The host notes this "can either be good or problematic and requires verbosity from your side when planning."</p>
+      <p>Testing the live API: GET /tasks returns empty array ✅, POST with empty data returns proper validation error ✅, POST with valid JSON creates the task ✅, DELETE works ✅.</p>
+
+      <div class="highlight-box">💡 "Extremely precise, did what we told it to do, didn't sidestep or build a monster no one asked for."</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> YOLO Mode — The Contrast</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=460s" target="_blank">▶ 7:40</a>
+      </p>
+      <p>In parallel, the host ran a second task in <strong>YOLO mode</strong> with a generic, less specific prompt — "sent into oblivion." The results contrast sharply:</p>
+      <ul>
+        <li>It produced <em>something</em> — login, auth, and actions</li>
+        <li>"No real structure, but fine"</li>
+        <li>Running it eventually works, but produces unexplained errors</li>
+        <li>The host doesn't bother debugging: "I still don't know what's up here"</li>
+      </ul>
+      <p>The lesson: YOLO mode without precise instructions produces the typical AI agent experience — functional-ish but messy. The <strong>call mode with TDD and quality gates</strong> produces the precise, correct result.</p>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Verdict — The Philosophy of Obedience</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=670s" target="_blank">▶ 11:10</a>
+      </p>
+      <p>The host's final assessment is genuinely positive:</p>
+      <ul>
+        <li><strong>Babysitter is not a magician</strong> — it's an orchestrator. It won't turn a bad prompt into a good result</li>
+        <li><strong>It's not OpenClaw</strong> — not "running around drinking tokens and chatting to other agents for fun"</li>
+        <li><strong>If you're a pro, it'll be a pro employee</strong> — but the user is a huge part of the process. You need to be precise in what you ask for</li>
+        <li><strong>Speed is the trade-off</strong> — running GPT 5.5 on high/xHigh with Babysitter on top means "you don't get the Usain Bolt of AI agents." He dropped to medium reasoning just to move faster</li>
+      </ul>
+      <p>He commits to running it for the next few weeks/months and reporting back.</p>
+
+      <div class="highlight-box">💡 "We're not here for speed or quantity. And just like the cliché, we want a proper result."</div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Babysitter enforces obedience, not magic</strong> — it's an orchestration layer that adds quality gates, approval loops, and a real definition of done to any AI coding agent</li>
+          <li><strong>Model and agent agnostic</strong> — wraps Codex, Cursor, Pi, Gemini, Copilot, OpenCode, or runs standalone in CI/ephemeral environments</li>
+          <li><strong>Two-phase onboarding is key</strong> — the tool learns your profile (language preferences, style) and your project (code, deps, git history, workflow) before doing any work</li>
+          <li><strong>TDD produces better agent results</strong> — tests-first approach makes agents generate the test file before implementation, catching errors before they compound</li>
+          <li><strong>Four modes for different needs</strong> — call (standard with approvals), plan-only (review first), yolo (autonomous), forever (continuous). Call mode with quality gates produces the best results</li>
+          <li><strong>Precision is the feature</strong> — the agent does exactly what you ask, nothing more. Zero logs if you didn't ask for logs. This requires you to be verbose and specific in planning</li>
+          <li><strong>Speed is the trade-off</strong> — Babysitter + high reasoning models = slow execution. Drop reasoning to medium for better speed, or accept the wait for precision</li>
+          <li><strong>Open source, no data sent</strong> — fully auditable, model agnostic, no vendor lock-in. "By developers for developers"</li>
+          <li><strong>The user is a huge part of the process</strong> — Babysitter won't rescue a vague prompt. Precise input → precise output. Garbage in, garbage out still applies</li>
+          <li><strong>YOLO mode shows the contrast</strong> — same tool with a generic prompt produces the typical messy AI output, proving the quality gates and TDD are what make the difference</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Resources & Links -->
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://github.com/a5c-ai/babysitter" target="_blank">Babysitter on GitHub</a> — the open-source agent orchestration framework by A5C AI</li>
+      </ul>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=0s" target="_blank">▶ 0:00</a>
+          <span class="label">The hallucination problem — AI misses its target</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=60s" target="_blank">▶ 1:00</a>
+          <span class="label">Introducing A5C AI Babysitter</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=126s" target="_blank">▶ 2:06</a>
+          <span class="label">GitHub project overview</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=163s" target="_blank">▶ 2:43</a>
+          <span class="label">Installation — npm &amp; Pi extension</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=238s" target="_blank">▶ 3:58</a>
+          <span class="label">Four execution modes</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=305s" target="_blank">▶ 5:05</a>
+          <span class="label">User profile onboarding</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=384s" target="_blank">▶ 6:24</a>
+          <span class="label">Project onboarding — 15 minute deep scan</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=460s" target="_blank">▶ 7:40</a>
+          <span class="label">YOLO mode — autonomous run</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=486s" target="_blank">▶ 8:06</a>
+          <span class="label">TDD workflow — building a REST API</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=567s" target="_blank">▶ 9:27</a>
+          <span class="label">Tests first, then implementation code</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=612s" target="_blank">▶ 10:12</a>
+          <span class="label">Live API testing — all endpoints working</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=xNDxh35Dva4&t=670s" target="_blank">▶ 11:10</a>
+          <span class="label">Verdict — not a magician, an orchestrator</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video xNDxh35Dva4 · DevOps Toolbox</footer>
+
+</body>
+</html>
