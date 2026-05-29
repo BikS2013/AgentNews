@@ -242,7 +242,18 @@
       "thumbnailSource": "html",
       "sha256": "985269f30b2fb7e5213d0ff4ff77ddf0dd7c2476e2a7b055a8b1259c96f4c748",
       "category": "deep-dive"
+    },
+    {
+      "slug": "i-was-wrong-about-gpt-5-5",
+      "title": "I Was Wrong About GPT 5.5",
+      "publishedAt": "2026-05-28T12:00:00.000Z",
+      "sourcePath": "/tmp/gpt55-wrong-ben-davis.html",
+      "articlePath": "experimental/i-was-wrong-about-gpt-5-5.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/WVHcPIr7pVI/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "18fcb3230dda81800a9ceb713ca228a315376f4863449a723dcb2b7e195ea21d",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-29T04:38:17.796Z"
+  "updatedAt": "2026-05-29T15:27:19.765Z"
 }
