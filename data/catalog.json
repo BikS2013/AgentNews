@@ -218,7 +218,18 @@
       "thumbnailSource": "html",
       "sha256": "c38c5da15986323409fd4d8561a01b563dfd9f747785411d30fd8b3ffc374ee2",
       "category": "deep-dive"
+    },
+    {
+      "slug": "most-enterprise-agentic-projects-are-doomed-here-s-why-jess-grogan-avignon-jack-wang-accenture",
+      "title": "Most Enterprise Agentic Projects Are Doomed, Here's Why — Jess Grogan-Avignon & Jack Wang, Accenture",
+      "publishedAt": "2026-05-28T12:00:00.000Z",
+      "sourcePath": "/tmp/enterprise-agentic-doomed-accenture.html",
+      "articlePath": "articles/most-enterprise-agentic-projects-are-doomed-here-s-why-jess-grogan-avignon-jack-wang-accenture.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/AGkzpxMdPn8/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "e0924a955521697a18093dcc96309bdee497a71812b9ac51340f2c9afefc5759",
+      "category": "ai-news"
     }
   ],
-  "updatedAt": "2026-05-28T03:22:43.345Z"
+  "updatedAt": "2026-05-29T15:32:59.778Z"
 }
