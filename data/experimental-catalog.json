@@ -231,7 +231,18 @@
       "thumbnailSource": "html",
       "sha256": "2a3792c86b4d59faaa79fd31854743c3cc4bf08a22ead1ea2f0a96acb824b1eb",
       "category": "deep-dive"
+    },
+    {
+      "slug": "hermes-agent-crash-course-vps-setup-easy",
+      "title": "Hermes Agent Crash Course — VPS Setup (EASY)",
+      "publishedAt": "2026-05-26T12:00:00.000Z",
+      "sourcePath": "/tmp/hermes-agent-vps-crash-course.html",
+      "articlePath": "experimental/hermes-agent-crash-course-vps-setup-easy.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/ut8mTsgzdhY/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "985269f30b2fb7e5213d0ff4ff77ddf0dd7c2476e2a7b055a8b1259c96f4c748",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-29T04:19:35.354Z"
+  "updatedAt": "2026-05-29T04:38:17.796Z"
 }

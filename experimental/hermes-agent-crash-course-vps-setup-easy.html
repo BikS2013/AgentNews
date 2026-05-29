@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent Crash Course — VPS Setup (EASY)</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.hero .meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+.thumb-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  max-width: 560px;
+  width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.toc {
+  position: sticky;
+  top: 1rem;
+  width: 260px;
+  min-width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.toc h3 {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a {
+  color: var(--text-muted);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before {
+  content: counter(toc) ". ";
+  color: var(--accent);
+  font-weight: 600;
+}
+.toc li.no-counter a::before { content: ""; }
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.card h3 {
+  color: var(--purple);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+code {
+  background: rgba(59,130,246,0.12);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.88em;
+}
+
+pre {
+  background: #13151c;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  overflow-x: auto;
+  margin: 10px 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.6rem;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(26,29,39,0.6);
+  transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+footer {
+  text-align: center;
+  color: #444;
+  font-size: 12px;
+  margin-top: 40px;
+  padding: 20px 1rem;
+  border-top: 1px solid #1e2028;
+}
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+  .ts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/ut8mTsgzdhY/maxresdefault.jpg" alt="Hermes Agent Crash Course — VPS Setup (EASY)" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>Hermes Agent Crash Course — VPS Setup (EASY)</h1>
+  <div class="meta">Alejandro AO · ~40 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=ut8mTsgzdhY" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/ut8mTsgzdhY/maxresdefault.jpg"
+         alt="Video thumbnail — Hermes Agent Crash Course — VPS Setup (EASY)">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~40 min</span>
+    <span class="meta-pill">🎤 Alejandro AO</span>
+    <span class="meta-pill">🏷 Hermes Agent · VPS Setup · Telegram · Cron Jobs · AI Assistant</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">What Is Hermes Agent?</a></li>
+      <li><a href="#s2">Architecture Overview</a></li>
+      <li><a href="#s3">Provisioning a VPS on Hetzner</a></li>
+      <li><a href="#s4">Cloud Config &amp; Security</a></li>
+      <li><a href="#s5">Agent-Driven VPS Setup</a></li>
+      <li><a href="#s6">VPS Security &amp; Runtime</a></li>
+      <li><a href="#s7">Hermes Setup Wizard</a></li>
+      <li><a href="#s8">Telegram Integration</a></li>
+      <li><a href="#s9">Brain Dump Workflow</a></li>
+      <li><a href="#s10">Cron Jobs</a></li>
+      <li><a href="#s11">Dashboard &amp; Management</a></li>
+      <li class="no-counter"><a href="#takeaways">🎯 Key Takeaways</a></li>
+      <li class="no-counter"><a href="#resources">🔗 Resources &amp; Links</a></li>
+      <li class="no-counter"><a href="#timestamps">⏱ Timestamps</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="card" id="overview">
+      <h2>Overview</h2>
+      <p>Alejandro AO walks through a complete, end-to-end setup of <strong>Hermes Agent</strong> as an always-on AI personal assistant running on a VPS. The tutorial covers provisioning a cheap Hetzner server (€5/month), using an AI coding agent (Pi/Codex/Claude Code) to install and secure the VPS automatically via a reusable skill, connecting Hermes to Telegram for mobile access, brain-dumping workflows so the agent can suggest automations, setting up cron jobs for recurring research tasks, and managing everything through the built-in Hermes dashboard. The key idea: <strong>let an AI agent set up another AI agent</strong>, rather than doing manual server administration.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> What Is Hermes Agent?</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=105s" target="_blank">▶ 1:45</a>
+      </p>
+      <p>Hermes Agent is a <strong>self-improving AI agent designed to be always-on</strong>. Unlike coding assistants that only work while you're at the computer, Hermes runs continuously on a server and is accessible from anywhere through messaging platforms.</p>
+      <ul>
+        <li><strong>Multiple communication channels</strong> — Telegram, Discord, Slack, WhatsApp, and more. You talk to it like a personal assistant (PA), not a coding tool</li>
+        <li><strong>Always on</strong> — runs on a VPS or home server, so your computer can be off and the agent keeps working</li>
+        <li><strong>Rich integrations via skills</strong> — comes with ~85 skills built-in, including productivity integrations (Notion, PowerPoint, Shopify), finance tools, and more</li>
+        <li><strong>~25 built-in toolsets</strong> — web search, browser automation, terminal, file operations, code execution, vision, text-to-speech, cron jobs, sub-agents, and cross-platform messaging</li>
+      </ul>
+      <div class="highlight-box">💡 "It works kind of like a PA that you can talk to through your Telegram, WhatsApp, Slack… rather than a coding assistant that is only working while you're actually at the computer."</div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Architecture Overview</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=188s" target="_blank">▶ 3:08</a>
+      </p>
+      <p>Alejandro provides a clear overview of how Hermes processes every message in a standard <strong>ReAct loop</strong>:</p>
+      <ol>
+        <li><strong>Message received</strong> — the agent receives your message from Telegram (or any platform)</li>
+        <li><strong>System prompt built</strong> — for each thread, Hermes dynamically constructs a system prompt containing: available tools, loaded skills, current memory about you, project context, and platform context</li>
+        <li><strong>LLM reasoning</strong> — the system prompt + message go to the language model, which either calls a tool or generates a response</li>
+        <li><strong>Tool loop</strong> — if a tool is called, the result feeds back to the LLM, repeating until a final response is ready</li>
+        <li><strong>Memory update</strong> — after responding, the agent updates its memory if you shared preferences, workflow details, or personal information</li>
+        <li><strong>Future sessions benefit</strong> — that updated memory is injected into future system prompts, so the agent gets better over time</li>
+      </ol>
+      <p>Conversations in Telegram stay in the same thread by default unless you explicitly ask Hermes to restart the thread.</p>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Provisioning a VPS on Hetzner</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=277s" target="_blank">▶ 4:37</a>
+      </p>
+      <p>Alejandro chooses <strong>Hetzner</strong> as the VPS provider, praising its developer experience and affordability. He also mentions OVH and DigitalOcean as alternatives.</p>
+
+      <h3>Server specs</h3>
+      <ul>
+        <li><strong>Plan:</strong> €5/month (cost-optimized)</li>
+        <li><strong>RAM:</strong> 4 GB</li>
+        <li><strong>Storage:</strong> 40 GB</li>
+        <li><strong>Traffic:</strong> 20 TB</li>
+        <li><strong>Billing:</strong> per-hour with monthly cap — if you shut down mid-month, you only pay for the hours used</li>
+        <li><strong>OS:</strong> Ubuntu</li>
+        <li><strong>Networking:</strong> IPv4 + IPv6</li>
+      </ul>
+
+      <h3>SSH key setup</h3>
+      <p>Before creating the server, generate an SSH key pair:</p>
+      <pre><code>ssh-keygen -t ed25519 -C "hetzner-vps"</code></pre>
+      <p>Save it in <code>~/.ssh/</code> with a descriptive name (e.g., <code>hetzner_vps_key</code>). Copy the <strong>public key</strong> content and paste it into the Hetzner SSH key field during server creation.</p>
+
+      <div class="highlight-box">💡 "Just to be clear, we are not talking about hosting the models yourself, just the agent. The model is going to be running on third-party inference providers."</div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Cloud Config &amp; Initial Security</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=460s" target="_blank">▶ 7:40</a>
+      </p>
+      <p>During server creation, Alejandro uses Hetzner's <strong>Cloud Config</strong> (cloud-init) to pre-configure the server on first boot:</p>
+      <ul>
+        <li><strong>User creation</strong> — creates a named user (e.g., "alejandro") with <code>sudo</code> group access and <code>/bin/bash</code> shell</li>
+        <li><strong>SSH authorized keys</strong> — injects the public key so the user can SSH in immediately</li>
+        <li><strong>Package updates</strong> — <code>package_update: true</code> runs <code>apt update</code> on first boot</li>
+        <li><strong>Baseline packages</strong> — installs <code>curl</code>, <code>git</code>, <code>ufw</code>, and <code>fail2ban</code></li>
+        <li><strong>Firewall rules</strong> — runs <code>ufw allow OpenSSH</code> and <code>ufw --force enable</code> on install</li>
+      </ul>
+      <p>After the server is created (takes a few seconds), connect via SSH:</p>
+      <pre><code>ssh -i ~/.ssh/hetzner_vps_key alejandro@&lt;SERVER_IP&gt;</code></pre>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Agent-Driven VPS Setup with Pi + Codex</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=607s" target="_blank">▶ 10:07</a>
+      </p>
+      <p>This is the core innovation of the tutorial: <strong>using an AI coding agent to install and configure the entire VPS</strong> instead of running commands manually. Alejandro installs <strong>Pi</strong> (a minimalist coding agent) on the fresh VPS and gives it a reusable VPS setup skill.</p>
+
+      <h3>Installing Pi</h3>
+      <ol>
+        <li>Install Pi from <code>pi.dev</code> — it auto-installs Node.js as a dependency</li>
+        <li>Source <code>~/.bashrc</code> after installation so the <code>pi</code> command is available</li>
+        <li>Log in with a ChatGPT subscription (or another provider) — Alejandro uses GPT-5.5 on low/no reasoning</li>
+        <li>Install the <code>pi-web-access</code> extension for web research capabilities</li>
+      </ol>
+
+      <h3>The VPS setup skill</h3>
+      <p>Rather than typing individual commands, Alejandro copies the raw content of his <strong>hermes-vps-setup</strong> skill and pastes it directly into Pi with the instruction: <em>"Help me set up this new VPS. Current user has sudo privileges."</em></p>
+      <p>The skill orchestrates the entire setup in phases:</p>
+      <ul>
+        <li><strong>Phase 1 — Inspection:</strong> detects OS, current user, SSH status, and privileges</li>
+        <li><strong>Phase 2 — Baseline security:</strong> updates packages, installs tools (git, curl, tmux), configures UFW firewall (allows SSH, HTTP, HTTPS), enables fail2ban, disables root SSH, disables password SSH (after confirming key access works)</li>
+        <li><strong>Phase 3 — Runtime dependencies:</strong> installs Docker Compose, Node.js, FFmpeg, and Playwright browser dependencies</li>
+        <li><strong>Phase 4 — Agent user:</strong> creates a dedicated <code>agentuser</code> with a home directory containing <code>.hermes/</code> for Hermes installation</li>
+      </ul>
+
+      <div class="highlight-box">💡 "You're going to run Codex or Claude Code and have it run this skill… and it is going to set up everything you need in order to set up your VPS securely."</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> VPS Security Hardening &amp; Hermes Installation</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=810s" target="_blank">▶ 13:30</a>
+      </p>
+      <p>During Phase 2, the agent performs critical security hardening with interactive confirmation:</p>
+      <ul>
+        <li><strong>Firewall (UFW)</strong> — allows only SSH, HTTP, and HTTPS traffic. HTTP/HTTPS needed for the dashboard</li>
+        <li><strong>Fail2ban</strong> — protects against brute-force SSH attacks by banning repeat offenders</li>
+        <li><strong>Disable root SSH login</strong> — eliminates the most common attack vector</li>
+        <li><strong>Disable password SSH login</strong> — the agent asks for explicit confirmation first: "I found an SSH authorized key for Alejandro, so I should be safe to disable password SSH login. This reduces brute force risk, but if your SSH key does not work, it could lock you out. Please confirm."</li>
+      </ul>
+
+      <h3>Hermes installation</h3>
+      <p>After security hardening, the agent installs Hermes under the <code>agentuser</code> account. It reports back:</p>
+      <ul>
+        <li>Hermes installed successfully at <code>/home/agentuser/.hermes/hermes-agent</code></li>
+        <li>Playwright Chromium installed for browser tools</li>
+        <li>Hermes can update and modify itself because the CLI binary runs directly from the source code</li>
+        <li><code>hermes doctor</code> shows expected pre-setup warnings (missing Telegram/Discord config)</li>
+      </ul>
+      <p>The next step requires an <strong>interactive terminal</strong> — the setup wizard can't run inside Pi, so you SSH in directly.</p>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Hermes Setup Wizard — Configuration Deep Dive</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1150s" target="_blank">▶ 19:10</a>
+      </p>
+      <p>Switch to the <code>agentuser</code> and run the interactive setup wizard:</p>
+      <pre><code>sudo -u agentuser -i bash -c "cd ~/.hermes/hermes-agent && ./bin/hermes setup"</code></pre>
+      <p>Select <strong>"Full setup"</strong> and configure each option:</p>
+
+      <h3>Inference provider</h3>
+      <p>Options include OpenRouter, Anthropic, OpenAI, and Hugging Face Inference Providers. Alejandro chooses <strong>Hugging Face</strong>:</p>
+      <ul>
+        <li>Create a HF access token at <code>huggingface.co</code> → account → new token</li>
+        <li><strong>Important:</strong> enable "Make calls to inference providers" permission</li>
+        <li>Base URL: <code>router.huggingface.co/v1</code></li>
+        <li>Model: <strong>MiniMax M2.7</strong> — affordable and very good quality</li>
+        <li>Fallback provider: optional, skipped in this tutorial</li>
+      </ul>
+
+      <h3>Text-to-speech</h3>
+      <p>Default is Edge TTS (free). Alejandro recommends <strong>ElevenLabs</strong> for premium, human-like voice quality if you have a subscription.</p>
+
+      <h3>Terminal backend</h3>
+      <p>Keep <strong>local</strong> since the VPS setup skill already containerized everything with the dedicated agent user.</p>
+
+      <h3>Maximum iterations</h3>
+      <p>Default is 60, Alejandro sets it to <strong>90</strong> — enables more complex workflows while preventing infinite loops that drain tokens.</p>
+
+      <h3>Tool progress mode</h3>
+      <p>Options: every tool call, new tools only, or none. Alejandro prefers <strong>"new"</strong> — if the agent calls web search 10 times, you only see the notification once.</p>
+
+      <h3>Context compression</h3>
+      <p>Hermes auto-compresses conversation when reaching a percentage of the context window:</p>
+      <ul>
+        <li>MiniMax M2.7 has ~200K tokens → set to <strong>0.90</strong> (compress at 90%)</li>
+        <li>For 1M-token models → set to 0.5 or lower</li>
+        <li>Smaller context windows need higher thresholds to avoid premature compression</li>
+      </ul>
+
+      <h3>Session reset mode</h3>
+      <ul>
+        <li><strong>Inactivity timeout:</strong> 1440 minutes (24 hours — daily reset recommended)</li>
+        <li><strong>Daily reset hour:</strong> 4 AM local time ("I'm rarely working at 4 AM")</li>
+        <li>The agent retains memory of previous sessions, so resetting just clears the active conversation thread</li>
+      </ul>
+
+      <h3>Tools selection</h3>
+      <p>Alejandro enables: web search, browser automation, terminal, file operations, code execution, text-to-speech, skills, memory, session search, clarifying questions, task delegation (sub-agents), cron jobs, and cross-platform messaging. He skips vision/image generation.</p>
+
+      <h3>Search provider</h3>
+      <p>Options: self-hosted Firecrawl (via Docker — more complex), Exa, or cloud Firecrawl. Alejandro uses a <strong>Firecrawl API key</strong> for simplicity.</p>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Telegram Integration</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1563s" target="_blank">▶ 26:03</a>
+      </p>
+      <p>With Hermes configured, the next step is connecting it to Telegram as the primary communication channel.</p>
+
+      <h3>Gateway setup</h3>
+      <p>Switch to <code>agentuser</code> and run:</p>
+      <pre><code>sudo -u agentuser -i bash -c "cd ~/.hermes/hermes-agent && ./bin/hermes setup gateway"</code></pre>
+      <p>Select Telegram with spacebar, then hit enter.</p>
+
+      <h3>Creating a Telegram bot</h3>
+      <ol>
+        <li>Open Telegram and search for <strong>@BotFather</strong></li>
+        <li>Send <code>/newbot</code></li>
+        <li>Give it a display name (e.g., "Bobby")</li>
+        <li>Create a unique username ending in <code>bot</code></li>
+        <li>Copy the bot token and paste it into the Hermes setup</li>
+      </ol>
+
+      <h3>Restricting access</h3>
+      <p>Without restrictions, anyone could message your bot and access your personal AI agent. To lock it down:</p>
+      <ol>
+        <li>Search for <strong>@userinfobot</strong> in Telegram</li>
+        <li>Send <code>/start</code> to get your personal Telegram user ID</li>
+        <li>Paste the ID as the allowed user in the Hermes gateway config</li>
+        <li>Set it as the <strong>home channel</strong> (your primary conversation destination)</li>
+      </ol>
+
+      <h3>Running as a system service</h3>
+      <p>When asked, select <strong>"system service"</strong> — this ensures the Telegram gateway starts automatically on boot and runs in the background permanently. After setup, go to your bot in Telegram, hit <code>/start</code>, and you're connected.</p>
+
+      <div class="highlight-box">💡 "Your computer can be off and your Hermes agent is going to continue working because it is working in the cloud."</div>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="card" id="s9">
+      <h2><span class="num">9</span> Brain Dump Workflow</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1853s" target="_blank">▶ 30:53</a>
+      </p>
+      <p>Alejandro demonstrates a powerful onboarding pattern: <strong>brain-dumping your entire workflow into Hermes</strong> and asking it what it can help with.</p>
+      <p>His prompt: <em>"I'm going to tell you a few things about my workflows, so can you tell me where you can help me out and how we can work together?"</em></p>
+      <p>After describing his daily workflow, Hermes suggested help with:</p>
+      <ul>
+        <li><strong>Video production pipeline</strong> — research, scripting, metadata generation</li>
+        <li><strong>Quick side project scaffolding</strong> — "If I have an idea for a web application, just have Hermes build it"</li>
+        <li><strong>General research</strong> — on-demand deep dives into any topic</li>
+        <li><strong>Cron job automations</strong> — recurring scheduled tasks (shown next)</li>
+      </ul>
+      <div class="highlight-box">💡 "Just dump your workflow into Hermes and ask it what it can do for you. You'd be surprised by how creative it is."</div>
+    </div>
+
+    <!-- Section 10 -->
+    <div class="card" id="s10">
+      <h2><span class="num">10</span> Cron Jobs — Automated Research</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1945s" target="_blank">▶ 32:25</a>
+      </p>
+      <p>Alejandro creates a recurring cron job directly through Telegram chat — no terminal needed:</p>
+      <p>His prompt: <em>"Create a cron automation that runs every three days. On each run, research developments for the past 3-5 days in AI research and product launches, open source AI models, etc. Identify tutorial ideas and for each run produce a concise summary, 5-10 tutorial ideas. Prioritize ideas that are hands-on, reproducible, open-source friendly, and likely to perform well with the Hugging Face community."</em></p>
+
+      <h3>What Hermes did</h3>
+      <ul>
+        <li>Created the cron job with a unique ID</li>
+        <li>Scheduled to run every 3 days</li>
+        <li>Output delivery: Telegram DM</li>
+        <li>Offered to run it once immediately to preview the output</li>
+      </ul>
+      <p>The first run took about <strong>4 minutes</strong>, producing tutorial ideas with sources split across multiple Telegram messages. From now on, Alejandro receives this research brief every 3 days automatically.</p>
+    </div>
+
+    <!-- Section 11 -->
+    <div class="card" id="s11">
+      <h2><span class="num">11</span> Dashboard Setup &amp; Management</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=2054s" target="_blank">▶ 34:14</a>
+      </p>
+      <p>The final piece is the Hermes <strong>web dashboard</strong> — a management UI accessible at the VPS's IP address.</p>
+
+      <h3>Enabling the dashboard</h3>
+      <p>Alejandro goes back to his Pi session (which has full context of the VPS setup) and asks it to set up the dashboard service. Since the VPS setup skill already includes dashboard instructions, Pi knows exactly how to configure it:</p>
+      <ul>
+        <li>Sets up the dashboard as a system service</li>
+        <li>Secures it with <strong>HTTP basic authentication</strong> (username + password)</li>
+        <li>Makes it accessible at <code>https://&lt;SERVER_IP&gt;</code></li>
+      </ul>
+
+      <h3>Dashboard features</h3>
+      <p>Once logged in, the dashboard provides:</p>
+      <ul>
+        <li><strong>Connected platforms</strong> — shows Telegram (and any other platforms configured)</li>
+        <li><strong>Sessions</strong> — active sessions (Telegram conversations + cron job runs)</li>
+        <li><strong>Models</strong> — current main model (MiniMax M2.7 via Hugging Face)</li>
+        <li><strong>Logs</strong> — real-time agent logs for debugging</li>
+        <li><strong>Cron jobs</strong> — view, trigger, pause, or delete scheduled automations. You can also create cron jobs directly from the dashboard UI</li>
+        <li><strong>Skills</strong> — browse all 85 available skills</li>
+        <li><strong>Toolsets</strong> — 26 active toolsets with their status</li>
+        <li><strong>Plugins &amp; profiles</strong> — manage extensions and configurations</li>
+        <li><strong>Configuration</strong> — model settings, context length (auto-detected), all configuration keys</li>
+        <li><strong>API keys</strong> — view which keys are configured</li>
+        <li><strong>Documentation</strong> — embedded iframe of the Hermes docs</li>
+        <li><strong>Kanban</strong> — experimental multi-task orchestration for sub-agents (teased for a follow-up video)</li>
+      </ul>
+
+      <h3>Alejandro's minimalism note</h3>
+      <p>He notes that Hermes ships with ~85 skills and ~25 toolsets active from the start — more than he personally prefers. As a fan of Pi (a minimalist agent), he'd prefer starting with almost no tools and gradually adding ones he needs. But he acknowledges this "batteries included" approach works well for most users.</p>
+
+      <div class="highlight-box">💡 "I just prefer to ask Hermes to create cron jobs because it knows how to do it, and it can also be more descriptive or expand on my prompt."</div>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>€5/month is enough</strong> — a Hetzner VPS with 4 GB RAM and 40 GB storage can run the Hermes agent (not the models — those run on third-party inference providers like Hugging Face)</li>
+          <li><strong>Let an AI agent set up your AI agent</strong> — using Pi/Codex/Claude Code with a VPS setup skill eliminates manual server administration and applies security best practices automatically</li>
+          <li><strong>Security is non-negotiable</strong> — the skill configures UFW firewall, fail2ban, disabled root SSH, and key-only authentication. These aren't optional extras</li>
+          <li><strong>Dedicated agent user</strong> — Hermes runs under a separate <code>agentuser</code> account, isolating it from your personal user for security</li>
+          <li><strong>Restrict Telegram access</strong> — always set your personal user ID as the allowed user to prevent strangers from using your AI assistant</li>
+          <li><strong>Brain dump your workflow</strong> — describe your daily work to Hermes and let it suggest where it can help. The agent is surprisingly creative in finding automation opportunities</li>
+          <li><strong>Cron jobs via chat</strong> — create recurring automations through natural language in Telegram. No terminal required, no crontab syntax to remember</li>
+          <li><strong>Context compression matters</strong> — set it higher (0.9) for smaller context windows like MiniMax's 200K, lower (0.5) for million-token models</li>
+          <li><strong>The dashboard is a management hub</strong> — view sessions, logs, cron jobs, skills, plugins, and configurations all in one secured web UI</li>
+          <li><strong>Pi for setup, Hermes for daily use</strong> — use a trusted coding agent (with full VPS context) for initial setup and troubleshooting, then switch to Hermes for daily assistant tasks</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Resources & Links -->
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://alejandro-ao.com/tutorials/hermes-agent-vps/" target="_blank">Written Tutorial</a> — Alejandro's full written guide for Hermes Agent VPS setup</li>
+        <li><a href="https://github.com/alejandro-ao/skills/blob/main/skills/hermes-vps-setup/SKILL.md" target="_blank">VPS Setup Skill (SKILL.md)</a> — the reusable skill that automates VPS provisioning, security hardening, and Hermes installation</li>
+        <li><a href="https://hermes-agent.nousresearch.com/docs" target="_blank">Hermes Agent Documentation</a> — official docs for setup, configuration, skills, and integrations</li>
+      </ul>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=0s" target="_blank">▶ 0:00</a>
+          <span class="label">Hugging Face intro</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=3s" target="_blank">▶ 0:03</a>
+          <span class="label">Intro &amp; roadmap</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=105s" target="_blank">▶ 1:45</a>
+          <span class="label">What is Hermes Agent?</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=188s" target="_blank">▶ 3:08</a>
+          <span class="label">Architecture overview — ReAct loop</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=277s" target="_blank">▶ 4:37</a>
+          <span class="label">VPS setup — choosing Hetzner</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=460s" target="_blank">▶ 7:40</a>
+          <span class="label">Cloud config &amp; initial security</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=607s" target="_blank">▶ 10:07</a>
+          <span class="label">Agent setup — installing Pi</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=810s" target="_blank">▶ 13:30</a>
+          <span class="label">VPS security hardening &amp; Hermes install</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1150s" target="_blank">▶ 19:10</a>
+          <span class="label">Hermes setup wizard walkthrough</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1563s" target="_blank">▶ 26:03</a>
+          <span class="label">Telegram integration — bot creation</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1853s" target="_blank">▶ 30:53</a>
+          <span class="label">Brain dump workflow</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=1945s" target="_blank">▶ 32:25</a>
+          <span class="label">Cron jobs — automated research</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=2054s" target="_blank">▶ 34:14</a>
+          <span class="label">Dashboard setup &amp; management</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=ut8mTsgzdhY&t=2400s" target="_blank">▶ 40:00</a>
+          <span class="label">Conclusion &amp; next steps</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video ut8mTsgzdhY · Alejandro AO</footer>
+
+</body>
+</html>
