@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I'm Using claude --worktree for Everything Now</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --card-bg: #1a1d27;
+  --card-border: #2a2d3a;
+  --accent: #3b82f6;
+  --accent-dim: #1e3a5f;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-bright: #f8fafc;
+  --green: #22c55e;
+  --red: #ef4444;
+  --orange: #f59e0b;
+  --purple: #a78bfa;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.7;
+  padding: 0;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%);
+  border-bottom: 1px solid var(--card-border);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+}
+.hero .meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+.thumb-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  max-width: 560px;
+  width: 100%;
+}
+.thumb-link:hover { transform: scale(1.02); }
+.thumb-link img { width: 100%; display: block; }
+.meta-pills { margin-top: 1.2rem; display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.meta-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+.toc {
+  position: sticky;
+  top: 1rem;
+  width: 260px;
+  min-width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.toc h3 {
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+}
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; margin-bottom: 0.5rem; }
+.toc li a {
+  color: var(--text-muted);
+  display: block;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc li a:hover { color: var(--text-bright); text-decoration: none; }
+.toc li a::before {
+  content: counter(toc) ". ";
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.content { flex: 1; min-width: 0; }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 {
+  color: var(--text-bright);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card h2 .num {
+  background: var(--accent);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.card h3 {
+  color: var(--purple);
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.card p, .card li { margin-bottom: 0.6rem; }
+.card ul, .card ol { padding-left: 1.5rem; }
+.card ul li::marker { color: var(--accent); }
+
+.ts {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ts:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+.takeaways {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(167,139,250,0.08));
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+}
+.takeaways h3 { color: var(--green); margin-top: 0; }
+.takeaways li { color: var(--text); }
+
+.highlight-box {
+  background: rgba(59,130,246,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.6rem;
+}
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(26,29,39,0.6);
+  transition: background 0.15s;
+}
+.ts-row:hover { background: var(--card-bg); }
+.ts-row .label { color: var(--text-muted); font-size: 0.85rem; }
+
+code {
+  background: rgba(59,130,246,0.12);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.88em;
+}
+
+footer {
+  text-align: center;
+  color: #444;
+  font-size: 12px;
+  margin-top: 40px;
+  padding: 20px 1rem;
+  border-top: 1px solid #1e2028;
+}
+
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+  .toc { position: static; width: 100%; max-height: none; }
+  .ts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden thumbnail for AgentNews -->
+<img src="https://img.youtube.com/vi/yv8VZpov8bk/maxresdefault.jpg" alt="I'm Using claude --worktree for Everything Now" style="display:none;">
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <h1>I'm Using claude --worktree for Everything Now</h1>
+  <div class="meta">Matt Pocock · ~8 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=yv8VZpov8bk" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/yv8VZpov8bk/maxresdefault.jpg"
+         alt="Video thumbnail — I'm Using claude --worktree for Everything Now">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~8 min</span>
+    <span class="meta-pill">🎤 Matt Pocock</span>
+    <span class="meta-pill">🏷 Claude Code · Git Worktrees · Parallelization · AI Coding · Branch Management</span>
+  </div>
+</div>
+
+<!-- ─── BODY (two-column) ─── -->
+<div class="container">
+
+  <!-- Sticky TOC sidebar -->
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">What Are Git Worktrees?</a></li>
+      <li><a href="#s2">Manual Worktree Demo</a></li>
+      <li><a href="#s3">IDE Integration</a></li>
+      <li><a href="#s4">Claude --worktree in Action</a></li>
+      <li><a href="#s5">The Branch Pitfall</a></li>
+      <li><a href="#s6">Fixing the Push Behavior</a></li>
+      <li><a href="#s7">Why Use Worktrees Every Time</a></li>
+      <li><a href="#s8">Sub-agent Worktree Support</a></li>
+      <li><a href="#takeaways">Key Takeaways</a></li>
+      <li><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Overview -->
+    <div class="card" id="overview">
+      <h2><span class="num" style="background:var(--purple);">◆</span> Overview</h2>
+      <p>Matt Pocock explores Claude Code's newly built-in <code>--worktree</code> flag — a feature that leverages Git worktrees to let multiple AI agents run in parallel without stepping on each other's work. He walks through Git worktrees from scratch, demonstrates the Claude integration, uncovers a key pitfall with branch management, and shares his vision for how this changes parallel AI-assisted development workflows.</p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> What Are Git Worktrees?</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=0s" target="_blank">▶ 0:00</a>
+      </p>
+      <p>Matt starts by introducing the concept of Git worktrees — a feature he's known about for years but rarely used. Git worktrees allow you to have <strong>multiple branches checked out simultaneously</strong> in separate directories, all sharing the same underlying Git repository.</p>
+      <ul>
+        <li><strong>Core concept</strong> — instead of switching branches back and forth, each worktree is a separate folder with its own checked-out branch</li>
+        <li><strong>Shared repository</strong> — all worktrees share the same <code>.git</code> database, so commits, refs, and history are unified</li>
+        <li><strong>Independent state</strong> — each worktree has its own working directory and index, so changes don't conflict</li>
+      </ul>
+      <div class="highlight-box">Key insight: Git worktrees have existed for years, but the friction of setting them up manually meant most developers (including Matt) never adopted them. Claude Code's integration removes that friction entirely.</div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Manual Worktree Demo</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=34s" target="_blank">▶ 0:34</a>
+      </p>
+      <p>Matt demonstrates the manual Git worktree workflow using his "course video manager" project. He starts on the main branch and creates a new worktree to show the full lifecycle:</p>
+      <ul>
+        <li><strong><code>git worktree add UI-updates</code></strong> — creates a new folder called <code>UI-updates</code> at the repo root, automatically on a new branch called <code>UI-updates</code></li>
+        <li><strong><code>cd UI-updates</code></strong> — navigating into the folder and running <code>git status</code> confirms it's on the <code>UI-updates</code> branch</li>
+        <li><strong>Creating files</strong> — he runs <code>touch foobar.md</code> inside the worktree to create a test file, demonstrating that changes are isolated to this worktree</li>
+        <li><strong>Commit &amp; push</strong> — he stages, commits, publishes the branch, and even creates a PR, all from within the worktree directory</li>
+      </ul>
+      <p>After merging the PR, he pulls changes back into main with <code>git pull</code> and verifies the file now exists on the main branch.</p>
+      <h3>Cleanup</h3>
+      <p>Two ways to remove a worktree:</p>
+      <ul>
+        <li><code>rm -rf UI-updates</code> — simple filesystem removal</li>
+        <li><code>git worktree remove UI-updates</code> — Git-managed cleanup (preferred, as it updates Git's internal tracking)</li>
+      </ul>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> IDE Integration</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=78s" target="_blank">▶ 1:18</a>
+      </p>
+      <p>A significant benefit Matt highlights is how VS Code (and likely Cursor) automatically detects worktrees:</p>
+      <ul>
+        <li><strong>Source Control panel</strong> — VS Code shows both the main repo and the worktree as separate entries in the Source Control view</li>
+        <li><strong>Independent staging</strong> — you can stage, commit, and push changes in the worktree directly from the IDE's GUI</li>
+        <li><strong>Branch visibility</strong> — each worktree's branch is clearly labeled, making it obvious which branch you're working on</li>
+      </ul>
+      <div class="highlight-box">VS Code's Source Control panel picks up worktrees automatically — no configuration needed. You can stage, commit, and create PRs all within the IDE.</div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> Claude --worktree in Action</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=181s" target="_blank">▶ 3:01</a>
+      </p>
+      <p>Matt runs <code>claude --worktree</code> for the first time. Instead of the manual <code>git worktree add</code> workflow, Claude automates everything:</p>
+      <ul>
+        <li><strong>Automatic creation</strong> — Claude creates the worktree at <code>.claude/worktrees/</code> with a randomly generated, human-friendly name (e.g., "cheerful-coalescing-worth")</li>
+        <li><strong>Standard git worktree under the hood</strong> — it's the same <code>git worktree</code> mechanism, just managed by Claude</li>
+        <li><strong>Task execution</strong> — Matt tells Claude to delete <code>foobar.md</code>, and it searches for the file, removes it, commits, and pushes — all within the isolated worktree</li>
+        <li><strong>Lifecycle management</strong> — when you exit Claude (Ctrl+C), you're prompted to either <strong>keep</strong> or <strong>remove</strong> the worktree</li>
+      </ul>
+      <div class="highlight-box">Claude ties the entire lifecycle of a worktree to a single agent session. When you quit, you decide whether to keep or discard — clean and simple.</div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> The Branch Pitfall</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=256s" target="_blank">▶ 4:16</a>
+      </p>
+      <p>Matt's first "paper cut" — after running <code>claude --worktree</code> and having Claude commit changes, he discovers the commit landed on <strong>main</strong>, not on a separate branch:</p>
+      <ul>
+        <li><strong>The problem</strong> — running <code>git status</code> and <code>git log</code> in the main directory shows the worktree's commit was made against main</li>
+        <li><strong>Why this happens</strong> — <code>claude --worktree</code> creates the worktree <em>from</em> main, so the worktree's branch tracks main by default</li>
+        <li><strong>The danger</strong> — if your main branch is <strong>not protected</strong>, you could accidentally push commits directly to main when you intended them for a feature branch</li>
+      </ul>
+      <div class="highlight-box">⚠️ Critical gotcha: If your main branch is unprotected, <code>claude --worktree</code> may push commits directly to main instead of a separate feature branch. Always ensure branch protection is enabled.</div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> Fixing the Push Behavior</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=287s" target="_blank">▶ 4:47</a>
+      </p>
+      <p>Matt experiments further and finds the solution. In a new session, he tells Claude to "add a new file, commit it, and push it to the branch":</p>
+      <ul>
+        <li><strong>Worktree branch name</strong> — Claude names the worktree branch something like <code>worktree/delightful-dazzling-sketch</code>. Running <code>git status</code> shows this branch is "up to date with origin/main" even though it's a separate worktree</li>
+        <li><strong>Safety hook</strong> — Matt has a git hook that blocks pushes. Claude attempts <code>git push</code>, hits the hook, and suggests the explicit command: <code>git push origin worktree/delightful-dazzling-sketch</code></li>
+        <li><strong>Explicit branch push</strong> — running the push with the specific branch name creates a new remote branch with the worktree's name</li>
+      </ul>
+      <p>The key takeaway: <strong>your agent needs to push with a specific branch name</strong> to avoid accidentally pushing to main. This is something you can configure via prompting or CLAUDE.md rules.</p>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Why Use Worktrees Every Time</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=365s" target="_blank">▶ 6:05</a>
+      </p>
+      <p>Matt makes a strong argument that you should use <code>claude --worktree</code> for <strong>every single Claude Code session</strong>:</p>
+      <ul>
+        <li><strong>Instant parallelization</strong> — spin up multiple worktrees simultaneously, each working on a separate task or feature</li>
+        <li><strong>Zero interference</strong> — agents can't step on each other's work because each has its own directory and branch</li>
+        <li><strong>PR-based workflow</strong> — every worktree's output naturally maps to a pull request back to main</li>
+        <li><strong>Low cost</strong> — worktrees share the Git database, so they're essentially free to create and destroy</li>
+        <li><strong>Idea capture</strong> — whenever you have an idea or want to try something, you can instantly spin up a worktree and get things working without disrupting your current branch</li>
+      </ul>
+      <div class="highlight-box">"I'm not sure why you wouldn't want to use git worktrees every single time you use Claude, because it just means you can guarantee that every time you have an idea, you can instantly ping up a new worktree, get things working, and ping that back to main as a PR."</div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Sub-agent Worktree Support</h2>
+      <p>
+        <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=400s" target="_blank">▶ 6:40</a>
+      </p>
+      <p>Matt highlights a detail from the official announcement: <strong>sub-agents now support worktrees too</strong>. This unlocks orchestrated parallelism:</p>
+      <ul>
+        <li><strong>Orchestration pattern</strong> — a parent agent can spin up sub-agents, each in their own worktree, and have them make PRs back to main</li>
+        <li><strong>Opt-in behavior</strong> — sub-agent worktrees are not automatic; you need to explicitly tell Claude to use worktrees for its sub-agents</li>
+        <li><strong>Free parallelization</strong> — Matt describes this as offering "so many free parallelization opportunities" — the complexity of Git branching is absorbed by the tool itself</li>
+      </ul>
+      <p>Matt ties this into his broader philosophy: <strong>AI coding isn't that different from human coding</strong> — it's about reintroducing fundamentals (TDD, parallelization, planning) into the AI era. Worktrees are the Git foundation that makes parallel agent work practical.</p>
+    </div>
+
+    <!-- Key Takeaways -->
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Git worktrees enable parallel branches</strong> — multiple branches checked out simultaneously in separate directories, sharing the same Git database</li>
+          <li><strong><code>claude --worktree</code> automates the lifecycle</strong> — creates, names, and manages worktrees automatically, with cleanup on exit</li>
+          <li><strong>Worktrees live at <code>.claude/worktrees/</code></strong> — Claude gives them random human-friendly names like "cheerful-coalescing-worth"</li>
+          <li><strong>Branch protection is critical</strong> — without it, worktree commits may accidentally push to main instead of a feature branch</li>
+          <li><strong>Explicit push required</strong> — agents should push with <code>git push origin &lt;worktree-branch-name&gt;</code> to create proper feature branches</li>
+          <li><strong>IDE support is seamless</strong> — VS Code detects worktrees in the Source Control panel with no configuration</li>
+          <li><strong>Use worktrees for every session</strong> — Matt argues there's no reason not to, as they provide free parallelization</li>
+          <li><strong>Sub-agents support worktrees too</strong> — enabling orchestrated multi-agent parallel workflows via PRs</li>
+          <li><strong>The tool absorbs complexity</strong> — Claude managing worktree lifecycle means developers don't need to learn Git worktree internals</li>
+          <li><strong>AI coding fundamentals matter</strong> — worktrees complement TDD, planning, and effective parallelization in AI-assisted development</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Timestamp Index -->
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=0s" target="_blank">▶ 0:00</a>
+          <span class="label">Introduction — built-in Git worktree support for Claude Code</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=34s" target="_blank">▶ 0:34</a>
+          <span class="label">Manual worktree demo — git worktree add</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=78s" target="_blank">▶ 1:18</a>
+          <span class="label">IDE integration — VS Code Source Control</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=113s" target="_blank">▶ 1:53</a>
+          <span class="label">PR workflow from worktree</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=148s" target="_blank">▶ 2:28</a>
+          <span class="label">Worktree cleanup — remove vs rimraf</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=181s" target="_blank">▶ 3:01</a>
+          <span class="label">Claude --worktree first run</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=231s" target="_blank">▶ 3:51</a>
+          <span class="label">Exit behavior — keep or remove worktree</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=256s" target="_blank">▶ 4:16</a>
+          <span class="label">Paper cut — commits landing on main</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=287s" target="_blank">▶ 4:47</a>
+          <span class="label">Experiments — understanding branch behavior</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=322s" target="_blank">▶ 5:22</a>
+          <span class="label">Explicit branch push — the solution</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=365s" target="_blank">▶ 6:05</a>
+          <span class="label">Why use worktrees every time</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=400s" target="_blank">▶ 6:40</a>
+          <span class="label">Sub-agent worktree support</span>
+        </div>
+        <div class="ts-row">
+          <a class="ts" href="https://www.youtube.com/watch?v=yv8VZpov8bk&t=425s" target="_blank">▶ 7:05</a>
+          <span class="label">AI coding fundamentals — TDD, planning, parallelization</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video yv8VZpov8bk · Matt Pocock</footer>
+
+</body>
+</html>
