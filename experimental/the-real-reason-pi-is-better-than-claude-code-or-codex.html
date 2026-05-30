@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The REAL Reason Pi Is Better Than Claude Code or Codex</title>
+<style>
+:root{--bg:#0f1117;--card-bg:#1a1d27;--card-border:#2a2d3a;--accent:#3b82f6;--accent-dim:#1e3a5f;--text:#e2e8f0;--text-muted:#94a3b8;--text-bright:#f8fafc;--green:#22c55e;--purple:#a78bfa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;padding:0}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#1a1d27 50%,#0f1117 100%);border-bottom:1px solid var(--card-border);padding:2rem 1rem;text-align:center}
+.hero h1{font-size:1.8rem;color:var(--text-bright);margin-bottom:.5rem}
+.hero .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:1.2rem}
+.thumb-link{display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .2s;max-width:560px;width:100%}
+.thumb-link:hover{transform:scale(1.02)}.thumb-link img{width:100%;display:block}
+.meta-pills{margin-top:1.2rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.meta-pill{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:.3rem .9rem;font-size:.82rem;color:var(--text-muted)}
+.container{display:flex;max-width:1200px;margin:0 auto;gap:2rem;padding:2rem 1rem}
+.toc{position:sticky;top:1rem;width:260px;min-width:220px;max-height:calc(100vh - 2rem);overflow-y:auto;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.2rem;font-size:.85rem;flex-shrink:0}
+.toc h3{color:var(--accent);font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.8rem}
+.toc ol{list-style:none;counter-reset:toc}.toc li{counter-increment:toc;margin-bottom:.5rem}
+.toc li a{color:var(--text-muted);display:block;padding:4px 0;transition:color .2s}
+.toc li a:hover{color:var(--text-bright);text-decoration:none}
+.toc li a::before{content:counter(toc) ". ";color:var(--accent);font-weight:600}
+.content{flex:1;min-width:0}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:1.8rem;margin-bottom:1.5rem}
+.card h2{color:var(--text-bright);font-size:1.3rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:2px solid var(--accent-dim);display:flex;align-items:center;gap:.5rem}
+.card h2 .num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.card h3{color:var(--purple);font-size:1rem;margin:1rem 0 .5rem}
+.card p,.card li{margin-bottom:.6rem}.card ul,.card ol{padding-left:1.5rem}.card ul li::marker{color:var(--accent)}
+.ts{display:inline-block;background:var(--accent-dim);color:var(--accent);font-family:'JetBrains Mono','Fira Code',monospace;font-size:.78rem;padding:2px 10px;border-radius:999px;margin:2px 4px 2px 0;white-space:nowrap;transition:background .2s}
+.ts:hover{background:var(--accent);color:#fff;text-decoration:none}
+.takeaways{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(167,139,250,.08));border:1px solid var(--accent-dim);border-radius:10px;padding:1.2rem 1.5rem;margin:1rem 0}
+.takeaways h3{color:var(--green);margin-top:0}.takeaways li{color:var(--text)}
+.highlight-box{background:rgba(59,130,246,.08);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:.9rem;color:var(--text)}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:.6rem}
+.ts-row{display:flex;align-items:center;gap:.7rem;padding:6px 10px;border-radius:8px;background:rgba(26,29,39,.6);transition:background .15s}
+.ts-row:hover{background:var(--card-bg)}.ts-row .label{color:var(--text-muted);font-size:.85rem}
+code{background:rgba(59,130,246,.12);color:var(--accent);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.88em}
+blockquote{border-left:3px solid var(--purple);padding:8px 16px;margin:10px 0;font-style:italic;color:var(--text-muted);background:rgba(167,139,250,.05);border-radius:0 8px 8px 0}
+footer{text-align:center;color:#444;font-size:12px;margin-top:40px;padding:20px 1rem;border-top:1px solid #1e2028}
+@media(max-width:800px){.container{flex-direction:column}.toc{position:static;width:100%;max-height:none}.ts-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<img src="https://img.youtube.com/vi/pr2WGRhVKys/maxresdefault.jpg" alt="The REAL Reason Pi Is Better Than Claude Code or Codex" style="display:none;">
+
+<div class="hero">
+  <h1>The REAL Reason Pi Is Better Than Claude Code or Codex</h1>
+  <div class="meta">Ben Holmes · ~8 min · Deep Dive Document</div>
+  <a class="thumb-link" href="https://www.youtube.com/watch?v=pr2WGRhVKys" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/pr2WGRhVKys/maxresdefault.jpg" alt="Video thumbnail">
+  </a>
+  <div class="meta-pills">
+    <span class="meta-pill">⏱ ~8 min</span>
+    <span class="meta-pill">🎤 Ben Holmes</span>
+    <span class="meta-pill">🏷 Pi · Claude Code · Codex · Conversation History · /tree · Agent Workflows</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">The Problem with Long Conversations</a></li>
+      <li><a href="#s2">Option 1 — Ask the Agent Directly</a></li>
+      <li><a href="#s3">Option 2 — Fork / Branch</a></li>
+      <li><a href="#s4">The Limitations of Forking</a></li>
+      <li><a href="#s5">Pi's /tree — A Wayback Machine</a></li>
+      <li><a href="#s6">How /tree Preserves History</a></li>
+      <li><a href="#s7">Rolling Back to Tool Calls</a></li>
+      <li><a href="#s8">Debugging Agent Meta-Behavior</a></li>
+      <li><a href="#takeaways">Key Takeaways</a></li>
+      <li><a href="#resources">Resources &amp; Links</a></li>
+      <li><a href="#timestamps">Timestamp Index</a></li>
+    </ol>
+  </nav>
+
+  <main class="content">
+
+    <div class="card" id="overview">
+      <h2><span class="num" style="background:var(--purple);">◆</span> Overview</h2>
+      <p>Ben Holmes zeros in on a single killer feature that makes the Pi coding agent harness stand out from Claude Code and Codex: <code>/tree</code> — a conversation history management system that lets you roll back to any previous point in a conversation and branch from there. Unlike the simple <code>/fork</code> or <code>/branch</code> commands available in other harnesses, <code>/tree</code> gives you surgical control over context, letting you explore alternative solutions without losing progress or polluting context. Ben demonstrates real-world scenarios including architecture exploration and debugging agent tool call behavior, making a compelling case for Pi's "grug-brain" approach to agent conversation management.</p>
+    </div>
+
+    <div class="card" id="s1">
+      <h2><span class="num">1</span> The Problem with Long Agent Conversations</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=0s" target="_blank">▶ 0:00</a></p>
+      <p>Ben describes his typical workflow with coding agents — what he calls a "lazy" approach:</p>
+      <ul>
+        <li><strong>No planning mode</strong>, no saved architecture documents</li>
+        <li>Just have a <strong>long, exploratory conversation</strong> about what he wants to build</li>
+        <li>When they arrive at something that feels buildable, ask the agent to implement it</li>
+      </ul>
+      <p>He demonstrates with a real example: setting up end-to-end testing for a desktop app. The agent came back with multiple options, he picked one (a CLI package), the agent implemented it and verified it worked. But then Ben realized through reading the implementation that it might be <strong>simpler as an MCP server</strong> instead.</p>
+      <div class="highlight-box">The core problem: "How do I go back to the previous plan we built and explore that other option?" This is a common situation — you've gone deep into one solution and realize you want to backtrack and try a different approach.</div>
+    </div>
+
+    <div class="card" id="s2">
+      <h2><span class="num">2</span> Option 1 — Ask the Agent Directly</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=99s" target="_blank">▶ 1:39</a></p>
+      <p>The simplest approach — just tell the agent you want to change direction:</p>
+      <blockquote>"I'm not sure I agree with this implementation. It might be simpler as an MCP server. Can you go explore that?"</blockquote>
+      <p>This works "well enough," but creates <strong>context pollution</strong>:</p>
+      <ul>
+        <li>The agent still knows everything about the previous implementation (the Pi extension)</li>
+        <li>You want a <strong>fresh start</strong> to explore the new solution — not a course correction contaminated by the old one</li>
+        <li>The agent may carry assumptions and biases from the previous approach into the new exploration</li>
+      </ul>
+    </div>
+
+    <div class="card" id="s3">
+      <h2><span class="num">3</span> Option 2 — Fork / Branch</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=125s" target="_blank">▶ 2:05</a></p>
+      <p>Every major harness has a forking mechanism:</p>
+      <ul>
+        <li><strong>Claude Code</strong> — <code>/branch</code></li>
+        <li><strong>Codex</strong> — <code>/fork</code></li>
+      </ul>
+      <p>The mechanics are simple: take your current conversation and copy it to a new thread. You keep the original thread to revisit later, and you get a new thread to explore a different solution. You can even work in a separate <strong>worktree</strong> with the forked conversation.</p>
+    </div>
+
+    <div class="card" id="s4">
+      <h2><span class="num">4</span> The Limitations of Forking</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=155s" target="_blank">▶ 2:35</a></p>
+      <p>Forking doesn't solve the fundamental problem:</p>
+      <ul>
+        <li><strong>No context control</strong> — fork copies <em>everything</em> wholesale. You can't choose what comes along</li>
+        <li><strong>No rollback</strong> — you can't go back to a specific earlier point in the conversation. The fork happens from wherever you currently are</li>
+        <li><strong>Requires defensive prompting</strong> — you have to predict <em>in advance</em> when you might need to fork and proactively save architecture docs or create branches</li>
+      </ul>
+      <div class="highlight-box">The problem with forking: to get a clean branch from an earlier decision point, you would have needed to be "super smart up front" — saving plans to markdown files or running /fork at exactly the right moment. This requires upfront thinking that contradicts how most developers actually work with agents.</div>
+      <p>Ben's preferred style — prompt forward, explore freely, and branch when you realize you need to — doesn't fit the fork model.</p>
+    </div>
+
+    <div class="card" id="s5">
+      <h2><span class="num">5</span> Pi's /tree — A Wayback Machine for Agents</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=211s" target="_blank">▶ 3:31</a></p>
+      <p>Pi's <code>/tree</code> command is the solution: <strong>fork from any point in the past</strong>, not just the current position.</p>
+
+      <h3>How It Works</h3>
+      <ul>
+        <li>Run <code>/tree</code> to see <strong>every call and response</strong> in the conversation, including tool calls</li>
+        <li>Use <strong>arrow keys</strong> to page through the full history</li>
+        <li>Select the exact point you want to roll back to</li>
+        <li>Optionally <strong>summarize</strong> the context — compact everything, or add a custom prompt ("This solution didn't work, now explore a new one")</li>
+        <li>The original prompt from that point is placed back in the prompt box — <strong>literally a Wayback Machine</strong></li>
+      </ul>
+      <p>In Ben's example, he rolls all the way back to the initial architecture plan where the agent listed multiple options, selects that point, and describes a new direction to explore — starting clean from the original decision point.</p>
+    </div>
+
+    <div class="card" id="s6">
+      <h2><span class="num">6</span> How /tree Preserves History</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=313s" target="_blank">▶ 5:13</a></p>
+      <p>A critical design choice: <code>/tree</code> <strong>doesn't rewrite history</strong> when you resume from a previous point. It creates a branching tree structure:</p>
+      <ul>
+        <li>The original conversation thread is <strong>fully preserved</strong></li>
+        <li>New branches appear as forks from the selected rollback point</li>
+        <li>You can visualize the entire tree of all branches and their divergence points</li>
+        <li>No progress is ever lost — every path you've explored remains accessible</li>
+      </ul>
+      <div class="highlight-box">"You don't have to plan out when you save architecture diagrams or when you're going to fork. You can just move forward as far as you want and then branch off later. It's the grug-brain approach."</div>
+      <p>This is the key philosophical difference: instead of requiring defensive, upfront planning about when to save checkpoints, Pi lets you <strong>retrospectively</strong> create forks — work first, organize later.</p>
+    </div>
+
+    <div class="card" id="s7">
+      <h2><span class="num">7</span> Rolling Back to Tool Calls</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=370s" target="_blank">▶ 6:10</a></p>
+      <p><code>/tree</code> doesn't just show user prompts and agent responses — it shows <strong>individual tool calls</strong> too. Ben uses this for debugging agent meta-behavior:</p>
+      <ul>
+        <li>The agent tried to do a <code>curl</code> but the web search extension wasn't installed — roll back to that tool call and fix the setup</li>
+        <li>The agent used a <code>create-worktree</code> skill but created the worktree from an unexpected directory — roll back to inspect why</li>
+      </ul>
+    </div>
+
+    <div class="card" id="s8">
+      <h2><span class="num">8</span> Debugging Agent Meta-Behavior with /tree</h2>
+      <p><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=393s" target="_blank">▶ 6:33</a></p>
+      <p>Ben demonstrates a powerful pattern: rolling back to a specific tool call and asking <strong>why</strong> the agent made that decision:</p>
+      <blockquote>"Why did we create a worktree off of the other working directory? I would expect this to create a worktree off of the main branch always. Update the skill if we need to."</blockquote>
+      <p>This is analogous to <code>/side</code> or <code>/btw</code> in Codex/Claude Code — asking a question unrelated to the main thread but with full context. The difference: Pi lets you <strong>target the exact tool call</strong> that was problematic.</p>
+      <p>In this case, the agent patched its skill file to always branch off of main. Then Ben used the arrow keys to navigate back to the main conversation thread and continue working — seamlessly.</p>
+      <div class="highlight-box">The /tree command turns debugging from a new-conversation problem into an in-context surgical fix. Roll back to the problematic tool call, ask why, fix the skill, then return to the main thread — all without losing context or starting over.</div>
+    </div>
+
+    <div class="card" id="takeaways">
+      <h2><span class="num">🎯</span> Key Takeaways</h2>
+      <div class="takeaways">
+        <h3>🔑 Key Takeaways</h3>
+        <ul>
+          <li><strong>Context pollution is a real problem</strong> — telling an agent to change direction keeps all the old implementation context, biasing the new exploration</li>
+          <li><strong>/fork and /branch are limited</strong> — they copy the entire context from the current point, with no way to roll back or select what comes along</li>
+          <li><strong>Pi's /tree is fork + rollback</strong> — choose any previous point in the conversation to branch from, not just the current position</li>
+          <li><strong>History is never rewritten</strong> — /tree creates a branching tree structure where all paths are preserved and accessible</li>
+          <li><strong>The "grug-brain" approach</strong> — no need to defensively plan forks in advance. Prompt forward freely, branch retroactively when needed</li>
+          <li><strong>Tool calls are first-class citizens</strong> — /tree shows individual tool calls, not just user prompts and agent responses</li>
+          <li><strong>Debug agent behavior in-context</strong> — roll back to a problematic tool call, ask why the agent made that decision, fix the underlying skill, then return to the main thread</li>
+          <li><strong>Summarization is optional</strong> — when rolling back, you can compact context with a summary or add a custom prompt, or just roll back clean</li>
+          <li><strong>Similar to /side or /btw</strong> — but with the added power of targeting exact points in history rather than just forking from the current position</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" id="resources">
+      <h2><span class="num">🔗</span> Resources &amp; Links</h2>
+      <ul>
+        <li><a href="https://pi.dev" target="_blank">Pi</a> — the minimal, extensible coding agent harness</li>
+        <li><a href="https://warp.dev" target="_blank">Warp Terminal</a> — terminal with built-in voice mode and code review panel for Pi</li>
+      </ul>
+    </div>
+
+    <div class="card" id="timestamps">
+      <h2><span class="num">⏱</span> Timestamp Index</h2>
+      <div class="ts-grid">
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=0s" target="_blank">▶ 0:00</a><span class="label">Intro — Pi as a coding agent harness, /tree feature</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=29s" target="_blank">▶ 0:29</a><span class="label">Real example — exploratory E2E testing conversation in Codex</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=79s" target="_blank">▶ 1:19</a><span class="label">Realizing MCP server might be simpler — the rollback problem</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=99s" target="_blank">▶ 1:39</a><span class="label">Option 1 — ask the agent directly (context pollution)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=125s" target="_blank">▶ 2:05</a><span class="label">Option 2 — /fork and /branch (wholesale copy)</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=155s" target="_blank">▶ 2:35</a><span class="label">Limitations of forking — no rollback, defensive prompting needed</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=211s" target="_blank">▶ 3:31</a><span class="label">Pi's /tree — selecting any point to branch from</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=270s" target="_blank">▶ 4:30</a><span class="label">Summarization options — compact, custom prompt, or clean rollback</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=313s" target="_blank">▶ 5:13</a><span class="label">History preservation — branching tree structure, no rewrites</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=348s" target="_blank">▶ 5:48</a><span class="label">The grug-brain approach — branch retroactively</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=370s" target="_blank">▶ 6:10</a><span class="label">Rolling back to tool calls — debugging agent behavior</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=393s" target="_blank">▶ 6:33</a><span class="label">Worktree skill bug — asking why at a specific tool call</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=449s" target="_blank">▶ 7:29</a><span class="label">Comparison to /side and /btw in Codex/Claude Code</span></div>
+        <div class="ts-row"><a class="ts" href="https://www.youtube.com/watch?v=pr2WGRhVKys&t=469s" target="_blank">▶ 7:49</a><span class="label">Returning to the main thread — arrow key navigation</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Deep Dive document generated from YouTube video pr2WGRhVKys · Ben Holmes</footer>
+
+</body>
+</html>

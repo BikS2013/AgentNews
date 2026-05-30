@@ -319,7 +319,18 @@
       "thumbnailSource": "html",
       "sha256": "5ed45f3ce9e750bc78d68a5415368a2f8906bb3062fc91e10f0e9cc8c353513a",
       "category": "deep-dive"
+    },
+    {
+      "slug": "the-real-reason-pi-is-better-than-claude-code-or-codex",
+      "title": "The REAL Reason Pi Is Better Than Claude Code or Codex",
+      "publishedAt": "2026-05-21T15:28:39.000Z",
+      "sourcePath": "/tmp/pi-tree-deep-dive.html",
+      "articlePath": "experimental/the-real-reason-pi-is-better-than-claude-code-or-codex.html",
+      "thumbnailUrl": "https://img.youtube.com/vi/pr2WGRhVKys/maxresdefault.jpg",
+      "thumbnailSource": "html",
+      "sha256": "83f4b609f30d55dab1bf9f17716fa6d2a9fe16000c961aebf16dbea3ae16d659",
+      "category": "deep-dive"
     }
   ],
-  "updatedAt": "2026-05-30T05:12:09.031Z"
+  "updatedAt": "2026-05-30T08:50:25.792Z"
 }
