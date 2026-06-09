@@ -557,6 +557,7 @@ function renderHeader(bp: string, siteName: string, showToolsLink: boolean): str
       <a href="${aiNewsAnchor}" class="active">AI-News</a>
       <a href="${deepDivesAnchor}">Deep Dives</a>${toolsNavLink}
       <a href="${articlesAnchor}">Articles</a>
+      <a href="https://claude-code-sandbox.azurewebsites.net/" target="_blank" rel="noopener">Sandbox ↗</a>
       <a href="${home}">About</a>
     </nav>
     <div class="header-actions">
@@ -608,9 +609,14 @@ function renderFooter(bp: string, siteName: string, showToolsLink: boolean): str
         </ul>
       </div>
       <div>
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="https://claude-code-sandbox.azurewebsites.net/" target="_blank" rel="noopener noreferrer">Sandbox</a></li>
+        </ul>
+      </div>
+      <div>
         <h4>Connect</h4>
         <ul>
-          <li><span class="footer-link--disabled" aria-disabled="true">RSS</span></li>
           <li><a href="https://github.com/BikS2013/AgentNews" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><span class="footer-link--disabled" aria-disabled="true">Contact</span></li>
         </ul>
