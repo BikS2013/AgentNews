@@ -1,7 +1,13 @@
 name: Deploy to GitHub Pages
 
-# Build the static export and publish it to GitHub Pages.
-# Triggered on every push to `main` and on manual dispatch from the Actions tab.
+# The public site has moved to https://the-agent-daily.org — this workflow
+# now publishes a minimal client-side redirect instead of the full static
+# build. index.html covers the site root; 404.html covers every other path
+# (GitHub Pages serves it for any URL that has no matching file), so all
+# old deep links redirect too.
+#
+# To resurrect the full static site, restore the previous version of this
+# file from git history (it built via `npm run build:static` into ./dist).
 
 on:
   push:
@@ -20,52 +26,34 @@ permissions:
   pages: write
   id-token: write
 
-# Run all JavaScript-based actions (actions/checkout, actions/setup-node,
-# actions/configure-pages, actions/upload-pages-artifact, actions/deploy-pages,
-# etc.) on Node.js 24 instead of the deprecated Node.js 20 runtime. GitHub is
-# flipping Node 24 to default on 2026-06-02; setting this now silences the
-# deprecation warnings and gets us onto the new runtime early. Once Node 24
-# becomes the default, this env var becomes a no-op and can be removed.
-# See: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    env:
-      # Project-page deploy → site is served at /<repo>/, so internal links
-      # must be prefixed accordingly. Driven by the repo name.
-      BASE_PATH: /${{ github.event.repository.name }}
-      CATALOG_PATH: ./data/catalog.json
-      ARTICLES_DIR: ./articles
-      LINKS_PATH: ./data/links.json
-      OUT_DIR: ./dist
-      # Optional. When set, the public hero gains a discreet link to the
-      # experimental sibling site. Set to an empty value (or remove this
-      # line) to suppress the link.
-      EXPERIMENTAL_URL: https://biks2013.github.io/AgentNews-Experimental/
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build static site
-        run: npm run build:static
+      - name: Generate redirect artifact
+        run: |
+          mkdir -p dist
+          cat > dist/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>The Agent Daily</title>
+            <meta name="robots" content="noindex">
+            <meta http-equiv="refresh" content="0; url=https://the-agent-daily.org/">
+            <link rel="canonical" href="https://the-agent-daily.org/">
+            <script>window.location.replace("https://the-agent-daily.org/");</script>
+          </head>
+          <body>
+            <p>This site has moved to <a href="https://the-agent-daily.org/">the-agent-daily.org</a>. You are being redirected automatically.</p>
+          </body>
+          </html>
+          HTML
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -75,13 +63,6 @@ jobs:
         with:
           path: ./dist
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
